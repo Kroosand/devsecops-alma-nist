@@ -12,7 +12,7 @@ import os
 import subprocess
 import sys
 
-CANARY_FILE = "temp_canary_leak_test.php"
+CANARY_FILE = "config_test_leak.php"
 
 SAMPLE_LEAKS = """<?php
 // ARCHIVO DE PRUEBA CONTROLADA - SIMULACIÓN DE FUGA DE CREDENCIALES
