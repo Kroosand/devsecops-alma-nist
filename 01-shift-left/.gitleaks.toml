@@ -1,0 +1,54 @@
+# ==============================================================================
+# Reglas personalizadas de Gitleaks para Alma Industria Creativa E.I.R.L.
+# Proyecto de Titulación SENATI: DevSecOps NIST CSF v2.0
+# Control: SOP-02 (PR.PS-01 / DE.CM-01)
+# ==============================================================================
+
+title = "Alma DevSecOps Gitleaks Custom Configuration"
+
+[extend]
+useDefault = true
+
+# 1. Detección de Tokens de Bot de Telegram
+[[rules]]
+id = "telegram-bot-token"
+description = "Token de API de Bot de Telegram"
+regex = '''(?i)(telegram[_-]?token|bot[_-]?token|tg[_-]?token)["']?\s*[:=]\s*["']?([0-9]{8,10}:[a-zA-Z0-9_-]{35})["']?'''
+keywords = ["telegram", "bot_token", "tg_token"]
+entropy = 3.5
+secretGroup = 2
+
+# 2. Detección de Webhooks y API Keys de n8n
+[[rules]]
+id = "n8n-webhook-api-key"
+description = "API Key o Webhook Secret de n8n"
+regex = '''(?i)(n8n[_-]?(api[_-]?key|webhook[_-]?secret|auth))["']?\s*[:=]\s*["']?([a-zA-Z0-9_\-\.]{20,})["']?'''
+keywords = ["n8n", "n8n_api_key", "webhook_secret"]
+entropy = 3.5
+secretGroup = 3
+
+# 3. Detección de Constantes de Base de Datos de WordPress (wp-config.php)
+[[rules]]
+id = "wordpress-db-password"
+description = "Contraseña de base de datos en wp-config.php"
+regex = '''define\s*\(\s*['"]DB_PASSWORD['"]\s*,\s*['"]([^'"]{4,})['"]\s*\)'''
+keywords = ["DB_PASSWORD"]
+secretGroup = 1
+
+# 4. Detección de Tokens JWT
+[[rules]]
+id = "json-web-token"
+description = "JSON Web Token (JWT) hardcodeado"
+regex = '''(?i)(bearer\s+|jwt\s*[:=]\s*["']?)(eyJ[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*)'''
+keywords = ["eyJ", "bearer", "jwt"]
+entropy = 4.0
+secretGroup = 2
+
+# 5. Archivos ignorados por defecto (Whitelisting de pruebas y documentación)
+[allowlist]
+description = "Archivos permitidos / excepciones controladas"
+paths = [
+    '''\.gitleaks\.toml$''',
+    '''01-shift-left/tests/test_canary_secrets\.py$''',
+    '''05-docs-senati/.*'''
+]

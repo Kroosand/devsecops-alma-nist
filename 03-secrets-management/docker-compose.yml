@@ -1,0 +1,85 @@
+# ==============================================================================
+# ENTORNO DE LABORATORIO Y GESTIÓN DE SECRETOS (DOCKER COMPOSE)
+# Empresa: Alma Industria Creativa E.I.R.L.
+# Proyecto: Titulación SENATI - DevSecOps NIST CSF v2.0
+# Control: SOP-01 (PR.AA-01 / PR.DS-01)
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  # 1. Bóveda Centralizada de Contraseñas (Vaultwarden / Bitwarden Self-Hosted)
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: alma_vaultwarden
+    restart: unless-stopped
+    environment:
+      - WEBSOCKET_ENABLED=true
+      - SIGNUPS_ALLOWED=false         # Registro cerrado por seguridad
+      - INVITATIONS_ALLOWED=true      # Solo altas por invitación de admin
+      - SHOW_PASSWORD_HINT=false
+      - DOMAIN=http://vault.alma.local
+    volumes:
+      - ./data/vaultwarden:/data
+    networks:
+      - devsecops_net
+    ports:
+      - "8080:80"
+
+  # 2. Gestor de Secretos de Infraestructura y Pipelines (HashiCorp Vault)
+  vault:
+    image: hashicorp/vault:1.15.0
+    container_name: alma_vault_engine
+    restart: unless-stopped
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=alma_master_dev_token_2026
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./data/vault_data:/vault/file
+      - ./rbac-policies:/vault/policies
+    networks:
+      - devsecops_net
+    ports:
+      - "8200:8200"
+
+  # 3. WordPress de Pruebas para Auditorías de Hardening (Laboratorio de Pentesting)
+  lab_wordpress:
+    image: wordpress:6.4-apache
+    container_name: alma_lab_wordpress
+    restart: unless-stopped
+    environment:
+      - WORDPRESS_DB_HOST=lab_db:3306
+      - WORDPRESS_DB_USER=alma_wp_user
+      - WORDPRESS_DB_PASSWORD=alma_wp_pass_secure_2026
+      - WORDPRESS_DB_NAME=alma_wp_db
+    volumes:
+      - ./data/wp_data:/var/www/html
+      - ../02-hardening-web/.htaccess:/var/www/html/.htaccess
+      - ../02-hardening-web/wp-hardening-plugin.php:/var/www/html/wp-content/mu-plugins/wp-hardening-plugin.php
+    depends_on:
+      - lab_db
+    networks:
+      - devsecops_net
+    ports:
+      - "8088:80"
+
+  # 4. Base de Datos MySQL para WordPress de Laboratorio
+  lab_db:
+    image: mysql:8.0
+    container_name: alma_lab_mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=alma_wp_db
+      - MYSQL_USER=alma_wp_user
+      - MYSQL_PASSWORD=alma_wp_pass_secure_2026
+      - MYSQL_ROOT_PASSWORD=alma_root_secure_pass_2026
+    volumes:
+      - ./data/db_data:/var/lib/mysql
+    networks:
+      - devsecops_net
+
+networks:
+  devsecops_net:
+    driver: bridge

@@ -1,0 +1,82 @@
+# ==============================================================================
+# BASTIONADO PERIMETRAL Y DIRECTIVAS DE SEGURIDAD (.htaccess / LiteSpeed / Apache)
+# Empresa: Alma Industria Creativa E.I.R.L.
+# Proyecto: Titulación SENATI - DevSecOps NIST CSF v2.0
+# Control: SOP-03 (PR.IR-01 / PR.PT-01)
+# ==============================================================================
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# ------------------------------------------------------------------------------
+# 1. BLOQUEO DE ENUMERACIÓN DE USUARIOS VÍA QUERY STRING (/?author=X)
+# Evita que un atacante descubra nombres de usuario administradores mediante redirección
+# ------------------------------------------------------------------------------
+RewriteCond %{QUERY_STRING} ^author=([0-9]+) [NC]
+RewriteRule .* - [F,L]
+
+# ------------------------------------------------------------------------------
+# 2. BLOQUEO PERIMETRAL DEL ENDPOINT REST API DE USUARIOS (/wp-json/wp/v2/users)
+# Bloquea el acceso anónimo al endpoint sensible y retorna HTTP 403 Forbidden
+# ------------------------------------------------------------------------------
+RewriteCond %{REQUEST_URI} ^/wp-json/wp/v2/users [NC]
+RewriteCond %{HTTP:Authorization} ^$
+RewriteCond %{HTTP_COOKIE} !wordpress_logged_in_ [NC]
+RewriteRule ^.*$ - [F,L]
+
+# ------------------------------------------------------------------------------
+# 3. LISTA BLANCA (WHITELIST) OPENGRAPH / REDES SOCIALES (RESOLUCIÓN ERROR HTTP 429)
+# Exonera a los bots legítimos de metadatos de las reglas agresivas de Rate Limiting
+# ------------------------------------------------------------------------------
+SetEnvIfNoCase User-Agent "(facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|TelegramBot|Pinterest|Googlebot|bingbot)" is_trusted_crawler
+
+# Excepción de limitación de tasa si el servidor usa mod_ratelimit o LiteSpeed WAF
+<IfModule mod_ratelimit.c>
+    SetEnvIf is_trusted_crawler 1 no-ratelimit
+</IfModule>
+
+</IfModule>
+
+# ------------------------------------------------------------------------------
+# 4. INYECCIÓN DE CABECERAS HTTP DE SEGURIDAD ESTRICTA (SECURITY HEADERS)
+# ------------------------------------------------------------------------------
+<IfModule mod_headers.c>
+    # Previene ataques de Clickjacking / Framing
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # Previene ataques de MIME Sniffing
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Forzado estricto de HTTPS (HSTS - 1 año con subdominios)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+
+    # Control de fuga de información de URL de referencia
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Restricción de permisos y APIs de hardware en navegador
+    Header always set Permissions-Policy "geolocation=(), camera=(), microphone=(), payment=()"
+
+    # Política de Seguridad de Contenido (CSP equilibrado para CMS y analítica)
+    Header always set Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:; font-src 'self' https: data:; connect-src 'self' https:;"
+
+    # Ocultar cabeceras informativas de versión del servidor
+    Header unset X-Powered-By
+    Header unset Server
+</IfModule>
+
+# ------------------------------------------------------------------------------
+# 5. PROTECCIÓN DE ARCHIVOS SENSIBLES DEL SISTEMA
+# ------------------------------------------------------------------------------
+<FilesMatch "^(wp-config\.php|\.env|\.git|\.htaccess|\.htpasswd|composer\.json|package\.json)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Deshabilitar listado de directorios
+Options -Indexes

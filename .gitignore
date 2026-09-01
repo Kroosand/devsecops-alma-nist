@@ -1,0 +1,21 @@
+# Entornos virtuales y dependencias de Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# Variables de entorno y secretos locales
+.env
+.env.*
+*.local
+temp_canary_leak_test.php
+
+# Datos persistentes de contenedores de laboratorio
+03-secrets-management/data/
+
+# Logs del sistema y temporales
+*.log
+.DS_Store
+Thumbs.db
