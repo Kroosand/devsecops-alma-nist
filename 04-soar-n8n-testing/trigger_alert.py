@@ -175,44 +175,106 @@ def main():
 
     # Construir payload enriquecido con nombres en inglés y español para total compatibilidad
     payload = {
-        # Claves en Inglés
+        # Claves Principales
         "incident_id": incident_id,
+        "id_incidente": incident_id,
         "company": "Alma Industria Creativa E.I.R.L.",
+        "empresa": "Alma Industria Creativa E.I.R.L.",
         "project": "DevSecOps NIST CSF v2.0",
+        "proyecto": "DevSecOps NIST CSF v2.0",
         "timestamp": now_utc,
-        "event_type": selected_event["event_type"],
-        "severity": selected_event["severity"],
-        "risk_score": selected_event["risk_score"],
-        "source": selected_event["source"],
-        "affected_asset": selected_event["affected_asset"],
-        "attacker_ip": selected_event["attacker_ip"],
-        "user_involved": selected_event["user_involved"],
-        "nist_control": selected_event["nist_control"],
-        "phva_phase": selected_event["phva_phase"],
-        "sop_reference": selected_event["sop_reference"],
-        "details": selected_event["details"],
-        "suggested_action": selected_event["suggested_action"],
-        "telegram_formatted_text": format_telegram_message({**selected_event, "timestamp": now_utc, "incident_id": incident_id}),
+        "fecha_hora": now_utc,
         
-        # Claves en Español (Mapeadas exactamente a la plantilla de n8n)
+        # Severidad / Nivel de Riesgo
+        "severity": selected_event["severity"],
         "severidad": selected_event["severity"],
+        "nivel": selected_event["severity"],
+        "risk_score": selected_event["risk_score"],
+        "score": selected_event["risk_score"],
+        
+        # Tipo de Incidente / Evento
+        "event_type": selected_event["event_type"],
         "incidente": selected_event["event_type"],
+        "tipo_incidente": selected_event["event_type"],
+        "tipo_evento": selected_event["event_type"],
+        "evento": selected_event["event_type"],
+        "nombre_incidente": selected_event["event_type"],
+        "titulo": selected_event["event_type"],
+        "title": selected_event["event_type"],
+        
+        # Activo Afectado
+        "affected_asset": selected_event["affected_asset"],
         "activo_afectado": selected_event["affected_asset"],
         "activo": selected_event["affected_asset"],
+        "recurso": selected_event["affected_asset"],
+        "target": selected_event["affected_asset"],
+        
+        # Framework NIST
+        "nist_control": selected_event["nist_control"],
         "framework_nist": selected_event["nist_control"],
         "nist": selected_event["nist_control"],
+        "control_nist": selected_event["nist_control"],
+        "control": selected_event["nist_control"],
+        "framework": selected_event["nist_control"],
+        "norma_nist": selected_event["nist_control"],
+        "categoria_nist": selected_event["nist_control"],
+        "phva_phase": selected_event["phva_phase"],
+        "fase_phva": selected_event["phva_phase"],
+        
+        # Origen / Fuente
+        "source": selected_event["source"],
         "origen": selected_event["source"],
-        "detalles_tecnicos": selected_event["details"],
+        "fuente": selected_event["source"],
+        "sistema_origen": selected_event["source"],
+        "modulo": selected_event["source"],
+        "herramienta": selected_event["source"],
+        
+        # Detalles Técnicos
+        "details": selected_event["details"],
         "detalles": selected_event["details"],
-        "archivo_endpoint": selected_event.get("affected_asset", "N/A"),
-        "archivo": "config_test_leak.php" if "PRECOMMIT" in selected_event["event_type"] else "/wp-json/wp/v2/users",
+        "detalles_tecnicos": selected_event["details"],
+        "descripcion": selected_event["details"],
+        
+        # Archivo / Endpoint
+        "archivo_endpoint": "config_test_leak.php" if "PRECOMMIT" in selected_event["event_type"] else "/wp-json/wp/v2/users",
+        "archivo_o_endpoint": "config_test_leak.php" if "PRECOMMIT" in selected_event["event_type"] else "/wp-json/wp/v2/users",
+        "archivo": "config_test_leak.php" if "PRECOMMIT" in selected_event["event_type"] else "N/A",
         "endpoint": "/wp-json/wp/v2/users" if "REST" in selected_event["event_type"] else "N/A",
+        "ruta": "config_test_leak.php",
+        "path": "config_test_leak.php",
+        "url": "https://almaindustriacreativa.com/wp-json/wp/v2/users",
+        
+        # Regla / Procedimiento SOP
         "regla": selected_event["sop_reference"],
-        "responsable_ip": f"{selected_event['user_involved']} / {selected_event['attacker_ip']}",
-        "ip": selected_event["attacker_ip"],
+        "regla_seguridad": selected_event["sop_reference"],
+        "regla_violada": selected_event["sop_reference"],
+        "sop": selected_event["sop_reference"],
+        "procedimiento": selected_event["sop_reference"],
+        "politica": selected_event["sop_reference"],
+        "sop_reference": selected_event["sop_reference"],
+        
+        # Responsable / IP
+        "responsable_ip": f"{selected_event['user_involved']} ({selected_event['attacker_ip']})",
+        "usuario_ip": f"{selected_event['user_involved']} ({selected_event['attacker_ip']})",
+        "ip_responsable": f"{selected_event['user_involved']} ({selected_event['attacker_ip']})",
         "responsable": selected_event["user_involved"],
+        "usuario": selected_event["user_involved"],
+        "user": selected_event["user_involved"],
+        "user_involved": selected_event["user_involved"],
+        "ip": selected_event["attacker_ip"],
+        "ip_origen": selected_event["attacker_ip"],
+        "attacker_ip": selected_event["attacker_ip"],
+        
+        # Acción Recomendada
+        "suggested_action": selected_event["suggested_action"],
         "accion_recomendada": selected_event["suggested_action"],
-        "accion": selected_event["suggested_action"]
+        "accion": selected_event["suggested_action"],
+        "recomendacion": selected_event["suggested_action"],
+        "mitigacion": selected_event["suggested_action"],
+        
+        # Mensaje Completo Preformateado para Telegram
+        "telegram_formatted_text": format_telegram_message({**selected_event, "timestamp": now_utc, "incident_id": incident_id}),
+        "mensaje_telegram": format_telegram_message({**selected_event, "timestamp": now_utc, "incident_id": incident_id})
     }
 
     print(f"\n[*] Despachando incidente [{incident_id}]: {payload['event_type']}...")
