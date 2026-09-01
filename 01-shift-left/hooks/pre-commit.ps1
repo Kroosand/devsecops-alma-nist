@@ -1,6 +1,6 @@
 # ==============================================================================
 # Proyecto: DevSecOps NIST CSF v2.0 - Alma Industria Creativa E.I.R.L.
-# Control: SOP-02 - Control Preventivo Shift-Left en PowerShell
+# Control: SOP-02 - Control Preventivo Shift-Left en PowerShell con Notificación SOAR
 # ==============================================================================
 
 Write-Host "[DevSecOps - Shift Left] Validando código preparado en Staging..." -ForegroundColor Cyan
@@ -29,6 +29,13 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "1. Remueve las credenciales y trasládalas a la bóveda (Vault/Bitwarden)."
     Write-Host "2. Usa variables de entorno (.env) que no se suban al repositorio."
     Write-Host "3. Vuelve a ejecutar 'git add <archivo>' y realiza el commit nuevamente.`n"
+    
+    # Notificación automática SOAR hacia n8n / Telegram en segundo plano
+    $dispatcherScript = "C:\Sergio\Proyecto Final\devsecops-alma-nist\04-soar-n8n-testing\trigger_alert.py"
+    if (Test-Path $dispatcherScript) {
+        Start-Process -FilePath "python" -ArgumentList "`"$dispatcherScript`" 1" -WindowStyle Hidden
+    }
+
     exit 1
 }
 

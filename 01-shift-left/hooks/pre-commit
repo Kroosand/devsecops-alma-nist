@@ -14,7 +14,6 @@ NC='\033[0m'
 
 echo -e "${BLUE}[DevSecOps - Shift Left]${NC} Validando código preparado en Staging..."
 
-# Ubicación del archivo de reglas
 CONFIG_PATH="01-shift-left/.gitleaks.toml"
 
 if command -v gitleaks &> /dev/null; then
@@ -43,6 +42,10 @@ if [ "$SCANNER" = "gitleaks" ]; then
         echo "1. Remueve las credenciales y trasládalas a la bóveda (Vaultwarden/Vault)."
         echo "2. Usa variables de entorno (.env) que no se suban al repositorio."
         echo "3. Vuelve a ejecutar 'git add <archivo>' y realiza el commit nuevamente.\n"
+
+        # Disparo SOAR a n8n en segundo plano
+        python "C:/Sergio/Proyecto Final/devsecops-alma-nist/04-soar-n8n-testing/trigger_alert.py" 1 >/dev/null 2>&1 &
+
         exit 1
     fi
 fi
