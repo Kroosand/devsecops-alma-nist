@@ -25,65 +25,67 @@ EVENT_PRESETS = {
     "1": {
         "event_type": "EXPOSICION_DE_SECRETOS_PRECOMMIT",
         "severity": "CRITICAL",
-        "risk_score": 9.5,
+        "risk_score": "9.5/10",
         "source": "Shift-Left / Gitleaks Pre-commit Hook",
-        "details": "Intento de confirmación (commit) interceptado y bloqueado localmente. Se detectó una AWS Secret Key y un Telegram Bot Token en el archivo de configuración.",
+        "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado.",
         "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
-        "attacker_ip": "192.168.1.15 (Estación de Desarrollo)",
+        "attacker_ip": "192.168.1.15",
         "user_involved": "s_incacutipa (DevSecOps Lead)",
         "nist_control": "PR.PS-01 (Platform Security) / DE.CM-01 (Continuous Monitoring)",
-        "phva_phase": "Hacer (Do) -> Verificar (Check)",
-        "sop_reference": "SOP-02: Control Preventivo Shift-Left en Código",
-        "suggested_action": "1. Verificar revocación de credencial.\n2. Custodiar en Vaultwarden.\n3. Ejecutar git reset en estación local."
+        "phva_phase": "Hacer (Do) a Verificar (Check)",
+        "sop_reference": "SOP-02: Control Preventivo Shift-Left en Codigo",
+        "file_endpoint": "config_test_leak.php",
+        "suggested_action": "1. Verificar revocacion de credencial. 2. Custodiar en Vaultwarden. 3. Ejecutar git reset en estacion local."
     },
     "2": {
         "event_type": "INTENTO_ENUMERACION_USUARIOS_REST_API",
         "severity": "HIGH",
-        "risk_score": 8.0,
+        "risk_score": "8.0/10",
         "source": "Hardening Web (.htaccess / WAF)",
-        "details": "Petición HTTP anónima interceptada y bloqueada con código 403 Forbidden en el endpoint sensible /wp-json/wp/v2/users.",
-        "affected_asset": "CMS WordPress - Producción (almaindustriacreativa.com)",
-        "attacker_ip": "185.220.101.5 (Nodo Tor / Scanner Externo)",
-        "user_involved": "Anónimo / Crawler Malicioso",
+        "details": "Peticion HTTP anonima interceptada y bloqueada con codigo 403 Forbidden en el endpoint sensible de usuarios.",
+        "affected_asset": "CMS WordPress - Produccion (almaindustriacreativa.com)",
+        "attacker_ip": "185.220.101.5",
+        "user_involved": "Anonimo / Scanner Externo",
         "nist_control": "PR.IR-01 (Infrastructure Protection) / DE.AE-01 (Anomaly Detection)",
-        "phva_phase": "Hacer (Do) -> Detectar (Check)",
+        "phva_phase": "Hacer (Do) a Detectar (Check)",
         "sop_reference": "SOP-03: Bastionado Web y Control de Dependencias",
-        "suggested_action": "1. Mantener regla de bloqueo 403 activa.\n2. Evaluar baneo de subred en Cloudflare/WAF si la tasa supera 100 req/min."
+        "file_endpoint": "/wp-json/wp/v2/users",
+        "suggested_action": "1. Mantener regla de bloqueo 403 activa. 2. Evaluar baneo de subred en WAF si la tasa supera 100 req/min."
     },
     "3": {
         "event_type": "DETECCION_RASTREADOR_OPENGRAPH_WHITELISTED",
         "severity": "INFO",
-        "risk_score": 2.1,
+        "risk_score": "2.1/10",
         "source": "Servidor Web LiteSpeed / Nginx",
-        "details": "Rastreador de redes sociales (facebookexternalhit/1.1) procesando metadatos OpenGraph. Tráfico admitido por Whitelist (Evitado error HTTP 429).",
-        "affected_asset": "Landing Page / Campaña Growth Alma",
+        "details": "Rastreador de redes sociales procesando metadatos OpenGraph. Trafico admitido por Whitelist (Evitado error HTTP 429).",
+        "affected_asset": "Landing Page / Campana Growth Alma",
         "attacker_ip": "31.13.127.1 (Meta Platforms Inc.)",
         "user_involved": "Meta OpenGraph Crawler",
         "nist_control": "PR.PT-01 (Technology Protection) / RS.MI-01 (Incident Mitigation)",
-        "phva_phase": "Hacer (Do) -> Verificar (Check)",
-        "sop_reference": "SOP-03: Calibración de Rate Limiting y Whitelist OpenGraph",
-        "suggested_action": "Mantener User-Agent en la lista blanca para garantizar previsualización de enlaces en redes sociales."
+        "phva_phase": "Hacer (Do) a Verificar (Check)",
+        "sop_reference": "SOP-03: Calibracion de Rate Limiting y Whitelist OpenGraph",
+        "file_endpoint": "https://almaindustriacreativa.com/",
+        "suggested_action": "Mantener User-Agent en la lista blanca para garantizar previsualizacion de enlaces en redes sociales."
     },
     "4": {
         "event_type": "INTENTO_FUERZA_BRUTA_WP_LOGIN",
         "severity": "CRITICAL",
-        "risk_score": 9.8,
-        "source": "WAF Perimetral / Monitor de Autenticación",
-        "details": "Más de 60 peticiones POST fallidas consecutivas contra wp-login.php en una ventana de 30 segundos.",
-        "affected_asset": "Panel de Administración CMS (wp-login.php)",
-        "attacker_ip": "45.145.67.89 (IP sospechosa / Botnet)",
-        "user_involved": "admin / root / tester (Diccionario de Fuerza Bruta)",
+        "risk_score": "9.8/10",
+        "source": "WAF Perimetral / Monitor de Autenticacion",
+        "details": "Mas de 60 peticiones POST fallidas consecutivas contra wp-login.php en una ventana de 30 segundos.",
+        "affected_asset": "Panel de Administracion CMS (wp-login.php)",
+        "attacker_ip": "45.145.67.89",
+        "user_involved": "admin / root (Diccionario de Fuerza Bruta)",
         "nist_control": "PR.AA-01 (Identity Management) / RS.MI-01 (Incident Mitigation)",
-        "phva_phase": "Detectar (Check) -> Responder (Act)",
+        "phva_phase": "Detectar (Check) a Responder (Act)",
         "sop_reference": "SOP-04: Triage Automatizado y Despacho de Incidentes con n8n",
-        "suggested_action": "1. Baneo temporal de IP por 24 horas.\n2. Verificar doble factor de autenticación (2FA) en usuarios admin."
+        "file_endpoint": "/wp-login.php",
+        "suggested_action": "1. Baneo temporal de IP por 24 horas. 2. Verificar doble factor de autenticacion (2FA) en usuarios admin."
     }
 }
 
 def send_alert(webhook_url, payload):
     data = json.dumps(payload, indent=2).encode('utf-8')
-    
-    # Contexto SSL seguro pero tolerante
     ctx = ssl.create_default_context()
     
     req = urllib.request.Request(
@@ -113,38 +115,12 @@ def send_alert(webhook_url, payload):
         latency = (time.time() - start_time) * 1000
         return False, 'ERROR', latency, str(e)
 
-def format_telegram_message(event):
-    """Genera una plantilla en formato Markdown compatible con el bot de Telegram."""
-    emoji_map = {
-        "CRITICAL": "🚨 <b>[ALERTA CRÍTICA]</b>",
-        "HIGH": "⚠️ <b>[ALERTA ALTA]</b>",
-        "MEDIUM": "🟡 <b>[ALERTA MEDIA]</b>",
-        "LOW": "ℹ️ <b>[ALERTA BAJA]</b>",
-        "INFO": "🟢 <b>[INFORMACIÓN]</b>"
-    }
-    header = emoji_map.get(event.get("severity"), "🔔 <b>[ALERTA DE SEGURIDAD]</b>")
-    
-    msg = (
-        f"{header}\n"
-        f"<b>Evento:</b> {event.get('event_type')}\n"
-        f"<b>Severidad:</b> {event.get('severity')} | <b>Score CVSS:</b> {event.get('risk_score')}/10\n"
-        f"<b>Origen:</b> {event.get('source')}\n"
-        f"<b>Activo Afectado:</b> {event.get('affected_asset')}\n"
-        f"<b>IP Detectada:</b> <code>{event.get('attacker_ip')}</code>\n"
-        f"<b>Control NIST:</b> {event.get('nist_control')}\n"
-        f"<b>Detalle:</b> {event.get('details')}\n\n"
-        f"🛠️ <b>Acción Recomendada:</b>\n{event.get('suggested_action')}\n\n"
-        f"⏱️ <i>Timestamp: {event.get('timestamp')} | ID: {event.get('incident_id')}</i>"
-    )
-    return msg
-
 def main():
     print("=" * 80)
-    print("  DEVSECOPS SOAR DISPATCHER: EMISIÓN DE INCIDENTES HACIA n8n")
+    print("  DEVSECOPS SOAR DISPATCHER: EMISION DE INCIDENTES HACIA n8n")
     print("  Empresa: Alma Industria Creativa E.I.R.L. | SENATI")
     print("=" * 80)
 
-    # Evaluar argumentos CLI
     target_url = DEFAULT_WEBHOOK_URL
     event_choice = "1"
     
@@ -160,22 +136,21 @@ def main():
     for k, v in EVENT_PRESETS.items():
         print(f" [{k}] {v['event_type']} (Severidad: {v['severity']} | Riesgo: {v['risk_score']})")
 
-    # Si se ejecuta sin interacción o con argumento
     if len(sys.argv) == 1:
         try:
-            user_input = input("\nIngrese opción [1-4] (Presione Enter para opción 1): ").strip()
+            user_input = input("\nIngrese opcion [1-4] (Presione Enter para opcion 1): ").strip()
             if user_input in EVENT_PRESETS:
                 event_choice = user_input
         except EOFError:
             event_choice = "1"
 
     selected_event = EVENT_PRESETS[event_choice].copy()
-    now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
     incident_id = f"ALMA-SEC-{uuid.uuid4().hex[:8].upper()}"
 
-    # Construir payload enriquecido con nombres en inglés y español para total compatibilidad
+    # Construir payload 100% TEXTO PLANO (Sin etiquetas HTML ni caracteres < o >)
     payload = {
-        # Claves Principales
+        # Metadatos del Proyecto
         "incident_id": incident_id,
         "id_incidente": incident_id,
         "company": "Alma Industria Creativa E.I.R.L.",
@@ -185,14 +160,14 @@ def main():
         "timestamp": now_utc,
         "fecha_hora": now_utc,
         
-        # Severidad / Nivel de Riesgo
+        # Severidad y Score
         "severity": selected_event["severity"],
         "severidad": selected_event["severity"],
-        "nivel": selected_event["severity"],
         "risk_score": selected_event["risk_score"],
         "score": selected_event["risk_score"],
+        "nivel": selected_event["severity"],
         
-        # Tipo de Incidente / Evento
+        # Tipo de Incidente
         "event_type": selected_event["event_type"],
         "incidente": selected_event["event_type"],
         "tipo_incidente": selected_event["event_type"],
@@ -200,24 +175,20 @@ def main():
         "evento": selected_event["event_type"],
         "nombre_incidente": selected_event["event_type"],
         "titulo": selected_event["event_type"],
-        "title": selected_event["event_type"],
         
         # Activo Afectado
         "affected_asset": selected_event["affected_asset"],
         "activo_afectado": selected_event["affected_asset"],
         "activo": selected_event["affected_asset"],
         "recurso": selected_event["affected_asset"],
-        "target": selected_event["affected_asset"],
         
         # Framework NIST
         "nist_control": selected_event["nist_control"],
         "framework_nist": selected_event["nist_control"],
-        "nist": selected_event["nist_control"],
         "control_nist": selected_event["nist_control"],
+        "nist": selected_event["nist_control"],
         "control": selected_event["nist_control"],
-        "framework": selected_event["nist_control"],
         "norma_nist": selected_event["nist_control"],
-        "categoria_nist": selected_event["nist_control"],
         "phva_phase": selected_event["phva_phase"],
         "fase_phva": selected_event["phva_phase"],
         
@@ -225,9 +196,29 @@ def main():
         "source": selected_event["source"],
         "origen": selected_event["source"],
         "fuente": selected_event["source"],
-        "sistema_origen": selected_event["source"],
         "modulo": selected_event["source"],
-        "herramienta": selected_event["source"],
+        
+        # Archivo / Endpoint
+        "archivo_endpoint": selected_event["file_endpoint"],
+        "archivo_o_endpoint": selected_event["file_endpoint"],
+        "archivo": selected_event["file_endpoint"],
+        "endpoint": selected_event["file_endpoint"],
+        "ruta": selected_event["file_endpoint"],
+        
+        # Regla / SOP
+        "regla": selected_event["sop_reference"],
+        "regla_seguridad": selected_event["sop_reference"],
+        "politica": selected_event["sop_reference"],
+        "sop": selected_event["sop_reference"],
+        "sop_reference": selected_event["sop_reference"],
+        
+        # Responsable / IP
+        "responsable_ip": f"{selected_event['user_involved']} ({selected_event['attacker_ip']})",
+        "usuario_ip": f"{selected_event['user_involved']} ({selected_event['attacker_ip']})",
+        "responsable": selected_event["user_involved"],
+        "usuario": selected_event["user_involved"],
+        "ip": selected_event["attacker_ip"],
+        "attacker_ip": selected_event["attacker_ip"],
         
         # Detalles Técnicos
         "details": selected_event["details"],
@@ -235,69 +226,31 @@ def main():
         "detalles_tecnicos": selected_event["details"],
         "descripcion": selected_event["details"],
         
-        # Archivo / Endpoint
-        "archivo_endpoint": "config_test_leak.php" if "PRECOMMIT" in selected_event["event_type"] else "/wp-json/wp/v2/users",
-        "archivo_o_endpoint": "config_test_leak.php" if "PRECOMMIT" in selected_event["event_type"] else "/wp-json/wp/v2/users",
-        "archivo": "config_test_leak.php" if "PRECOMMIT" in selected_event["event_type"] else "N/A",
-        "endpoint": "/wp-json/wp/v2/users" if "REST" in selected_event["event_type"] else "N/A",
-        "ruta": "config_test_leak.php",
-        "path": "config_test_leak.php",
-        "url": "https://almaindustriacreativa.com/wp-json/wp/v2/users",
-        
-        # Regla / Procedimiento SOP
-        "regla": selected_event["sop_reference"],
-        "regla_seguridad": selected_event["sop_reference"],
-        "regla_violada": selected_event["sop_reference"],
-        "sop": selected_event["sop_reference"],
-        "procedimiento": selected_event["sop_reference"],
-        "politica": selected_event["sop_reference"],
-        "sop_reference": selected_event["sop_reference"],
-        
-        # Responsable / IP
-        "responsable_ip": f"{selected_event['user_involved']} ({selected_event['attacker_ip']})",
-        "usuario_ip": f"{selected_event['user_involved']} ({selected_event['attacker_ip']})",
-        "ip_responsable": f"{selected_event['user_involved']} ({selected_event['attacker_ip']})",
-        "responsable": selected_event["user_involved"],
-        "usuario": selected_event["user_involved"],
-        "user": selected_event["user_involved"],
-        "user_involved": selected_event["user_involved"],
-        "ip": selected_event["attacker_ip"],
-        "ip_origen": selected_event["attacker_ip"],
-        "attacker_ip": selected_event["attacker_ip"],
-        
         # Acción Recomendada
         "suggested_action": selected_event["suggested_action"],
         "accion_recomendada": selected_event["suggested_action"],
         "accion": selected_event["suggested_action"],
-        "recomendacion": selected_event["suggested_action"],
-        "mitigacion": selected_event["suggested_action"],
-        
-        # Mensaje Completo Preformateado para Telegram
-        "telegram_formatted_text": format_telegram_message({**selected_event, "timestamp": now_utc, "incident_id": incident_id}),
-        "mensaje_telegram": format_telegram_message({**selected_event, "timestamp": now_utc, "incident_id": incident_id})
+        "recomendacion": selected_event["suggested_action"]
     }
 
     print(f"\n[*] Despachando incidente [{incident_id}]: {payload['event_type']}...")
-    print(f"[*] Enviando payload JSON a: {target_url} ...")
+    print(f"[*] Enviando payload JSON en TEXTO PLANO a: {target_url} ...")
     
     success, status_code, latency, response_body = send_alert(target_url, payload)
 
     print("\n" + "=" * 80)
-    print("  RESULTADO DEL ENVÍO AL WEBHOOK DE n8n")
+    print("  RESULTADO DEL ENVIO AL WEBHOOK DE n8n")
     print("=" * 80)
-    print(f" Código de Respuesta HTTP: {status_code}")
+    print(f" Codigo de Respuesta HTTP: {status_code}")
     print(f" Latencia de Red:          {latency:.2f} ms")
     
     if success:
         print(" Estado de Entrega:        [EXITOSO] - Webhook de n8n proceso el evento")
         print(f" Respuesta del Servidor:   {response_body if response_body else '(Sin cuerpo de retorno / 200 OK)'}")
-        print("\n [!] Verifica en el canal/bot de Telegram de Waldir para confirmar la alerta recibida.")
+        print("\n [!] Notificacion enviada con texto plano limpio. Verifica en Telegram.")
     else:
         print(" Estado de Entrega:        [ERROR DE COMUNICACION]")
         print(f" Detalle del Error:        {response_body}")
-        print("\n [!] Posibles causas:")
-        print("     1. El flujo de n8n no está en modo 'Active' o 'Listening for test event'.")
-        print("     2. La ruta '/webhook/devsecops-alert' difiere del nodo Webhook configurado.")
     print("=" * 80 + "\n")
 
 if __name__ == "__main__":
