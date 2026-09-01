@@ -23,14 +23,14 @@ DEFAULT_WEBHOOK_URL = "https://n8n.almaquinta.com/webhook/devsecops-alert"
 
 EVENT_PRESETS = {
     "1": {
-        "event_type": "EXPOSICION_DE_SECRETOS_PRECOMMIT",
+        "event_type": "Exposicion de Secretos en Pre-Commit",
         "severity": "CRITICAL",
-        "risk_score": "9.5/10",
+        "risk_score": "9.5",
         "source": "Shift-Left / Gitleaks Pre-commit Hook",
         "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado.",
         "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
         "attacker_ip": "192.168.1.15",
-        "user_involved": "s_incacutipa (DevSecOps Lead)",
+        "user_involved": "Sergio Incacutipa (DevSecOps Lead)",
         "nist_control": "PR.PS-01 (Platform Security) / DE.CM-01 (Continuous Monitoring)",
         "phva_phase": "Hacer (Do) a Verificar (Check)",
         "sop_reference": "SOP-02: Control Preventivo Shift-Left en Codigo",
@@ -38,9 +38,9 @@ EVENT_PRESETS = {
         "suggested_action": "1. Verificar revocacion de credencial. 2. Custodiar en Vaultwarden. 3. Ejecutar git reset en estacion local."
     },
     "2": {
-        "event_type": "INTENTO_ENUMERACION_USUARIOS_REST_API",
+        "event_type": "Intento de Enumeracion de Usuarios REST API",
         "severity": "HIGH",
-        "risk_score": "8.0/10",
+        "risk_score": "8.0",
         "source": "Hardening Web (.htaccess / WAF)",
         "details": "Peticion HTTP anonima interceptada y bloqueada con codigo 403 Forbidden en el endpoint sensible de usuarios.",
         "affected_asset": "CMS WordPress - Produccion (almaindustriacreativa.com)",
@@ -53,9 +53,9 @@ EVENT_PRESETS = {
         "suggested_action": "1. Mantener regla de bloqueo 403 activa. 2. Evaluar baneo de subred en WAF si la tasa supera 100 req/min."
     },
     "3": {
-        "event_type": "DETECCION_RASTREADOR_OPENGRAPH_WHITELISTED",
+        "event_type": "Rastreador OpenGraph en Whitelist",
         "severity": "INFO",
-        "risk_score": "2.1/10",
+        "risk_score": "2.1",
         "source": "Servidor Web LiteSpeed / Nginx",
         "details": "Rastreador de redes sociales procesando metadatos OpenGraph. Trafico admitido por Whitelist (Evitado error HTTP 429).",
         "affected_asset": "Landing Page / Campana Growth Alma",
@@ -68,9 +68,9 @@ EVENT_PRESETS = {
         "suggested_action": "Mantener User-Agent en la lista blanca para garantizar previsualizacion de enlaces en redes sociales."
     },
     "4": {
-        "event_type": "INTENTO_FUERZA_BRUTA_WP_LOGIN",
+        "event_type": "Intento de Fuerza Bruta en Login CMS",
         "severity": "CRITICAL",
-        "risk_score": "9.8/10",
+        "risk_score": "9.8",
         "source": "WAF Perimetral / Monitor de Autenticacion",
         "details": "Mas de 60 peticiones POST fallidas consecutivas contra wp-login.php en una ventana de 30 segundos.",
         "affected_asset": "Panel de Administracion CMS (wp-login.php)",
