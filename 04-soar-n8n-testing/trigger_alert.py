@@ -173,8 +173,9 @@ def main():
     now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     incident_id = f"ALMA-SEC-{uuid.uuid4().hex[:8].upper()}"
 
-    # Construir payload enriquecido
+    # Construir payload enriquecido con nombres en inglés y español para total compatibilidad
     payload = {
+        # Claves en Inglés
         "incident_id": incident_id,
         "company": "Alma Industria Creativa E.I.R.L.",
         "project": "DevSecOps NIST CSF v2.0",
@@ -191,7 +192,27 @@ def main():
         "sop_reference": selected_event["sop_reference"],
         "details": selected_event["details"],
         "suggested_action": selected_event["suggested_action"],
-        "telegram_formatted_text": format_telegram_message({**selected_event, "timestamp": now_utc, "incident_id": incident_id})
+        "telegram_formatted_text": format_telegram_message({**selected_event, "timestamp": now_utc, "incident_id": incident_id}),
+        
+        # Claves en Español (Mapeadas exactamente a la plantilla de n8n)
+        "severidad": selected_event["severity"],
+        "incidente": selected_event["event_type"],
+        "activo_afectado": selected_event["affected_asset"],
+        "activo": selected_event["affected_asset"],
+        "framework_nist": selected_event["nist_control"],
+        "nist": selected_event["nist_control"],
+        "origen": selected_event["source"],
+        "detalles_tecnicos": selected_event["details"],
+        "detalles": selected_event["details"],
+        "archivo_endpoint": selected_event.get("affected_asset", "N/A"),
+        "archivo": "config_test_leak.php" if "PRECOMMIT" in selected_event["event_type"] else "/wp-json/wp/v2/users",
+        "endpoint": "/wp-json/wp/v2/users" if "REST" in selected_event["event_type"] else "N/A",
+        "regla": selected_event["sop_reference"],
+        "responsable_ip": f"{selected_event['user_involved']} / {selected_event['attacker_ip']}",
+        "ip": selected_event["attacker_ip"],
+        "responsable": selected_event["user_involved"],
+        "accion_recomendada": selected_event["suggested_action"],
+        "accion": selected_event["suggested_action"]
     }
 
     print(f"\n[*] Despachando incidente [{incident_id}]: {payload['event_type']}...")
