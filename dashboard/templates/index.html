@@ -283,11 +283,23 @@
                 </h2>
                 <p class="text-xs text-slate-400 mb-4">Ingresa la URL del sitio web a auditar para verificar en vivo si los endpoints vulnerables están bloqueados y si las cabeceras de seguridad están activas.</p>
 
-                <div class="flex gap-2 mb-6">
+                <div class="flex gap-2 mb-4">
                     <input id="audit-url-input" type="text" value="https://almaindustriacreativa.com" class="flex-1 bg-dark-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-mono outline-none focus:border-blue-500">
                     <button onclick="runUrlAudit()" id="btn-audit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-2 rounded-lg transition flex items-center gap-2">
                         <i data-lucide="search" class="w-4 h-4"></i> Auditar Objetivo
                     </button>
+                </div>
+
+                <!-- Alert Dispatch Banner -->
+                <div id="audit-alert-banner" class="hidden mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+                        <div>
+                            <span class="font-bold text-white">🚨 ¡VULNERABILIDAD DETECTADA!</span>
+                            <span id="audit-banner-text" class="text-rose-200 ml-1">Alerta despachada automáticamente al Webhook de n8n y canal de Telegram.</span>
+                        </div>
+                    </div>
+                    <span id="audit-banner-id" class="font-mono text-[11px] bg-rose-500/20 text-rose-300 px-2.5 py-1 rounded-lg border border-rose-500/30">ALMA-SEC-XXXX</span>
                 </div>
 
                 <div id="audit-results" class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -491,14 +503,22 @@
                 // REST API Users
                 const restEl = document.getElementById('audit-rest-status');
                 const restDesc = document.getElementById('audit-rest-desc');
+                const banner = document.getElementById('audit-alert-banner');
+                const bannerId = document.getElementById('audit-banner-id');
+
                 if (r.rest_users_protected) {
                     restEl.innerText = `HTTP ${r.rest_users_code} (PROTEGIDO)`;
                     restEl.className = "text-lg font-bold text-emerald-400";
                     restDesc.innerText = "Acceso anónimo bloqueado exitosamente.";
+                    banner.classList.add('hidden');
                 } else {
                     restEl.innerText = `HTTP ${r.rest_users_code} (VULNERABLE)`;
                     restEl.className = "text-lg font-bold text-rose-400";
                     restDesc.innerText = "El endpoint expone nombres de usuarios.";
+                    if (data.alert_dispatched) {
+                        banner.classList.remove('hidden');
+                        bannerId.innerText = data.incident_id || "ALMA-SEC-DISPATCH";
+                    }
                 }
 
                 // OpenGraph

@@ -300,9 +300,86 @@ def audit_url():
         results["opengraph_code"] = "ERROR"
         results["opengraph_ok"] = False
 
+    # 4. Si se detecta vulnerabilidad (HTTP 200 en endpoint sensible), disparar alerta SOAR automáticamente
+    alert_dispatched = False
+    incident_id = None
+    if not results.get("rest_users_protected", True):
+        now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        incident_id = f"ALMA-SEC-{uuid.uuid4().hex[:8].upper()}"
+        
+        payload = {
+            "incident_id": incident_id,
+            "id_incidente": incident_id,
+            "company": "Alma Industria Creativa E.I.R.L.",
+            "empresa": "Alma Industria Creativa E.I.R.L.",
+            "project": "DevSecOps NIST CSF v2.0",
+            "proyecto": "DevSecOps NIST CSF v2.0",
+            "timestamp": now_utc,
+            "fecha_hora": now_utc,
+            "severity": "HIGH",
+            "severidad": "HIGH",
+            "risk_score": "8.5",
+            "score": "8.5",
+            "nivel": "HIGH",
+            "event_type": "Vulnerabilidad en Auditoria Web",
+            "incidente": "Vulnerabilidad en Auditoria Web",
+            "tipo_incidente": "Vulnerabilidad en Auditoria Web",
+            "tipo_evento": "Vulnerabilidad en Auditoria Web",
+            "evento": "Vulnerabilidad en Auditoria Web",
+            "nombre_incidente": "Vulnerabilidad en Auditoria Web",
+            "titulo": "Vulnerabilidad en Auditoria Web",
+            "affected_asset": target_url,
+            "activo_afectado": target_url,
+            "activo": target_url,
+            "recurso": target_url,
+            "nist_control": "PR.IR-01 (Infrastructure Protection) / DE.AE-01 (Anomaly Detection)",
+            "framework_nist": "PR.IR-01 (Infrastructure Protection) / DE.AE-01 (Anomaly Detection)",
+            "control_nist": "PR.IR-01 (Infrastructure Protection)",
+            "source": "Auditor Perimetral Web / Pentesting Engine",
+            "origen": "Auditor Perimetral Web / Pentesting Engine",
+            "fuente": "Auditor Perimetral Web / Pentesting Engine",
+            "archivo_endpoint": f"{target_url.rstrip('/')}/wp-json/wp/v2/users",
+            "archivo_o_endpoint": f"{target_url.rstrip('/')}/wp-json/wp/v2/users",
+            "archivo": "/wp-json/wp/v2/users",
+            "endpoint": "/wp-json/wp/v2/users",
+            "ruta": "/wp-json/wp/v2/users",
+            "regla": "SOP-03: Bastionado Web y Control de Dependencias",
+            "regla_seguridad": "SOP-03: Bastionado Web y Control de Dependencias",
+            "sop": "SOP-03: Bastionado Web y Control de Dependencias",
+            "sop_reference": "SOP-03: Bastionado Web y Control de Dependencias",
+            "responsable_ip": "Escaneo de Diagnostico (Auditor Web)",
+            "usuario_ip": "Escaneo de Diagnostico (Auditor Web)",
+            "responsable": "Sergio Incacutipa (DevSecOps Lead)",
+            "usuario": "Sergio Incacutipa",
+            "ip": "Auditoria Remota",
+            "attacker_ip": "Auditoria Remota",
+            "details": f"Se audito el objetivo {target_url} y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores.",
+            "detalles": f"Se audito el objetivo {target_url} y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores.",
+            "detalles_tecnicos": f"Se audito el objetivo {target_url} y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200).",
+            "suggested_action": "1. Inyectar directivas de bastionado .htaccess en el servidor. 2. Instalar wp-hardening-plugin.php para restringir la REST API.",
+            "accion_recomendada": "1. Inyectar directivas de bastionado .htaccess en el servidor. 2. Instalar wp-hardening-plugin.php para restringir la REST API.",
+            "accion": "1. Inyectar directivas de bastionado .htaccess en el servidor. 2. Instalar wp-hardening-plugin.php para restringir la REST API."
+        }
+        
+        ok, code, lat, resp_b = dispatch_to_n8n(DEFAULT_WEBHOOK_URL, payload)
+        alert_dispatched = ok
+        
+        INCIDENT_HISTORY.insert(0, {
+            "incident_id": incident_id,
+            "timestamp": now_utc,
+            "event_type": "Vulnerabilidad en Auditoria Web",
+            "severity": "HIGH",
+            "status_code": code,
+            "latency_ms": round(lat, 2),
+            "success": ok,
+            "response_body": resp_b
+        })
+
     return jsonify({
         "target_url": target_url,
-        "results": results
+        "results": results,
+        "alert_dispatched": alert_dispatched,
+        "incident_id": incident_id
     })
 
 @app.route("/api/incident-history", methods=["GET"])
