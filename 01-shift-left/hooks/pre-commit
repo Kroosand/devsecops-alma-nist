@@ -14,7 +14,14 @@ NC='\033[0m'
 
 echo -e "${BLUE}[DevSecOps - Shift Left]${NC} Validando código preparado en Staging..."
 
-CONFIG_PATH="01-shift-left/.gitleaks.toml"
+# Determinar la raíz del repositorio dinámicamente
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+if [ -z "$REPO_ROOT" ]; then
+    REPO_ROOT="."
+fi
+
+CONFIG_PATH="$REPO_ROOT/01-shift-left/.gitleaks.toml"
+DISPATCHER_SCRIPT="$REPO_ROOT/04-soar-n8n-testing/trigger_alert.py"
 
 if command -v gitleaks &> /dev/null; then
     SCANNER="gitleaks"
@@ -28,25 +35,39 @@ fi
 
 if [ "$SCANNER" = "gitleaks" ]; then
     if [ -f "$CONFIG_PATH" ]; then
-        gitleaks protect --staged --verbose --redact --config="$CONFIG_PATH"
+        if ! gitleaks protect --staged --verbose --redact --config="$CONFIG_PATH"; then
+            echo -e "\n${RED}===================================================================${NC}"
+            echo -e "${RED}[BLOQUEO SHIFT-LEFT] Se detectaron secretos o tokens en el commit!${NC}"
+            echo -e "${RED}===================================================================${NC}"
+            echo -e "${YELLOW}Acción Correctiva:${NC}"
+            echo "1. Remueve las credenciales y trasládalas a la bóveda (Vaultwarden/Vault)."
+            echo "2. Usa variables de entorno (.env) que no se suban al repositorio."
+            echo "3. Vuelve a ejecutar 'git add <archivo>' y realiza el commit nuevamente.\n"
+
+            # Disparo SOAR a n8n en segundo plano
+            if [ -f "$DISPATCHER_SCRIPT" ]; then
+                python "$DISPATCHER_SCRIPT" 1 >/dev/null 2>&1 &
+            fi
+
+            exit 1
+        fi
     else
-        gitleaks protect --staged --verbose --redact
-    fi
-    STATUS=$?
+        if ! gitleaks protect --staged --verbose --redact; then
+            echo -e "\n${RED}===================================================================${NC}"
+            echo -e "${RED}[BLOQUEO SHIFT-LEFT] Se detectaron secretos o tokens en el commit!${NC}"
+            echo -e "${RED}===================================================================${NC}"
+            echo -e "${YELLOW}Acción Correctiva:${NC}"
+            echo "1. Remueve las credenciales y trasládalas a la bóveda (Vaultwarden/Vault)."
+            echo "2. Usa variables de entorno (.env) que no se suban al repositorio."
+            echo "3. Vuelve a ejecutar 'git add <archivo>' y realiza el commit nuevamente.\n"
 
-    if [ $STATUS -ne 0 ]; then
-        echo -e "\n${RED}===================================================================${NC}"
-        echo -e "${RED}[BLOQUEO SHIFT-LEFT] Se detectaron secretos o tokens en el commit!${NC}"
-        echo -e "${RED}===================================================================${NC}"
-        echo -e "${YELLOW}Acción Correctiva:${NC}"
-        echo "1. Remueve las credenciales y trasládalas a la bóveda (Vaultwarden/Vault)."
-        echo "2. Usa variables de entorno (.env) que no se suban al repositorio."
-        echo "3. Vuelve a ejecutar 'git add <archivo>' y realiza el commit nuevamente.\n"
+            # Disparo SOAR a n8n en segundo plano
+            if [ -f "$DISPATCHER_SCRIPT" ]; then
+                python "$DISPATCHER_SCRIPT" 1 >/dev/null 2>&1 &
+            fi
 
-        # Disparo SOAR a n8n en segundo plano
-        python "C:/Sergio/Proyecto Final/devsecops-alma-nist/04-soar-n8n-testing/trigger_alert.py" 1 >/dev/null 2>&1 &
-
-        exit 1
+            exit 1
+        fi
     fi
 fi
 

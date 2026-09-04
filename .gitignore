@@ -9,6 +9,9 @@ venv/
 # Variables de entorno y secretos locales
 .env
 .env.*
+!.env.example
+!*.env.example
+!**/.env.example
 *.local
 temp_canary_leak_test.php
 
@@ -17,5 +20,7 @@ temp_canary_leak_test.php
 
 # Logs del sistema y temporales
 *.log
+*.rar
+*.zip
 .DS_Store
 Thumbs.db

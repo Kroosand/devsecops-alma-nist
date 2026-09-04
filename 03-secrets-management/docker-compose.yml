@@ -31,8 +31,9 @@ services:
     image: hashicorp/vault:1.15.0
     container_name: alma_vault_engine
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      - VAULT_DEV_ROOT_TOKEN_ID=alma_master_dev_token_2026
       - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
     cap_add:
       - IPC_LOCK
@@ -49,11 +50,10 @@ services:
     image: wordpress:6.4-apache
     container_name: alma_lab_wordpress
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       - WORDPRESS_DB_HOST=lab_db:3306
-      - WORDPRESS_DB_USER=alma_wp_user
-      - WORDPRESS_DB_PASSWORD=alma_wp_pass_secure_2026
-      - WORDPRESS_DB_NAME=alma_wp_db
     volumes:
       - ./data/wp_data:/var/www/html
       - ../02-hardening-web/.htaccess:/var/www/html/.htaccess
@@ -70,11 +70,8 @@ services:
     image: mysql:8.0
     container_name: alma_lab_mysql
     restart: unless-stopped
-    environment:
-      - MYSQL_DATABASE=alma_wp_db
-      - MYSQL_USER=alma_wp_user
-      - MYSQL_PASSWORD=alma_wp_pass_secure_2026
-      - MYSQL_ROOT_PASSWORD=alma_root_secure_pass_2026
+    env_file:
+      - .env
     volumes:
       - ./data/db_data:/var/lib/mysql
     networks:

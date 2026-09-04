@@ -5,7 +5,14 @@
 
 Write-Host "[DevSecOps - Shift Left] Validando código preparado en Staging..." -ForegroundColor Cyan
 
-$configPath = "01-shift-left\.gitleaks.toml"
+# Determinar la raíz del repositorio dinámicamente
+$repoRoot = (git rev-parse --show-toplevel 2>$null)
+if (-not $repoRoot) {
+    $repoRoot = (Get-Location).Path
+}
+
+$configPath = Join-Path $repoRoot "01-shift-left\.gitleaks.toml"
+$dispatcherScript = Join-Path $repoRoot "04-soar-n8n-testing\trigger_alert.py"
 
 # Verificar existencia de gitleaks
 $gitleaksCmd = Get-Command gitleaks -ErrorAction SilentlyContinue
@@ -31,7 +38,6 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host "3. Vuelve a ejecutar 'git add <archivo>' y realiza el commit nuevamente.`n"
     
     # Notificación automática SOAR hacia n8n / Telegram en segundo plano
-    $dispatcherScript = "C:\Sergio\Proyecto Final\devsecops-alma-nist\04-soar-n8n-testing\trigger_alert.py"
     if (Test-Path $dispatcherScript) {
         Start-Process -FilePath "python" -ArgumentList "`"$dispatcherScript`" 1" -WindowStyle Hidden
     }
