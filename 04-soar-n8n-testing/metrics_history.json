@@ -42,5 +42,16 @@
     "source": "WAF Perimetral / Monitor de Autenticacion",
     "affected_asset": "Panel de Administracion CMS (wp-login.php)",
     "details": "Mas de 60 peticiones POST fallidas consecutivas contra wp-login.php en una ventana de 30 segundos."
+  },
+  {
+    "incident_id": "ALMA-SEC-077B1590",
+    "timestamp": "2026-09-04 02:37:16 UTC",
+    "event_type": "Exposicion de Secretos en Pre-Commit",
+    "latency_ms": 876.96,
+    "success": true,
+    "status_code": 200,
+    "source": "Shift-Left / Gitleaks Pre-commit Hook",
+    "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+    "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado."
   }
 ]

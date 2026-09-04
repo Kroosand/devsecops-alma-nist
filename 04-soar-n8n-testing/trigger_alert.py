@@ -234,6 +234,20 @@ def main():
         "recomendacion": selected_event["suggested_action"]
     }
 
+    # --------------------------------------------------------------------------
+    # SOP-07: Triage Asistido por IA (Claude / Anthropic) con Fallback Silencioso
+    # --------------------------------------------------------------------------
+    try:
+        CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+        if CURRENT_DIR not in sys.path:
+            sys.path.insert(0, CURRENT_DIR)
+        import ai_triage
+        payload = ai_triage.enhance_payload_with_ai(payload)
+        if payload.get("triage_source") and "IA" in payload.get("triage_source"):
+            print(f"[+] [SOP-07] Triage Inteligente Asistido por IA aplicado ({payload.get('triage_source')})")
+    except Exception:
+        pass
+
     print(f"\n[*] Despachando incidente [{incident_id}]: {payload['event_type']}...")
     print(f"[*] Enviando payload JSON en TEXTO PLANO a: {target_url} ...")
     

@@ -27,6 +27,7 @@ SOAR_DIR = os.path.join(PROJECT_ROOT, "04-soar-n8n-testing")
 if SOAR_DIR not in sys.path:
     sys.path.insert(0, SOAR_DIR)
 import metrics_logger
+import ai_triage
 
 app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"), static_folder=os.path.join(BASE_DIR, "static"))
 
@@ -259,13 +260,22 @@ def trigger_alert_api():
         "accion": event["suggested_action"]
     }
 
+    # SOP-07: Triage Asistido por IA (Claude) con Fallback Silencioso
+    try:
+        payload = ai_triage.enhance_payload_with_ai(payload)
+    except Exception:
+        pass
+
     success, status_code, latency, response_body = dispatch_to_n8n(webhook_url, payload)
 
     history_entry = {
         "incident_id": incident_id,
         "timestamp": now_utc,
-        "event_type": event["event_type"],
-        "severity": event["severity"],
+        "event_type": payload.get("event_type", event["event_type"]),
+        "severity": payload.get("severity", event["severity"]),
+        "ai_summary": payload.get("ai_summary", ""),
+        "suggested_action": payload.get("suggested_action", event["suggested_action"]),
+        "triage_source": payload.get("triage_source", "SOP-04"),
         "status_code": status_code,
         "latency_ms": round(latency, 2),
         "success": success,
@@ -408,14 +418,23 @@ def audit_url():
             "accion": "1. Inyectar directivas de bastionado .htaccess en el servidor. 2. Instalar wp-hardening-plugin.php para restringir la REST API."
         }
         
+        # SOP-07: Triage Asistido por IA (Claude) con Fallback Silencioso
+        try:
+            payload = ai_triage.enhance_payload_with_ai(payload)
+        except Exception:
+            pass
+
         ok, code, lat, resp_b = dispatch_to_n8n(DEFAULT_WEBHOOK_URL, payload)
         alert_dispatched = ok
         
         INCIDENT_HISTORY.insert(0, {
             "incident_id": incident_id,
             "timestamp": now_utc,
-            "event_type": "Vulnerabilidad en Auditoria Web",
-            "severity": "HIGH",
+            "event_type": payload.get("event_type", "Vulnerabilidad en Auditoria Web"),
+            "severity": payload.get("severity", "HIGH"),
+            "ai_summary": payload.get("ai_summary", ""),
+            "suggested_action": payload.get("suggested_action", ""),
+            "triage_source": payload.get("triage_source", "SOP-03"),
             "status_code": code,
             "latency_ms": round(lat, 2),
             "success": ok,
@@ -426,7 +445,8 @@ def audit_url():
         "target_url": target_url,
         "results": results,
         "alert_dispatched": alert_dispatched,
-        "incident_id": incident_id
+        "incident_id": incident_id,
+        "ai_summary": payload.get("ai_summary", "") if "payload" in locals() else ""
     })
 
 @app.route("/api/incident-history", methods=["GET"])

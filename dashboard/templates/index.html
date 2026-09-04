@@ -396,6 +396,12 @@
                                 <td class="py-2 text-emerald-400">CUMPLIDO</td>
                             </tr>
                             <tr>
+                                <td class="py-2 text-rose-400 font-bold">RESPONDER (RS)</td>
+                                <td class="py-2">RS.AN-01</td>
+                                <td class="py-2">SOP-07 (Triage IA)</td>
+                                <td class="py-2 text-emerald-400">CUMPLIDO</td>
+                            </tr>
+                            <tr>
                                 <td class="py-2 text-cyan-400 font-bold">RECUPERAR (RC)</td>
                                 <td class="py-2">RC.RP-01</td>
                                 <td class="py-2">SOP-05</td>
@@ -456,6 +462,10 @@
                 if (data.success) {
                     consoleEl.innerHTML += `\n[+] [OK] ALERTA ENVIADA CON ÉXITO A TELEGRAM!`;
                     consoleEl.innerHTML += `\n    ID Incidente: ${data.incident_id}`;
+                    if (data.payload && data.payload.ai_summary) {
+                        consoleEl.innerHTML += `\n    🤖 Triage IA: ${data.payload.ai_summary}`;
+                        consoleEl.innerHTML += `\n    🛡️ Remediación: ${data.payload.suggested_action}`;
+                    }
                     consoleEl.innerHTML += `\n    Respuesta n8n: ${JSON.stringify(data.response_body)}`;
                 } else {
                     consoleEl.innerHTML += `\n[-] [ERROR] ${data.response_body}`;
