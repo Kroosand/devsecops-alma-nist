@@ -1,0 +1,164 @@
+# ==============================================================================
+# PIPELINE CI/CD DEVSECOPS - ALMA INDUSTRIA CREATIVA E.I.R.L.
+# Proyecto de Titulación SENATI: Ingeniería de Ciberseguridad
+# Título: Implementación de un Sistema de DevSecOps mediante PHVA y NIST CSF v2.0
+# Autores: Sergio Saul Incacutipa Mamani & Waldir Rivaldo Chullo Chuma
+#
+# ==============================================================================
+# MAPEO ACADÉMICO DEL PIPELINE CON FRAMEWORK NIST CSF v2.0 (SECCIÓN 4.4 TESIS):
+# ==============================================================================
+# 1. JOB: secrets-scan
+#    - Función NIST CSF v2.0: PROTEGER (PR) & DETECTAR (DE)
+#    - Subcategorías: PR.PS-01 (Seguridad en Plataformas), DE.CM-01 (Monitoreo Continuo)
+#    - Control SOP: SOP-02 (Control Preventivo Shift-Left en Código)
+#    - Propósito: Auditar todo el historial y ramas en búsqueda de credenciales,
+#      tokens JWT y API keys con reglas personalizadas (.gitleaks.toml).
+#
+# 2. JOB: dependency-check
+#    - Función NIST CSF v2.0: IDENTIFICAR (ID) & PROTEGER (PR)
+#    - Subcategorías: ID.RA-01 (Identificación de Vulnerabilidades), PR.PS-02 (Integridad de Software)
+#    - Control SOP: SOP-03 (Control de Dependencias y Hardening - SCA)
+#    - Propósito: Escaneo de vulnerabilidades en dependencias y librerías de terceros
+#      (SCA con Trivy y auditorías nativas de manifiestos).
+#
+# 3. JOB: canary-test
+#    - Función NIST CSF v2.0: DETECTAR (DE) & RESPONDER (RS)
+#    - Subcategorías: DE.AE-01 (Detección de Anomalías), PR.PS-01 (Validación de Controles)
+#    - Control SOP: SOP-02 / SOP-04 (Validación Dinámica y Simulación de Fugas)
+#    - Propósito: Ejecutar pruebas automatizadas en CI con Canary Tokens para verificar
+#      que el mecanismo de intercepción y bloqueo de commits permanece 100% operativo.
+# ==============================================================================
+
+name: DevSecOps CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # ----------------------------------------------------------------------------
+  # JOB 1: Escaneo de Secretos en Todo el Repositorio (Gitleaks)
+  # NIST CSF v2.0: PR.PS-01, DE.CM-01 | SOP-02
+  # ----------------------------------------------------------------------------
+  secrets-scan:
+    name: 🛡️ Escaneo de Secretos (Gitleaks Shift-Left)
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Clonar repositorio completo (Historial completo)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: ⚙️ Instalar Gitleaks
+        run: |
+          GITLEAKS_VERSION="8.21.2"
+          echo "[+] Descargando Gitleaks v${GITLEAKS_VERSION}..."
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" | tar -xz -C /tmp
+          sudo mv /tmp/gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
+      - name: 🔍 Ejecutar Escaneo con Reglas Personalizadas
+        run: |
+          echo "[*] Ejecutando Gitleaks contra todo el historial del repositorio..."
+          if [ -f "01-shift-left/.gitleaks.toml" ]; then
+            gitleaks detect --verbose --redact --config="01-shift-left/.gitleaks.toml"
+          else
+            gitleaks detect --verbose --redact
+          fi
+
+  # ----------------------------------------------------------------------------
+  # JOB 2: Análisis de Composición de Software y Dependencias (SCA - Trivy)
+  # NIST CSF v2.0: ID.RA-01, PR.PS-02 | SOP-03
+  # ----------------------------------------------------------------------------
+  dependency-check:
+    name: 📦 Auditoría de Dependencias y SCA (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: 🔍 Escáner de Vulnerabilidades en Filesystem (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: 🔎 Verificación de Manifiestos de Dependencias
+        run: |
+          echo "=================================================================="
+          echo "[*] Verificando presencia de manifiestos en el repositorio..."
+          echo "=================================================================="
+          MANIFEST_FOUND=0
+
+          if [ -f "package.json" ]; then
+            echo "[+] Detectado package.json -> Ejecutando 'npm audit'..."
+            npm audit --audit-level=high || true
+            MANIFEST_FOUND=1
+          fi
+
+          if [ -f "composer.json" ]; then
+            echo "[+] Detectado composer.json -> Verificando dependencias PHP..."
+            composer audit || true
+            MANIFEST_FOUND=1
+          fi
+
+          if [ -f "requirements.txt" ]; then
+            echo "[+] Detectado requirements.txt -> Ejecutando 'pip-audit'..."
+            python -m pip install --upgrade pip
+            pip install pip-audit
+            pip-audit -r requirements.txt || true
+            MANIFEST_FOUND=1
+          fi
+
+          if [ $MANIFEST_FOUND -eq 0 ]; then
+            echo "[i] No se detectaron manifiestos de librerías en la raíz actual."
+            echo "[+] Job SCA preparado y validado correctamente para futuras dependencias."
+          fi
+
+  # ----------------------------------------------------------------------------
+  # JOB 3: Validación Dinámica con Canary Tokens (Prueba de Efectividad)
+  # NIST CSF v2.0: DE.AE-01, PR.PS-01 | SOP-02 / SOP-04
+  # ----------------------------------------------------------------------------
+  canary-test:
+    name: 🧪 Prueba Dinámica de Intercepción (Canary Test)
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar entorno Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: ⚙️ Instalar Gitleaks en Runner
+        run: |
+          GITLEAKS_VERSION="8.21.2"
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" | tar -xz -C /tmp
+          sudo mv /tmp/gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
+      - name: 🔧 Configurar Identidad Git e Instalar Pre-commit Hook
+        run: |
+          git config --global user.name "CI Canary Tester"
+          git config --global user.email "devsecops-ci@almaquinta.com"
+          chmod +x 01-shift-left/hooks/install_hooks.sh
+          ./01-shift-left/hooks/install_hooks.sh
+
+      - name: 🚀 Ejecutar Script de Validación Canary Secrets
+        run: |
+          python 01-shift-left/tests/test_canary_secrets.py

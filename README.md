@@ -1,5 +1,7 @@
 # DevSecOps NIST CSF v2.0 - Alma Industria Creativa E.I.R.L.
 
+[![DevSecOps CI/CD Pipeline](https://github.com/Kroosand/devsecops-alma-nist/actions/workflows/devsecops-pipeline.yml/badge.svg)](https://github.com/Kroosand/devsecops-alma-nist/actions/workflows/devsecops-pipeline.yml)
+
 Repositorio de implementación técnica para el Proyecto de Titulación Profesional Técnico en **SENATI** (Dirección Zonal Arequipa - Puno / Escuela de Tecnologías de la Información / Ingeniería de Ciberseguridad).
 
 ## 📌 Datos del Proyecto
