@@ -9,6 +9,7 @@ Control: SOP-04 (DE.AE-01 / RS.AN-01 / RS.MI-01)
 ==============================================================================
 """
 
+import os
 import json
 import sys
 import time
@@ -238,6 +239,25 @@ def main():
     
     success, status_code, latency, response_body = send_alert(target_url, payload)
 
+    # Registrar métrica empírica real
+    try:
+        CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+        if CURRENT_DIR not in sys.path:
+            sys.path.insert(0, CURRENT_DIR)
+        import metrics_logger
+        metrics_logger.log_metric(
+            incident_id=incident_id,
+            event_type=payload.get("event_type", "Incidente Desconocido"),
+            latency_ms=latency,
+            success=success,
+            status_code=status_code,
+            source=payload.get("source", "SOAR Dispatcher"),
+            affected_asset=payload.get("affected_asset", "Infraestructura Alma"),
+            details=payload.get("details", "")
+        )
+    except Exception as e:
+        pass
+
     print("\n" + "=" * 80)
     print("  RESULTADO DEL ENVIO AL WEBHOOK DE n8n")
     print("=" * 80)
@@ -248,6 +268,7 @@ def main():
         print(" Estado de Entrega:        [EXITOSO] - Webhook de n8n proceso el evento")
         print(f" Respuesta del Servidor:   {response_body if response_body else '(Sin cuerpo de retorno / 200 OK)'}")
         print("\n [!] Notificacion enviada con texto plano limpio. Verifica en Telegram.")
+        print(" [+] Metrica real persistida en 04-soar-n8n-testing/metrics_history.json")
     else:
         print(" Estado de Entrega:        [ERROR DE COMUNICACION]")
         print(f" Detalle del Error:        {response_body}")

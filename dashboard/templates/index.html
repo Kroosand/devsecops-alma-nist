@@ -549,24 +549,49 @@
             lucide.createIcons();
         }
 
-        function renderChart() {
+        async function renderChart() {
             window.chartRendered = true;
             const ctx = document.getElementById('mttrChart').getContext('2d');
-            new Chart(ctx, {
+
+            let manualData = [120, 45, 30, 60, 255];
+            let autoData = [0.01, 0.02, 0.01, 5.0, 5.04];
+            let labelAuto = 'Propuesta Mejorada (SOAR n8n - Minutos)';
+
+            try {
+                const res = await fetch('/api/benchmark-data');
+                const data = await res.json();
+                if (data.status === 'ok') {
+                    manualData = data.manual_times_min;
+                    autoData = data.automated_times_min;
+                    labelAuto = `Propuesta Mejorada SOAR (${data.reduction_pct} Reducción - ${data.total_samples} mediciones reales)`;
+                    const kpiEl = document.getElementById('kpi-mttr');
+                    if (kpiEl) kpiEl.innerText = data.reduction_pct;
+                } else if (data.status === 'insufficient_data') {
+                    labelAuto = 'Propuesta Mejorada SOAR (Esperando suficientes corridas para cálculo empírico)';
+                }
+            } catch (e) {
+                console.log('Error al consultar /api/benchmark-data:', e);
+            }
+
+            if (window.myMttrChart) {
+                window.myMttrChart.destroy();
+            }
+
+            window.myMttrChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['Detección', 'Triage', 'Notificación', 'Contención', 'MTTR Total'],
                     datasets: [
                         {
                             label: 'Situación Actual (Manual - Minutos)',
-                            data: [120, 45, 30, 60, 255],
+                            data: manualData,
                             backgroundColor: 'rgba(239, 68, 68, 0.7)',
                             borderColor: 'rgba(239, 68, 68, 1)',
                             borderWidth: 1
                         },
                         {
-                            label: 'Propuesta Mejorada (SOAR n8n - Minutos)',
-                            data: [0.01, 0.02, 0.01, 5.0, 5.04],
+                            label: labelAuto,
+                            data: autoData,
                             backgroundColor: 'rgba(34, 197, 94, 0.7)',
                             borderColor: 'rgba(34, 197, 94, 1)',
                             borderWidth: 1

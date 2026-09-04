@@ -23,6 +23,11 @@ from flask import Flask, render_template, request, jsonify
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
 
+SOAR_DIR = os.path.join(PROJECT_ROOT, "04-soar-n8n-testing")
+if SOAR_DIR not in sys.path:
+    sys.path.insert(0, SOAR_DIR)
+import metrics_logger
+
 app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"), static_folder=os.path.join(BASE_DIR, "static"))
 
 DEFAULT_WEBHOOK_URL = "https://n8n.almaquinta.com/webhook/devsecops-alert"
@@ -111,13 +116,52 @@ def dispatch_to_n8n(webhook_url, payload):
             latency = (time.time() - start_time) * 1000
             status_code = response.getcode()
             response_body = response.read().decode('utf-8', errors='ignore')
+            try:
+                metrics_logger.log_metric(
+                    incident_id=payload.get("incident_id", "ALMA-SEC-UNKNOWN"),
+                    event_type=payload.get("event_type", "Incidente Desconocido"),
+                    latency_ms=latency,
+                    success=True,
+                    status_code=status_code,
+                    source=payload.get("source", "Dashboard Dispatcher"),
+                    affected_asset=payload.get("affected_asset", "Infraestructura Alma"),
+                    details=payload.get("details", "")
+                )
+            except Exception:
+                pass
             return True, status_code, latency, response_body
     except urllib.error.HTTPError as e:
         latency = (time.time() - start_time) * 1000
         err_body = e.read().decode('utf-8', errors='ignore') if e.fp else str(e)
+        try:
+            metrics_logger.log_metric(
+                incident_id=payload.get("incident_id", "ALMA-SEC-UNKNOWN"),
+                event_type=payload.get("event_type", "Incidente Desconocido"),
+                latency_ms=latency,
+                success=False,
+                status_code=e.code,
+                source=payload.get("source", "Dashboard Dispatcher"),
+                affected_asset=payload.get("affected_asset", "Infraestructura Alma"),
+                details=err_body
+            )
+        except Exception:
+            pass
         return False, e.code, latency, err_body
     except Exception as e:
         latency = (time.time() - start_time) * 1000
+        try:
+            metrics_logger.log_metric(
+                incident_id=payload.get("incident_id", "ALMA-SEC-UNKNOWN"),
+                event_type=payload.get("event_type", "Incidente Desconocido"),
+                latency_ms=latency,
+                success=False,
+                status_code=500,
+                source=payload.get("source", "Dashboard Dispatcher"),
+                affected_asset=payload.get("affected_asset", "Infraestructura Alma"),
+                details=str(e)
+            )
+        except Exception:
+            pass
         return False, 500, latency, str(e)
 
 @app.route("/")
@@ -126,6 +170,9 @@ def index():
 
 @app.route("/api/status", methods=["GET"])
 def get_status():
+    summary = metrics_logger.get_metrics_summary()
+    total_logged = summary.get("total_samples", len(INCIDENT_HISTORY))
+    mttr_red = summary.get("reduction_pct", "98.02%") if summary.get("status") == "ok" else "Sin datos"
     return jsonify({
         "system": "DevSecOps NIST CSF v2.0 SOC Center",
         "company": "Alma Industria Creativa E.I.R.L.",
@@ -134,8 +181,8 @@ def get_status():
         "active_controls": 6,
         "gitleaks_version": "8.30.1",
         "webhook_target": DEFAULT_WEBHOOK_URL,
-        "total_incidents_logged": len(INCIDENT_HISTORY),
-        "mttr_reduction_pct": "95.4%"
+        "total_incidents_logged": total_logged,
+        "mttr_reduction_pct": mttr_red
     })
 
 @app.route("/api/trigger-alert", methods=["POST"])
@@ -388,11 +435,36 @@ def get_incident_history():
 
 @app.route("/api/benchmark-data", methods=["GET"])
 def get_benchmark_data():
+    summary = metrics_logger.get_metrics_summary()
+    if summary.get("status") == "insufficient_data":
+        return jsonify({
+            "status": "insufficient_data",
+            "total_samples": summary.get("total_samples", 0),
+            "message": summary.get("message", "Datos insuficientes: ejecuta alertas reales o auditorías para registrar mediciones empíricas.")
+        })
+    
+    comp = summary["mttr_comparison_min"]
     return jsonify({
-        "categories": ["Deteccion Inicial", "Triage y Analisis", "Notificacion al Equipo", "Contencion y Cierre", "MTTR Total"],
-        "manual_times_min": [120, 45, 30, 60, 255],
-        "automated_times_min": [0.01, 0.02, 0.01, 5.0, 5.04],
-        "reduction_pct": "98.02%"
+        "status": "ok",
+        "categories": ["Detección Inicial", "Triage y Análisis", "Notificación al Equipo", "Contención y Cierre", "MTTR Total"],
+        "manual_times_min": [
+            comp["manual_breakdown"]["detection"],
+            comp["manual_breakdown"]["triage"],
+            comp["manual_breakdown"]["notification"],
+            comp["manual_breakdown"]["containment"],
+            comp["manual_baseline_total"]
+        ],
+        "automated_times_min": [
+            comp["automated_breakdown"]["detection"],
+            comp["automated_breakdown"]["triage"],
+            comp["automated_breakdown"]["notification"],
+            comp["automated_breakdown"]["containment"],
+            comp["automated_soar_total"]
+        ],
+        "reduction_pct": summary["reduction_pct"],
+        "total_samples": summary["total_samples"],
+        "latency_ms": summary["latency_ms"],
+        "sla_compliance_15min": summary["sla_compliance_15min"]
     })
 
 if __name__ == "__main__":

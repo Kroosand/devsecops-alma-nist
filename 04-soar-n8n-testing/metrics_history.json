@@ -1,0 +1,46 @@
+[
+  {
+    "incident_id": "ALMA-SEC-6C7BDE80",
+    "timestamp": "2026-09-04 02:16:18 UTC",
+    "event_type": "Exposicion de Secretos en Pre-Commit",
+    "latency_ms": 1251.6,
+    "success": true,
+    "status_code": 200,
+    "source": "Shift-Left / Gitleaks Pre-commit Hook",
+    "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+    "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado."
+  },
+  {
+    "incident_id": "ALMA-SEC-5E43682C",
+    "timestamp": "2026-09-04 02:16:19 UTC",
+    "event_type": "Intento de Enumeracion de Usuarios REST API",
+    "latency_ms": 640.91,
+    "success": true,
+    "status_code": 200,
+    "source": "Hardening Web (.htaccess / WAF)",
+    "affected_asset": "CMS WordPress - Produccion (almaindustriacreativa.com)",
+    "details": "Peticion HTTP anonima interceptada y bloqueada con codigo 403 Forbidden en el endpoint sensible de usuarios."
+  },
+  {
+    "incident_id": "ALMA-SEC-82A1314E",
+    "timestamp": "2026-09-04 02:16:20 UTC",
+    "event_type": "Rastreador OpenGraph en Whitelist",
+    "latency_ms": 630.27,
+    "success": true,
+    "status_code": 200,
+    "source": "Servidor Web LiteSpeed / Nginx",
+    "affected_asset": "Landing Page / Campana Growth Alma",
+    "details": "Rastreador de redes sociales procesando metadatos OpenGraph. Trafico admitido por Whitelist (Evitado error HTTP 429)."
+  },
+  {
+    "incident_id": "ALMA-SEC-46B5479B",
+    "timestamp": "2026-09-04 02:16:20 UTC",
+    "event_type": "Intento de Fuerza Bruta en Login CMS",
+    "latency_ms": 631.1,
+    "success": true,
+    "status_code": 200,
+    "source": "WAF Perimetral / Monitor de Autenticacion",
+    "affected_asset": "Panel de Administracion CMS (wp-login.php)",
+    "details": "Mas de 60 peticiones POST fallidas consecutivas contra wp-login.php en una ventana de 30 segundos."
+  }
+]
