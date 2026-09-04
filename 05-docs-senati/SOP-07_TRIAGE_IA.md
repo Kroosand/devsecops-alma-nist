@@ -9,7 +9,7 @@
 ---
 
 ## 1. Objetivo
-Estandarizar y automatizar el análisis contextual de incidentes de seguridad en tiempo real mediante Modelos de Lenguaje de Gran Escala (LLM - Anthropic Claude), proporcionando al equipo de SOC y desarrollo:
+Estandarizar y automatizar el análisis contextual de incidentes de seguridad en tiempo real mediante Modelos de Lenguaje de Gran Escala (LLM - **Google Gemini 2.5 Flash** / **Anthropic Claude**), proporcionando al equipo de SOC y desarrollo:
 1. Una reevaluación contextual de la severidad del evento.
 2. Un resumen ejecutivo del incidente en lenguaje natural (español).
 3. Acciones de remediación técnicas específicas, priorizadas y accionables, reduciendo la carga cognitiva del analista y acelerando el MTTR.
@@ -24,14 +24,14 @@ sequenceDiagram
     actor Dev as Desarrollador / Atacante
     participant Hook as Sensor / Pre-commit / WAF
     participant SOAR as Despachador SOAR (trigger_alert.py / app.py)
-    participant AI as Motor IA (Claude API / Anthropic)
+    participant AI as Motor IA (Google Gemini / Claude)
     participant n8n as Orquestador n8n
     participant TG as Canal de Alertas (Telegram)
 
     Dev->>Hook: Intento de Commit / Petición Anómala
     Hook->>SOAR: Genera Telemetría e Incidente
     
-    alt API Key Disponible & Conectividad OK
+    alt API Key Disponible (Gemini / Anthropic) & Conectividad OK
         SOAR->>AI: Consulta Contextual (Payload Sanitizado)
         AI-->>SOAR: Severidad Ajustada + Resumen Español + Remediación Específica
     else Fallo de API / Timeout / Sin API Key
@@ -50,7 +50,7 @@ sequenceDiagram
 | :--- | :--- | :--- | :--- |
 | `ai_summary` | Modelo LLM | Resumen analítico de 2 a 3 frases en español describiendo causa raíz e impacto. | *"Se interceptó un intento de subida de tokens de bot y claves AWS en staging. La filtración expondría la infraestructura cloud a accesos no autorizados."* |
 | `suggested_action` | Modelo LLM | Pasos técnicos específicos y numerados para mitigar la amenaza de inmediato. | *"1. Revocar de inmediato la clave AWS en IAM. 2. Custodiar el nuevo secreto en Vaultwarden. 3. Ejecutar git reset en la rama local."* |
-| `triage_source` | Sistema | Indicador de trazabilidad que audita si la respuesta proviene de IA o del Fallback local. | `"Triage IA Asistido (Anthropic claude-sonnet-4-6)"` o `"Reglas Deterministas SOP-04 (Fallback Local)"` |
+| `triage_source` | Sistema | Indicador de trazabilidad que audita si la respuesta proviene de IA o del Fallback local. | `"Triage IA Asistido (Google gemini-2.5-flash)"`, `"Triage IA Asistido (Anthropic claude-sonnet-4-6)"` o `"Reglas Deterministas SOP-04 (Fallback Local)"` |
 
 ---
 
