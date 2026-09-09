@@ -17,6 +17,7 @@ temp_canary_leak_test.php
 
 # Datos persistentes de contenedores de laboratorio
 03-secrets-management/data/
+03-secrets-management/ssl/
 
 # Logs del sistema y temporales
 *.log
