@@ -15,10 +15,10 @@ services:
     restart: unless-stopped
     environment:
       - WEBSOCKET_ENABLED=true
-      - SIGNUPS_ALLOWED=false         # Registro cerrado por seguridad
-      - INVITATIONS_ALLOWED=true      # Solo altas por invitación de admin
+      - SIGNUPS_ALLOWED=true          # Permitido inicialmente para crear la cuenta admin
+      - INVITATIONS_ALLOWED=true      # Altas por invitación de admin
       - SHOW_PASSWORD_HINT=false
-      - DOMAIN=http://vault.alma.local
+      - DOMAIN=http://localhost:8080
     volumes:
       - ./data/vaultwarden:/data
     networks:
