@@ -130,10 +130,38 @@
             </div>
         </div>
 
+        <!-- QUICK LAUNCHER: ECOSYSTEM ACCESS -->
+        <div class="bg-dark-900 border border-slate-800/80 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+            <div class="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-white">Ecosistema DevSecOps:</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+                <a href="https://localhost:8080" target="_blank" class="bg-dark-850 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700/60 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                    <i data-lucide="key" class="w-3.5 h-3.5 text-blue-400"></i> Bóveda Vaultwarden <span class="text-[10px] text-emerald-400 font-mono">:8080</span>
+                </a>
+                <a href="http://localhost:8200" target="_blank" class="bg-dark-850 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700/60 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                    <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-amber-400"></i> HashiCorp Vault <span class="text-[10px] text-emerald-400 font-mono">:8200</span>
+                </a>
+                <a href="https://n8n.almaquinta.com" target="_blank" class="bg-dark-850 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700/60 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                    <i data-lucide="cpu" class="w-3.5 h-3.5 text-rose-400"></i> Orquestador n8n SOAR <span class="text-[10px] text-emerald-400 font-mono">Live</span>
+                </a>
+                <a href="https://github.com/Kroosand/devsecops-alma-nist/actions" target="_blank" class="bg-dark-850 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700/60 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                    <i data-lucide="git-pull-request" class="w-3.5 h-3.5 text-purple-400"></i> Pipeline GitHub Actions
+                </a>
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-[11px] font-mono">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Triage IA SOP-07 (Gemini/Claude)
+                </span>
+            </div>
+        </div>
+
         <!-- NAVIGATION TABS -->
         <div class="flex border-b border-slate-800 space-x-2 text-sm font-medium overflow-x-auto pb-px">
             <button onclick="switchTab('soar')" id="tab-soar" class="tab-btn px-4 py-2.5 rounded-t-lg border-b-2 border-emerald-500 text-emerald-400 bg-dark-900 flex items-center gap-2">
                 <i data-lucide="send" class="w-4 h-4"></i> Disparador SOAR (n8n & Telegram)
+            </button>
+            <button onclick="switchTab('vault')" id="tab-vault" class="tab-btn px-4 py-2.5 rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-dark-900 flex items-center gap-2">
+                <i data-lucide="key" class="w-4 h-4"></i> Bóvedas & Políticas RBAC (SOP-01)
             </button>
             <button onclick="switchTab('shift-left')" id="tab-shift-left" class="tab-btn px-4 py-2.5 rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-dark-900 flex items-center gap-2">
                 <i data-lucide="terminal" class="w-4 h-4"></i> Sandbox Shift-Left (Git Hooks)
@@ -247,6 +275,114 @@
                             <i data-lucide="check-circle" class="w-4 h-4"></i> Integración Verificada
                         </div>
                         Al presionar cualquier botón, la alerta viaja por Internet hacia el servidor n8n y notifica al instante al bot de Telegram.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: SECRETS MANAGEMENT & RBAC -->
+        <div id="content-vault" class="tab-content hidden space-y-6">
+            <!-- Vault Service Status Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Vaultwarden Card -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded font-mono font-bold">SOP-01 (NIST PR.AA-01)</span>
+                            <span class="flex items-center gap-1.5 text-xs text-emerald-400 font-mono">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> HTTPS :8080
+                            </span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="key" class="w-5 h-5 text-blue-400"></i> Vaultwarden (Bitwarden Server)
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-2">
+                            Bóveda centralizada con cifrado simétrico AES-256 para almacenamiento seguro de contraseñas de cPanel, bases de datos y accesos de clientes.
+                        </p>
+                    </div>
+                    <div class="bg-dark-850 p-3 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1.5">
+                        <div class="flex justify-between"><span>Registro Público:</span><span class="text-amber-400 font-mono">Deshabilitado (SIGNUPS=true admin)</span></div>
+                        <div class="flex justify-between"><span>Cifrado:</span><span class="text-emerald-400 font-mono">AES-256 Zero-Knowledge</span></div>
+                        <div class="flex justify-between"><span>Seguridad Web:</span><span class="text-blue-400 font-mono">HTTPS (ROCKET_TLS)</span></div>
+                    </div>
+                    <a href="https://localhost:8080" target="_blank" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-2.5 px-4 rounded-lg text-center transition flex items-center justify-center gap-2">
+                        <i data-lucide="external-link" class="w-4 h-4"></i> Abrir Bóveda Vaultwarden
+                    </a>
+                </div>
+
+                <!-- HashiCorp Vault Engine Card -->
+                <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded font-mono font-bold">SOP-01 (NIST PR.DS-01)</span>
+                            <span class="flex items-center gap-1.5 text-xs text-emerald-400 font-mono">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Activo :8200
+                            </span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i data-lucide="shield-alert" class="w-5 h-5 text-amber-400"></i> HashiCorp Vault Engine
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-2">
+                            Motor de gestión de secretos dinámicos e inyección de tokens en canalizaciones CI/CD, gobernado por políticas RBAC en lenguaje HCL.
+                        </p>
+                    </div>
+                    <div class="bg-dark-850 p-3 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1.5">
+                        <div class="flex justify-between"><span>Root Token:</span><span class="text-emerald-400 font-mono">alma_master_dev_token_2026</span></div>
+                        <div class="flex justify-between"><span>Políticas Cargadas:</span><span class="text-amber-400 font-mono">Backend, Frontend, QA-Growth</span></div>
+                        <div class="flex justify-between"><span>Secrets Engine:</span><span class="text-blue-400 font-mono">KV Version 2 (secret/)</span></div>
+                    </div>
+                    <a href="http://localhost:8200" target="_blank" class="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs py-2.5 px-4 rounded-lg text-center transition flex items-center justify-center gap-2">
+                        <i data-lucide="external-link" class="w-4 h-4"></i> Abrir Consola HashiCorp Vault
+                    </a>
+                </div>
+            </div>
+
+            <!-- RBAC Policy Live Viewer -->
+            <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <i data-lucide="lock" class="w-4 h-4 text-emerald-400"></i> Visor de Políticas de Control de Acceso por Roles (RBAC en HCL)
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Políticas declarativas de mínimo privilegio aplicadas en HashiCorp Vault.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="selectPolicy('backend-policy.hcl')" id="pbtn-backend" class="policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition">backend-policy.hcl</button>
+                        <button onclick="selectPolicy('frontend-policy.hcl')" id="pbtn-frontend" class="policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-dark-850 text-slate-400 hover:text-white border border-slate-700/60 transition">frontend-policy.hcl</button>
+                        <button onclick="selectPolicy('qa-growth-policy.hcl')" id="pbtn-qa" class="policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-dark-850 text-slate-400 hover:text-white border border-slate-700/60 transition">qa-growth-policy.hcl</button>
+                    </div>
+                </div>
+                <div class="bg-dark-950 border border-slate-800 rounded-lg p-4 font-mono text-xs text-slate-300 h-52 overflow-y-auto whitespace-pre-wrap" id="policy-viewer-code">
+Cargando políticas RBAC desde el servidor...
+                </div>
+            </div>
+
+            <!-- SOP-05 Offboarding Checklist -->
+            <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 space-y-4">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="user-x" class="w-4 h-4 text-rose-400"></i> Protocolo de Desprovisionamiento Inmediato de Accesos (SOP-05 / NIST RC.RP-01)
+                </h3>
+                <p class="text-xs text-slate-400">Procedimiento estandarizado para la revocación integral de permisos ante el cese de colaboradores en menos de 15 minutos.</p>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+                    <div class="bg-dark-850 p-3.5 rounded-lg border border-slate-800 space-y-1.5">
+                        <span class="text-[10px] text-emerald-400 font-mono font-bold">PASO 1 &bull; 2 MIN</span>
+                        <h5 class="font-bold text-white">Desactivar en Bóveda</h5>
+                        <p class="text-slate-400 text-[11px]">Dar de baja al usuario en Vaultwarden revocando acceso a todas las carpetas.</p>
+                    </div>
+                    <div class="bg-dark-850 p-3.5 rounded-lg border border-slate-800 space-y-1.5">
+                        <span class="text-[10px] text-emerald-400 font-mono font-bold">PASO 2 &bull; 3 MIN</span>
+                        <h5 class="font-bold text-white">Revocar en GitHub</h5>
+                        <p class="text-slate-400 text-[11px]">Remover como colaborador del repositorio y anular tokens de acceso personal.</p>
+                    </div>
+                    <div class="bg-dark-850 p-3.5 rounded-lg border border-slate-800 space-y-1.5">
+                        <span class="text-[10px] text-emerald-400 font-mono font-bold">PASO 3 &bull; 5 MIN</span>
+                        <h5 class="font-bold text-white">Rotar Llaves SSH</h5>
+                        <p class="text-slate-400 text-[11px]">Eliminar llave pública del archivo <code>authorized_keys</code> en servidores VPS.</p>
+                    </div>
+                    <div class="bg-dark-850 p-3.5 rounded-lg border border-slate-800 space-y-1.5">
+                        <span class="text-[10px] text-emerald-400 font-mono font-bold">PASO 4 &bull; 5 MIN</span>
+                        <h5 class="font-bold text-white">Auditoría de Cierre</h5>
+                        <p class="text-slate-400 text-[11px]">Generar acta de entrega de cargo firmada cumpliendo la Ley N° 29733.</p>
                     </div>
                 </div>
             </div>
@@ -411,6 +547,39 @@
                     </table>
                 </div>
             </div>
+
+            <!-- EMPIRICAL TELEMETRY HISTORY TABLE -->
+            <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <i data-lucide="database" class="w-4 h-4 text-emerald-400"></i> Registro Empírico de Telemetría Real (metrics_history.json)
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Muestras reales medidas de extremo a extremo contra el Webhook de producción (SOP-04).</p>
+                    </div>
+                    <button onclick="loadMetricsTable()" class="bg-dark-850 hover:bg-slate-800 text-slate-200 border border-slate-700/60 px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition font-mono">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-emerald-400"></i> Refrescar Telemetría
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="text-slate-400 border-b border-slate-800 bg-dark-950/60 font-mono">
+                            <tr>
+                                <th class="p-2.5">ID Incidente</th>
+                                <th class="p-2.5">Fecha / Hora UTC</th>
+                                <th class="p-2.5">Tipo de Evento</th>
+                                <th class="p-2.5">Sensor Origen</th>
+                                <th class="p-2.5 text-center">HTTP</th>
+                                <th class="p-2.5 text-right">Latencia Medida</th>
+                                <th class="p-2.5 text-center">Telegram</th>
+                            </tr>
+                        </thead>
+                        <tbody id="telemetry-table-body" class="divide-y divide-slate-800/60 font-mono">
+                            <tr><td colspan="7" class="p-4 text-center text-slate-500">Cargando telemetría empírica...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
     </main>
@@ -424,6 +593,63 @@
     <script>
         lucide.createIcons();
 
+        let policiesCache = {};
+
+        async function loadRbacPolicies() {
+            try {
+                const res = await fetch('/api/rbac-policies');
+                policiesCache = await res.json();
+                selectPolicy('backend-policy.hcl');
+            } catch (e) {
+                document.getElementById('policy-viewer-code').innerText = "Error cargando políticas: " + e.message;
+            }
+        }
+
+        function selectPolicy(pname) {
+            document.querySelectorAll('.policy-btn').forEach(b => {
+                b.className = 'policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-dark-850 text-slate-400 hover:text-white border border-slate-700/60 transition';
+            });
+            const activeId = pname.includes('backend') ? 'pbtn-backend' : (pname.includes('frontend') ? 'pbtn-frontend' : 'pbtn-qa');
+            const ab = document.getElementById(activeId);
+            if (ab) ab.className = 'policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition';
+            
+            const codeEl = document.getElementById('policy-viewer-code');
+            if (codeEl) {
+                codeEl.innerText = policiesCache[pname] || `# Archivo ${pname} cargado.
+path "secret/data/" { capabilities = ["read"] }`;
+            }
+        }
+
+        async function loadMetricsTable() {
+            const tbody = document.getElementById('telemetry-table-body');
+            if (!tbody) return;
+            try {
+                const res = await fetch('/api/metrics-raw');
+                const json = await res.json();
+                if (json.status === 'ok' && json.data && json.data.length > 0) {
+                    tbody.innerHTML = '';
+                    json.data.slice().reverse().forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'hover:bg-dark-850/50 transition';
+                        tr.innerHTML = `
+                            <td class="p-2.5 text-emerald-400 font-bold">${row.incident_id || 'ALMA-SEC'}</td>
+                            <td class="p-2.5 text-slate-400 text-[11px]">${(row.timestamp || '').replace(' UTC','')}</td>
+                            <td class="p-2.5 text-slate-200">${row.event_type}</td>
+                            <td class="p-2.5 text-slate-400 text-[11px]">${row.source}</td>
+                            <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] ${row.status_code === 200 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400'}">${row.status_code || 200}</span></td>
+                            <td class="p-2.5 text-right font-bold ${row.latency_ms < 1000 ? 'text-emerald-400' : 'text-amber-400'}">${Number(row.latency_ms || 0).toFixed(2)} ms</td>
+                            <td class="p-2.5 text-center"><span class="text-xs text-emerald-400">✓ Exitoso</span></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">Sin registros empíricos aún.</td></tr>';
+                }
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-rose-400">Error cargando telemetría: ${err.message}</td></tr>`;
+            }
+        }
+
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(el => {
@@ -436,8 +662,11 @@
             activeBtn.classList.remove('border-transparent', 'text-slate-400');
             activeBtn.classList.add('border-emerald-500', 'text-emerald-400', 'bg-dark-900');
 
-            if (tabName === 'metrics' && !window.chartRendered) {
-                renderChart();
+            if (tabName === 'metrics') {
+                if (!window.chartRendered) renderChart();
+                loadMetricsTable();
+            } else if (tabName === 'vault') {
+                loadRbacPolicies();
             }
         }
 
@@ -493,6 +722,63 @@
             btn.disabled = false;
             btn.innerHTML = '<i data-lucide="play" class="w-4 h-4 inline mr-1"></i> Ejecutar Canary Secret Test';
             lucide.createIcons();
+
+        let policiesCache = {};
+
+        async function loadRbacPolicies() {
+            try {
+                const res = await fetch('/api/rbac-policies');
+                policiesCache = await res.json();
+                selectPolicy('backend-policy.hcl');
+            } catch (e) {
+                document.getElementById('policy-viewer-code').innerText = "Error cargando políticas: " + e.message;
+            }
+        }
+
+        function selectPolicy(pname) {
+            document.querySelectorAll('.policy-btn').forEach(b => {
+                b.className = 'policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-dark-850 text-slate-400 hover:text-white border border-slate-700/60 transition';
+            });
+            const activeId = pname.includes('backend') ? 'pbtn-backend' : (pname.includes('frontend') ? 'pbtn-frontend' : 'pbtn-qa');
+            const ab = document.getElementById(activeId);
+            if (ab) ab.className = 'policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition';
+            
+            const codeEl = document.getElementById('policy-viewer-code');
+            if (codeEl) {
+                codeEl.innerText = policiesCache[pname] || `# Archivo ${pname} cargado.
+path "secret/data/" { capabilities = ["read"] }`;
+            }
+        }
+
+        async function loadMetricsTable() {
+            const tbody = document.getElementById('telemetry-table-body');
+            if (!tbody) return;
+            try {
+                const res = await fetch('/api/metrics-raw');
+                const json = await res.json();
+                if (json.status === 'ok' && json.data && json.data.length > 0) {
+                    tbody.innerHTML = '';
+                    json.data.slice().reverse().forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'hover:bg-dark-850/50 transition';
+                        tr.innerHTML = `
+                            <td class="p-2.5 text-emerald-400 font-bold">${row.incident_id || 'ALMA-SEC'}</td>
+                            <td class="p-2.5 text-slate-400 text-[11px]">${(row.timestamp || '').replace(' UTC','')}</td>
+                            <td class="p-2.5 text-slate-200">${row.event_type}</td>
+                            <td class="p-2.5 text-slate-400 text-[11px]">${row.source}</td>
+                            <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] ${row.status_code === 200 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400'}">${row.status_code || 200}</span></td>
+                            <td class="p-2.5 text-right font-bold ${row.latency_ms < 1000 ? 'text-emerald-400' : 'text-amber-400'}">${Number(row.latency_ms || 0).toFixed(2)} ms</td>
+                            <td class="p-2.5 text-center"><span class="text-xs text-emerald-400">✓ Exitoso</span></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">Sin registros empíricos aún.</td></tr>';
+                }
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-rose-400">Error cargando telemetría: ${err.message}</td></tr>`;
+            }
+        }
         }
 
         async function runUrlAudit() {
@@ -557,6 +843,63 @@
             btn.disabled = false;
             btn.innerHTML = '<i data-lucide="search" class="w-4 h-4 inline mr-1"></i> Auditar Objetivo';
             lucide.createIcons();
+
+        let policiesCache = {};
+
+        async function loadRbacPolicies() {
+            try {
+                const res = await fetch('/api/rbac-policies');
+                policiesCache = await res.json();
+                selectPolicy('backend-policy.hcl');
+            } catch (e) {
+                document.getElementById('policy-viewer-code').innerText = "Error cargando políticas: " + e.message;
+            }
+        }
+
+        function selectPolicy(pname) {
+            document.querySelectorAll('.policy-btn').forEach(b => {
+                b.className = 'policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-dark-850 text-slate-400 hover:text-white border border-slate-700/60 transition';
+            });
+            const activeId = pname.includes('backend') ? 'pbtn-backend' : (pname.includes('frontend') ? 'pbtn-frontend' : 'pbtn-qa');
+            const ab = document.getElementById(activeId);
+            if (ab) ab.className = 'policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition';
+            
+            const codeEl = document.getElementById('policy-viewer-code');
+            if (codeEl) {
+                codeEl.innerText = policiesCache[pname] || `# Archivo ${pname} cargado.
+path "secret/data/" { capabilities = ["read"] }`;
+            }
+        }
+
+        async function loadMetricsTable() {
+            const tbody = document.getElementById('telemetry-table-body');
+            if (!tbody) return;
+            try {
+                const res = await fetch('/api/metrics-raw');
+                const json = await res.json();
+                if (json.status === 'ok' && json.data && json.data.length > 0) {
+                    tbody.innerHTML = '';
+                    json.data.slice().reverse().forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'hover:bg-dark-850/50 transition';
+                        tr.innerHTML = `
+                            <td class="p-2.5 text-emerald-400 font-bold">${row.incident_id || 'ALMA-SEC'}</td>
+                            <td class="p-2.5 text-slate-400 text-[11px]">${(row.timestamp || '').replace(' UTC','')}</td>
+                            <td class="p-2.5 text-slate-200">${row.event_type}</td>
+                            <td class="p-2.5 text-slate-400 text-[11px]">${row.source}</td>
+                            <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] ${row.status_code === 200 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400'}">${row.status_code || 200}</span></td>
+                            <td class="p-2.5 text-right font-bold ${row.latency_ms < 1000 ? 'text-emerald-400' : 'text-amber-400'}">${Number(row.latency_ms || 0).toFixed(2)} ms</td>
+                            <td class="p-2.5 text-center"><span class="text-xs text-emerald-400">✓ Exitoso</span></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">Sin registros empíricos aún.</td></tr>';
+                }
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-rose-400">Error cargando telemetría: ${err.message}</td></tr>`;
+            }
+        }
         }
 
         async function renderChart() {

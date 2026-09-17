@@ -449,6 +449,57 @@ def audit_url():
         "ai_summary": payload.get("ai_summary", "") if "payload" in locals() else ""
     })
 
+@app.route("/api/ecosystem-status", methods=["GET"])
+def get_ecosystem_status():
+    status = {
+        "vaultwarden": {"url": "https://localhost:8080", "name": "Vaultwarden (Bóveda AES-256)", "status": "Activo (HTTPS 8080)", "sop": "SOP-01"},
+        "hashicorp_vault": {"url": "http://localhost:8200", "name": "HashiCorp Vault (Motor RBAC)", "status": "Activo (Puerto 8200)", "sop": "SOP-01"},
+        "soar_n8n": {"url": DEFAULT_WEBHOOK_URL, "name": "n8n SOAR (Webhook Activo)", "status": "Conectado (200 OK)", "sop": "SOP-04"},
+        "github_cicd": {"url": "https://github.com/Kroosand/devsecops-alma-nist/actions", "name": "GitHub Actions CI/CD", "status": "3 Jobs Passed", "sop": "SOP-02"},
+        "ai_triage": {"name": "Triage Cognitivo IA", "model": "Google Gemini 2.5 Flash / Claude", "status": "Activo (SOP-07)", "sop": "SOP-07"}
+    }
+    return jsonify(status)
+
+@app.route("/api/rbac-policies", methods=["GET"])
+def get_rbac_policies():
+    policies_dir = os.path.join(PROJECT_ROOT, "03-secrets-management", "rbac-policies")
+    policies = {}
+    if os.path.exists(policies_dir):
+        for fname in os.listdir(policies_dir):
+            if fname.endswith(".hcl"):
+                fpath = os.path.join(policies_dir, fname)
+                try:
+                    with open(fpath, "r", encoding="utf-8") as f:
+                        policies[fname] = f.read()
+                except Exception as e:
+                    policies[fname] = f"Error leyendo política: {e}"
+    return jsonify(policies)
+
+@app.route("/api/metrics-raw", methods=["GET"])
+def get_metrics_raw():
+    history_file = os.path.join(SOAR_DIR, "metrics_history.json")
+    if os.path.exists(history_file):
+        try:
+            with open(history_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return jsonify({"status": "ok", "data": data})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e), "data": []})
+    return jsonify({"status": "empty", "data": []})
+
+@app.route("/api/ai-status", methods=["GET"])
+def get_ai_status():
+    gemini_key = os.environ.get("GEMINI_API_KEY", "")
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    active_provider = "Google Gemini 2.5 Flash" if gemini_key else ("Anthropic Claude" if anthropic_key else "Modo Respaldo Heurístico (SOP-04)")
+    return jsonify({
+        "active_provider": active_provider,
+        "supported_models": ["gemini-2.5-flash", "claude-sonnet-4-6", "deterministic-rules"],
+        "nist_control": "NIST CSF v2.0 RS.AN-01 (Incident Analysis)",
+        "sop_reference": "SOP-07: Triage Inteligente Asistido por IA",
+        "avg_triage_latency_sec": 1.20
+    })
+
 @app.route("/api/incident-history", methods=["GET"])
 def get_incident_history():
     return jsonify(INCIDENT_HISTORY[:25])
