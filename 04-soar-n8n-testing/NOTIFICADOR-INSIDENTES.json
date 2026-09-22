@@ -1,0 +1,200 @@
+{
+  "name": "NOTIFICADOR-INSIDENTES",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.body || $input.first().json;\n\n// Función para BORRAR todo rastro de etiquetas HTML y sanitizar texto\nfunction stripHTML(text) {\n  if (text === undefined || text === null) return \"\";\n  return String(text)\n    .replace(/<[^>]*>/g, \"\")  // Elimina cualquier <tag>\n    .replace(/&lt;/g, \"<\")\n    .replace(/&gt;/g, \">\")\n    .replace(/&amp;/g, \"&\")\n    .trim();\n}\n\n// Mapeo inteligente de severidad a emojis\nconst sevUpper = String(raw.severidad || raw.severity || raw.nivel || \"\").toUpperCase();\nlet emoji = \"⚠️\";\nif (sevUpper.includes(\"CRITIC\") || sevUpper.includes(\"CRÍT\")) emoji = \"🚨\";\nelse if (sevUpper.includes(\"HIGH\") || sevUpper.includes(\"ALTA\")) emoji = \"🛑\";\nelse if (sevUpper.includes(\"INFO\") || sevUpper.includes(\"BAJ\")) emoji = \"ℹ️\";\nelse if (sevUpper.includes(\"MED\")) emoji = \"🟡\";\n\n// Extracción robusta de campos bilingües y con fallbacks\nconst severidad = stripHTML(raw.severidad || raw.severity || raw.nivel) || \"INFO\";\nconst score = stripHTML(raw.risk_score || raw.score || \"N/A\");\nconst evento = stripHTML(raw.tipo_incidente || raw.event_type || raw.evento || \"Incidente de Ciberseguridad\");\nconst activo = stripHTML(raw.activo_afectado || raw.affected_asset || raw.recurso) || \"Infraestructura Alma\";\nconst control = stripHTML(raw.control_nist || raw.framework_nist || raw.nist_control || raw.nist) || \"NIST CSF v2.0\";\nconst ip = stripHTML(raw.responsable_ip || raw.usuario_ip || raw.ip || raw.ip_origen) || \"N/A\";\nconst sop = stripHTML(raw.sop_reference || raw.regla || raw.sop);\nconst detalle = stripHTML(raw.detalles || raw.details || raw.descripcion) || \"Sin detalles técnicos adicionales.\";\nconst accion = stripHTML(raw.accion_recomendada || raw.suggested_action || raw.recomendacion) || \"Verificar protocolos de seguridad internos.\";\nconst aiSummary = stripHTML(raw.ai_summary || raw.resumen_ia || raw.analisis_ia);\nconst triageSource = stripHTML(raw.triage_source || raw.triage_origen || raw.ai_provider || \"IA\");\nconst id = stripHTML(raw.incident_id || raw.id_incidente) || \"N/A\";\nconst timestamp = stripHTML(raw.timestamp || raw.fecha_hora);\n\n// Construcción modular del mensaje\nlet seccionSop = sop ? `• Procedimiento: ${sop}\\n` : \"\";\nlet seccionTimestamp = timestamp ? ` | ${timestamp}` : \"\";\nlet seccionIa = \"\";\nif (aiSummary && aiSummary !== \"N/A\" && !aiSummary.includes(\"Fallback Local\")) {\n  seccionIa = `\\n🧠 TRIAGE ASISTIDO POR IA (${triageSource}):\\n${aiSummary}\\n`;\n}\n\nconst mensajeFinal = `\n${emoji} [ALERTA DE CIBERSEGURIDAD - SOAR]\n\n• Evento: ${evento}\n• Severidad: ${severidad} (Score: ${score}/10)\n• Activo: ${activo}\n• Control NIST: ${control}\n${seccionSop}• IP/Responsable: ${ip}\n${seccionIa}\nDETALLES TÉCNICOS:\n${detalle}\n\nACCIÓN RECOMENDADA:\n${accion}\n\n⏱️ ID: ${id}${seccionTimestamp}\n`.trim();\n\nreturn [{ json: { text: mensajeFinal } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        -64
+      ],
+      "id": "1034c43b-6cc0-41bc-bafc-225999c3bef4",
+      "name": "LIMPIA_INCIDENTE",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "devsecops-alert",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        -64
+      ],
+      "id": "e923b7f0-27fa-4637-93e9-fae247ce0bd0",
+      "name": "RECIBE_DATA",
+      "webhookId": "3ae4862a-68aa-42fa-a81e-1c449239a2b8"
+    },
+    {
+      "parameters": {
+        "chatId": "8943667157",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        -64
+      ],
+      "id": "a91fe331-f1f5-44a0-8c20-a59a7458caf8",
+      "name": "TELEGRAM",
+      "webhookId": "6d0ddf0f-bb6f-40a4-976e-f0b48fdcddcc",
+      "credentials": {
+        "telegramApi": {
+          "id": "EMOagjM1i8i0t2D1",
+          "name": "Telegram account DevSecOps"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "RECIBE_DATA": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.almaquinta.com",
+            "x-real-ip": "45.177.197.203",
+            "x-forwarded-for": "45.177.197.203",
+            "x-forwarded-proto": "https",
+            "connection": "upgrade",
+            "content-length": "7087",
+            "accept-encoding": "identity",
+            "content-type": "application/json",
+            "user-agent": "Alma-DevSecOps-Engine/2.0 (SENATI Thesis)",
+            "x-incident-source": "DevSecOps-NIST-SOAR"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "incident_id": "ALMA-SEC-A4CF71C9",
+            "id_incidente": "ALMA-SEC-A4CF71C9",
+            "company": "Alma Industria Creativa E.I.R.L.",
+            "empresa": "Alma Industria Creativa E.I.R.L.",
+            "project": "DevSecOps NIST CSF v2.0",
+            "proyecto": "DevSecOps NIST CSF v2.0",
+            "timestamp": "2026-09-01T23:13:49Z",
+            "fecha_hora": "2026-09-01T23:13:49Z",
+            "severity": "CRITICAL",
+            "severidad": "CRITICAL",
+            "nivel": "CRITICAL",
+            "risk_score": 9.5,
+            "score": 9.5,
+            "event_type": "EXPOSICION_DE_SECRETOS_PRECOMMIT",
+            "incidente": "EXPOSICION_DE_SECRETOS_PRECOMMIT",
+            "tipo_incidente": "EXPOSICION_DE_SECRETOS_PRECOMMIT",
+            "tipo_evento": "EXPOSICION_DE_SECRETOS_PRECOMMIT",
+            "evento": "EXPOSICION_DE_SECRETOS_PRECOMMIT",
+            "nombre_incidente": "EXPOSICION_DE_SECRETOS_PRECOMMIT",
+            "titulo": "EXPOSICION_DE_SECRETOS_PRECOMMIT",
+            "title": "EXPOSICION_DE_SECRETOS_PRECOMMIT",
+            "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+            "activo_afectado": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+            "activo": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+            "recurso": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+            "target": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+            "nist_control": "PR.PS-01 (Platform Security) / DE.CM-01 (Continuous Monitoring)",
+            "framework_nist": "PR.PS-01 (Platform Security) / DE.CM-01 (Continuous Monitoring)",
+            "nist": "PR.PS-01 (Platform Security) / DE.CM-01 (Continuous Monitoring)",
+            "control_nist": "PR.PS-01 (Platform Security) / DE.CM-01 (Continuous Monitoring)",
+            "control": "PR.PS-01 (Platform Security) / DE.CM-01 (Continuous Monitoring)",
+            "framework": "PR.PS-01 (Platform Security) / DE.CM-01 (Continuous Monitoring)",
+            "norma_nist": "PR.PS-01 (Platform Security) / DE.CM-01 (Continuous Monitoring)",
+            "categoria_nist": "PR.PS-01 (Platform Security) / DE.CM-01 (Continuous Monitoring)",
+            "phva_phase": "Hacer (Do) -> Verificar (Check)",
+            "fase_phva": "Hacer (Do) -> Verificar (Check)",
+            "source": "Shift-Left / Gitleaks Pre-commit Hook",
+            "origen": "Shift-Left / Gitleaks Pre-commit Hook",
+            "fuente": "Shift-Left / Gitleaks Pre-commit Hook",
+            "sistema_origen": "Shift-Left / Gitleaks Pre-commit Hook",
+            "modulo": "Shift-Left / Gitleaks Pre-commit Hook",
+            "herramienta": "Shift-Left / Gitleaks Pre-commit Hook",
+            "details": "Intento de confirmación (commit) interceptado y bloqueado localmente. Se detectó una AWS Secret Key y un Telegram Bot Token en el archivo de configuración.",
+            "detalles": "Intento de confirmación (commit) interceptado y bloqueado localmente. Se detectó una AWS Secret Key y un Telegram Bot Token en el archivo de configuración.",
+            "detalles_tecnicos": "Intento de confirmación (commit) interceptado y bloqueado localmente. Se detectó una AWS Secret Key y un Telegram Bot Token en el archivo de configuración.",
+            "descripcion": "Intento de confirmación (commit) interceptado y bloqueado localmente. Se detectó una AWS Secret Key y un Telegram Bot Token en el archivo de configuración.",
+            "archivo_endpoint": "config_test_leak.php",
+            "archivo_o_endpoint": "config_test_leak.php",
+            "archivo": "config_test_leak.php",
+            "endpoint": "N/A",
+            "ruta": "config_test_leak.php",
+            "path": "config_test_leak.php",
+            "url": "https://almaindustriacreativa.com/wp-json/wp/v2/users",
+            "regla": "SOP-02: Control Preventivo Shift-Left en Código",
+            "regla_seguridad": "SOP-02: Control Preventivo Shift-Left en Código",
+            "regla_violada": "SOP-02: Control Preventivo Shift-Left en Código",
+            "sop": "SOP-02: Control Preventivo Shift-Left en Código",
+            "procedimiento": "SOP-02: Control Preventivo Shift-Left en Código",
+            "politica": "SOP-02: Control Preventivo Shift-Left en Código",
+            "sop_reference": "SOP-02: Control Preventivo Shift-Left en Código",
+            "responsable_ip": "s_incacutipa (DevSecOps Lead) (192.168.1.15 (Estación de Desarrollo))",
+            "usuario_ip": "s_incacutipa (DevSecOps Lead) (192.168.1.15 (Estación de Desarrollo))",
+            "ip_responsable": "s_incacutipa (DevSecOps Lead) (192.168.1.15 (Estación de Desarrollo))",
+            "responsable": "s_incacutipa (DevSecOps Lead)",
+            "usuario": "s_incacutipa (DevSecOps Lead)",
+            "user": "s_incacutipa (DevSecOps Lead)",
+            "user_involved": "s_incacutipa (DevSecOps Lead)",
+            "ip": "192.168.1.15 (Estación de Desarrollo)",
+            "ip_origen": "192.168.1.15 (Estación de Desarrollo)",
+            "attacker_ip": "192.168.1.15 (Estación de Desarrollo)",
+            "suggested_action": "1. Verificar revocación de credencial.\n2. Custodiar en Vaultwarden.\n3. Ejecutar git reset en estación local.",
+            "accion_recomendada": "1. Verificar revocación de credencial.\n2. Custodiar en Vaultwarden.\n3. Ejecutar git reset en estación local.",
+            "accion": "1. Verificar revocación de credencial.\n2. Custodiar en Vaultwarden.\n3. Ejecutar git reset en estación local.",
+            "recomendacion": "1. Verificar revocación de credencial.\n2. Custodiar en Vaultwarden.\n3. Ejecutar git reset en estación local.",
+            "mitigacion": "1. Verificar revocación de credencial.\n2. Custodiar en Vaultwarden.\n3. Ejecutar git reset en estación local.",
+            "ai_summary": "Intento de confirmación con fuga de credenciales críticas (AWS/Telegram). Riesgo inminente de acceso lateral.",
+            "resumen_ia": "Intento de confirmación con fuga de credenciales críticas (AWS/Telegram). Riesgo inminente de acceso lateral.",
+            "triage_source": "Google Gemini 2.5 Flash"
+          },
+          "webhookUrl": "https://n8n.almaquinta.com/webhook/devsecops-alert",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "LIMPIA_INCIDENTE": {
+      "main": [
+        [
+          {
+            "node": "TELEGRAM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RECIBE_DATA": {
+      "main": [
+        [
+          {
+            "node": "LIMPIA_INCIDENTE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "4e262719-54ce-4f29-af51-22f631378a68",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8625640b1343d83a073021c820956499a1759e892801547678576867c8ae385b"
+  },
+  "id": "af9fbVPcqGcPUO3T",
+  "tags": []
+}
