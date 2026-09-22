@@ -1,0 +1,145 @@
+{
+  "name": "NOTIFICADOR-INSIDENTES-CON-IA",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "devsecops-alert",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -160,
+        0
+      ],
+      "id": "e923b7f0-27fa-4637-93e9-fae247ce0bd0",
+      "name": "RECIBE_DATA",
+      "webhookId": "3ae4862a-68aa-42fa-a81e-1c449239a2b8"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "={{ $env.GEMINI_API_KEY || 'REEMPLAZAR_CON_TU_GEMINI_API_KEY' }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Eres un analista SOC DevSecOps (NIST CSF v2.0) para Alma Industria Creativa E.I.R.L. Realiza el triage técnico del incidente:\\nEvento: {{ $json.body.event_type || $json.body.evento || $json.body.tipo_incidente }}\\nSeveridad Declarada: {{ $json.body.severity || $json.body.severidad }}\\nActivo Afectado: {{ $json.body.affected_asset || $json.body.activo_afectado }}\\nDetalles Técnicos: {{ $json.body.details || $json.body.detalles }}\\n\\nResponde en español de forma concisa con un resumen del impacto y 3 acciones clave de mitigación en texto plano puro.\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        80,
+        0
+      ],
+      "id": "c194b830-4e2b-4e6f-9988-8291a1b2c3d4",
+      "name": "NODO_IA_GEMINI",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtener datos originales del Webhook\nconst raw = $('RECIBE_DATA').first().json.body || $('RECIBE_DATA').first().json;\n\n// 2. Obtener respuesta del Nodo IA\nlet aiText = \"\";\ntry {\n  const aiRes = $input.first().json;\n  if (aiRes.candidates && aiRes.candidates[0] && aiRes.candidates[0].content && aiRes.candidates[0].content.parts) {\n    aiText = aiRes.candidates[0].content.parts[0].text || \"\";\n  } else if (raw.ai_summary) {\n    aiText = raw.ai_summary;\n  }\n} catch (e) {\n  aiText = raw.ai_summary || \"\";\n}\n\n// Función de sanitización antierrores HTML para Telegram\nfunction stripHTML(text) {\n  if (text === undefined || text === null) return \"\";\n  return String(text)\n    .replace(/<[^>]*>/g, \"\")\n    .replace(/&lt;/g, \"<\")\n    .replace(/&gt;/g, \">\")\n    .replace(/&amp;/g, \"&\")\n    .trim();\n}\n\n// Mapeo inteligente de severidad\nconst sevUpper = String(raw.severidad || raw.severity || raw.nivel || \"\").toUpperCase();\nlet emoji = \"⚠️\";\nif (sevUpper.includes(\"CRITIC\") || sevUpper.includes(\"CRÍT\")) emoji = \"🚨\";\nelse if (sevUpper.includes(\"HIGH\") || sevUpper.includes(\"ALTA\")) emoji = \"🛑\";\nelse if (sevUpper.includes(\"INFO\") || sevUpper.includes(\"BAJ\")) emoji = \"ℹ️\";\nelse if (sevUpper.includes(\"MED\")) emoji = \"🟡\";\n\nconst severidad = stripHTML(raw.severidad || raw.severity || raw.nivel) || \"INFO\";\nconst score = stripHTML(raw.risk_score || raw.score || \"N/A\");\nconst evento = stripHTML(raw.tipo_incidente || raw.event_type || raw.evento || \"Incidente de Ciberseguridad\");\nconst activo = stripHTML(raw.activo_afectado || raw.affected_asset || raw.recurso) || \"Infraestructura Alma\";\nconst control = stripHTML(raw.control_nist || raw.framework_nist || raw.nist_control || raw.nist) || \"NIST CSF v2.0\";\nconst ip = stripHTML(raw.responsable_ip || raw.usuario_ip || raw.ip || raw.ip_origen) || \"N/A\";\nconst sop = stripHTML(raw.sop_reference || raw.regla || raw.sop);\nconst detalle = stripHTML(raw.detalles || raw.details || raw.descripcion) || \"Sin detalles adicionales.\";\nconst accionOriginal = stripHTML(raw.accion_recomendada || raw.suggested_action || raw.recomendacion) || \"Verificar protocolos de seguridad.\";\nconst aiClean = stripHTML(aiText);\nconst id = stripHTML(raw.incident_id || raw.id_incidente) || \"N/A\";\nconst timestamp = stripHTML(raw.timestamp || raw.fecha_hora);\n\nlet seccionSop = sop ? `• Procedimiento: ${sop}\\n` : \"\";\nlet seccionTimestamp = timestamp ? ` | ${timestamp}` : \"\";\n\nlet seccionIa = \"\";\nif (aiClean && aiClean.length > 5) {\n  seccionIa = `\\n🧠 TRIAGE EN TIEMPO REAL (NODO IA - Google Gemini):\\n${aiClean}\\n`;\n}\n\nconst mensajeFinal = `\n${emoji} [ALERTA DE CIBERSEGURIDAD - SOAR]\n\n• Evento: ${evento}\n• Severidad: ${severidad} (Score: ${score}/10)\n• Activo: ${activo}\n• Control NIST: ${control}\n${seccionSop}• IP/Responsable: ${ip}\n${seccionIa}\nDETALLES TÉCNICOS:\n${detalle}\n\nACCIÓN RECOMENDADA:\n${accionOriginal}\n\n⏱️ ID: ${id}${seccionTimestamp}\n`.trim();\n\nreturn [{ json: { text: mensajeFinal } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        0
+      ],
+      "id": "1034c43b-6cc0-41bc-bafc-225999c3bef4",
+      "name": "LIMPIA_INCIDENTE",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "chatId": "8943667157",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "a91fe331-f1f5-44a0-8c20-a59a7458caf8",
+      "name": "TELEGRAM",
+      "webhookId": "6d0ddf0f-bb6f-40a4-976e-f0b48fdcddcc",
+      "credentials": {
+        "telegramApi": {
+          "id": "EMOagjM1i8i0t2D1",
+          "name": "Telegram account DevSecOps"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RECIBE_DATA": {
+      "main": [
+        [
+          {
+            "node": "NODO_IA_GEMINI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NODO_IA_GEMINI": {
+      "main": [
+        [
+          {
+            "node": "LIMPIA_INCIDENTE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LIMPIA_INCIDENTE": {
+      "main": [
+        [
+          {
+            "node": "TELEGRAM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b1f8c12a-33ce-4e12-b12a-44e823d11122",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": []
+}
