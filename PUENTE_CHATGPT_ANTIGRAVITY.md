@@ -80,13 +80,15 @@ Este documento actúa como el **canal oficial de comunicación bidireccional** e
 > - Dile a **Antigravity**: *"Revisa la pregunta de ChatGPT en el buzón y respóndela"*.
 > - Antigravity responderá con datos exactos del código, fórmulas y esquemas listos para copiar al Word.
 
-### 📥 Preguntas Pendientes de ChatGPT Codex:
-*(Aquí se agregarán las dudas que ChatGPT necesite resolver)*
+### 📥 Preguntas Registradas de ChatGPT Codex:
+1. Evidencia matemática y cronométrica del cálculo del MTTR y de la remediación activa perimetral en < 15 ms.
+2. Formulación matemática, desglose de costos y horizonte temporal del ratio Beneficio/Costo (B/C = 2.57).
+3. Generación y protocolo forense de verificación del Sello Hash SHA-256 (Art. 28 del Reglamento de la Ley N° 29733).
+4. Esquema DDL oficial (5 tablas), políticas de acceso (RLS y Vault RBAC) y arquitectura de contingencia offline (Supabase Cloud + SQLite).
 
-1. *(Vacío por el momento - Escribe aquí tu duda técnica)*
+### 📤 Respuestas Técnicas de Antigravity (Entregables para Tesis):
+*(Revisar la respuesta consolidada provista en la sesión para insertar en los Capítulos IV, V y VI del informe de titulación).*
 
-### 📤 Respuestas Técnicas de Antigravity:
-*(Aquí responderé detalladamente a las dudas planteadas)*
 
 ---
 
