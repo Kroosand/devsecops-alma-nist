@@ -53,5 +53,137 @@
     "source": "Shift-Left / Gitleaks Pre-commit Hook",
     "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
     "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado."
+  },
+  {
+    "incident_id": "ALMA-SEC-44D1C08C",
+    "timestamp": "2026-09-09 01:26:54 UTC",
+    "event_type": "Exposicion de Secretos en Pre-Commit",
+    "latency_ms": 1777.49,
+    "success": true,
+    "status_code": 200,
+    "source": "Shift-Left / Gitleaks Pre-commit Hook",
+    "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+    "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado."
+  },
+  {
+    "incident_id": "ALMA-SEC-333F39B5",
+    "timestamp": "2026-09-16 02:02:28 UTC",
+    "event_type": "Exposicion de Secretos en Pre-Commit",
+    "latency_ms": 1101.5,
+    "success": true,
+    "status_code": 200,
+    "source": "Shift-Left / Gitleaks Pre-commit Hook",
+    "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+    "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado."
+  },
+  {
+    "incident_id": "ALMA-SEC-912E52C3",
+    "timestamp": "2026-09-16 02:45:16 UTC",
+    "event_type": "Exposicion de Secretos en Pre-Commit",
+    "latency_ms": 924.63,
+    "success": true,
+    "status_code": 200,
+    "source": "Shift-Left / Gitleaks Pre-commit Hook",
+    "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+    "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado."
+  },
+  {
+    "incident_id": "ALMA-SEC-44CB7CFF",
+    "timestamp": "2026-09-16 03:03:03 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 829.13,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://mante.terrafinaperu.com/",
+    "details": "Se audito el objetivo https://mante.terrafinaperu.com/ y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-SEC-8B797718",
+    "timestamp": "2026-09-16 03:07:33 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 710.39,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://urquwasi.almatigers.com/",
+    "details": "Se audito el objetivo https://urquwasi.almatigers.com/ y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-SEC-91E56C29",
+    "timestamp": "2026-09-22 15:02:20 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 1439.12,
+    "success": false,
+    "status_code": 500,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://mapachio.com/",
+    "details": "{\"code\":0,\"message\":\"Unused Respond to Webhook node found in the workflow\"}"
+  },
+  {
+    "incident_id": "ALMA-SEC-BC5C5BB4",
+    "timestamp": "2026-09-22 15:02:53 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 1056.36,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://mapachio.com/",
+    "details": "Se audito el objetivo https://mapachio.com/ y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-SEC-80F9AD0B",
+    "timestamp": "2026-09-22 15:23:51 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 3339.22,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://radioyaravi.org.pe/",
+    "details": "Se audito el objetivo https://radioyaravi.org.pe/ y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-SEC-6A1E82AE",
+    "timestamp": "2026-09-22 15:29:32 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 3424.28,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://radioyaravi.org.pe/",
+    "details": "Se audito el objetivo https://radioyaravi.org.pe/ y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-SEC-92E41D7E",
+    "timestamp": "2026-09-29 15:24:08 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 4036.35,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://seguridad.almaquinta.com/",
+    "details": "Se audito el objetivo https://seguridad.almaquinta.com/ y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-OFFB-A75107",
+    "timestamp": "2026-10-11 22:08:03 UTC",
+    "event_type": "Desvinculacion Inmediata de Colaborador (SOP-05)",
+    "latency_ms": 770.0,
+    "success": true,
+    "status_code": 200,
+    "source": "Vaultwarden / Vault Engine",
+    "affected_asset": "Credenciales de: test@alma.com",
+    "details": "Acceso remoto revocado en Vaultwarden. Sesiones purgadas en dispositivos clientes. Duración: 0.77s."
+  },
+  {
+    "incident_id": "ALMA-BAN-C4E221",
+    "timestamp": "2026-10-11 22:08:11 UTC",
+    "event_type": "Remediacion Activa: Bloqueo de IP Hostil",
+    "latency_ms": 12.5,
+    "success": true,
+    "status_code": 200,
+    "source": "Dashboard SOAR 1-Click Mitigation",
+    "affected_asset": "Servidor Web / .htaccess (Bloqueada: 185.220.101.5)",
+    "details": "IP hostil 185.220.101.5 interceptada y baneada en .htaccess bajo control NIST RS.MI-01."
   }
 ]

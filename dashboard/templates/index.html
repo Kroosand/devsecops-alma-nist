@@ -58,7 +58,11 @@
                 </div>
             </div>
 
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-3">
+                <a href="/reporte-ejecutivo" target="_blank" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs shadow-md transition">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    <span>📄 Informe Ejecutivo (PDF)</span>
+                </a>
                 <div class="hidden sm:flex items-center space-x-2 bg-dark-850 px-3 py-1.5 rounded-lg border border-slate-800 text-xs">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                     <span class="text-slate-300">n8n SOAR Webhook:</span>
@@ -172,6 +176,49 @@
             <button onclick="switchTab('metrics')" id="tab-metrics" class="tab-btn px-4 py-2.5 rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-dark-900 flex items-center gap-2">
                 <i data-lucide="bar-chart-2" class="w-4 h-4"></i> MTTR & Matriz NIST v2.0
             </button>
+            <button onclick="switchTab('supabase')" id="tab-supabase" class="tab-btn px-4 py-2.5 rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-dark-900 flex items-center gap-2">
+                <i data-lucide="database" class="w-4 h-4 text-emerald-400"></i> Cloud SIEM (Supabase)
+            </button>
+        </div>
+
+        <!-- JURY LIVE DEMO SUITE (3-MINUTE PENTESTING DEMO) -->
+        <div class="bg-gradient-to-r from-amber-500/10 via-dark-900 to-emerald-500/10 border border-amber-500/30 rounded-xl p-4 shadow-lg">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="award" class="w-4 h-4 text-amber-400"></i> Suite de Demostración en Vivo (Evaluación SENATI)
+                    </h3>
+                </div>
+                <span class="text-[11px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded font-mono">3 Pruebas de Impacto Directo</span>
+            </div>
+            <p class="text-xs text-slate-300 mb-3">Ejecuta las pruebas en vivo preparadas para el jurado con un solo clic. Cada prueba dispara su telemetría y muestra el resultado en tiempo real:</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <button onclick="runCanaryTest(); switchTab('shift-left');" class="bg-dark-850 hover:bg-dark-800 border border-blue-500/40 p-3 rounded-xl text-left transition flex items-center justify-between group">
+                    <div>
+                        <div class="text-[10px] font-mono text-blue-400 uppercase font-bold">Pilar 2 &bull; Shift-Left</div>
+                        <div class="text-xs font-bold text-white mt-0.5">1. Fuga en Commit Git</div>
+                        <div class="text-[11px] text-slate-400">Gitleaks intercepta exit code 1</div>
+                    </div>
+                    <i data-lucide="play" class="w-5 h-5 text-blue-400 group-hover:scale-110 transition"></i>
+                </button>
+                <button onclick="runUrlAudit(); switchTab('hardening');" class="bg-dark-850 hover:bg-dark-800 border border-purple-500/40 p-3 rounded-xl text-left transition flex items-center justify-between group">
+                    <div>
+                        <div class="text-[10px] font-mono text-purple-400 uppercase font-bold">Pilar 3 &bull; Bastionado</div>
+                        <div class="text-xs font-bold text-white mt-0.5">2. Ataque /wp-json/</div>
+                        <div class="text-[11px] text-slate-400">HTTP 403 &bull; SOAR + Gemini</div>
+                    </div>
+                    <i data-lucide="play" class="w-5 h-5 text-purple-400 group-hover:scale-110 transition"></i>
+                </button>
+                <button onclick="triggerOffboardingDemo();" class="bg-dark-850 hover:bg-dark-800 border border-rose-500/40 p-3 rounded-xl text-left transition flex items-center justify-between group">
+                    <div>
+                        <div class="text-[10px] font-mono text-rose-400 uppercase font-bold">Pilar 1 &bull; Gobernanza</div>
+                        <div class="text-xs font-bold text-white mt-0.5">3. Offboarding SOP-05</div>
+                        <div class="text-[11px] text-slate-400">Revocación remota &lt; 10 seg</div>
+                    </div>
+                    <i data-lucide="play" class="w-5 h-5 text-rose-400 group-hover:scale-110 transition"></i>
+                </button>
+            </div>
         </div>
 
         <!-- TAB 1: SOAR DISPATCHER -->
@@ -459,6 +506,39 @@ Cargando políticas RBAC desde el servidor...
                     </div>
                 </div>
             </div>
+
+            <!-- ACTIVE REMEDIATION: 1-CLICK IP BAN IN .HTACCESS -->
+            <div class="bg-dark-900 border border-slate-800 rounded-xl p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-base font-bold text-white flex items-center gap-2">
+                        <i data-lucide="shield-alert" class="w-5 h-5 text-rose-400"></i> Remediación Activa SOAR: Bloqueo Inmediato de IPs Hostiles (.htaccess)
+                    </h2>
+                    <span class="text-xs bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2.5 py-0.5 rounded font-mono font-bold">NIST RS.MI-01</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Aisla atacantes en tiempo real inyectando directivas de denegación perimetral directamente en el servidor web Apache/LiteSpeed:</p>
+
+                <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                    <div class="flex-1 flex gap-2">
+                        <input id="ban-ip-input" type="text" value="185.220.101.5" placeholder="Ingresa IP hostil (ej: 185.220.101.5)" class="flex-1 bg-dark-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-mono outline-none focus:border-rose-500">
+                        <button onclick="mitigateIp()" id="btn-mitigate-ip" class="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-4 py-2 rounded-lg transition flex items-center gap-2">
+                            <i data-lucide="ban" class="w-4 h-4"></i> Bloquear IP en Servidor
+                        </button>
+                    </div>
+                </div>
+
+                <div id="ban-status-banner" class="hidden mb-4 p-3 rounded-lg bg-dark-850 border border-slate-800 text-xs text-slate-200 flex items-center justify-between">
+                    <span id="ban-status-msg" class="font-mono"></span>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i data-lucide="list" class="w-3.5 h-3.5 text-slate-400"></i> Lista Dinámica de IPs Bloqueadas en .htaccess:
+                    </h4>
+                    <div id="blocked-ips-list" class="flex flex-wrap gap-2 text-xs font-mono">
+                        <span class="text-slate-500 text-xs">Cargando IPs bloqueadas...</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- TAB 4: METRICS & NIST MATRIX -->
@@ -582,6 +662,97 @@ Cargando políticas RBAC desde el servidor...
             </div>
         </div>
 
+        <!-- TAB 5: CLOUD SIEM & AUDIT LOGS (SUPABASE POSTGRESQL) -->
+        <div id="content-supabase" class="tab-content hidden space-y-6">
+            <!-- Header Card with Metadata & Cloud Connection Status -->
+            <div class="bg-dark-900 border border-slate-800 rounded-xl p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">Cloud Security Information and Event Management (SIEM)</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i data-lucide="database" class="w-6 h-6 text-emerald-400"></i> Repositorio Centralizado Supabase (PostgreSQL 15)
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Sincronización híbrida n8n &bull; Almacenamiento forense inmutable conforme al Art. 28 del Reglamento de la Ley N° 29733.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="bg-dark-850 border border-slate-800 px-3 py-2 rounded-lg text-xs font-mono">
+                            <span class="text-slate-400">Proyecto:</span> <span class="text-emerald-400 font-bold">PROYECTO-FINAL</span>
+                        </div>
+                        <div class="bg-dark-850 border border-slate-800 px-3 py-2 rounded-lg text-xs font-mono">
+                            <span class="text-slate-400">Instancia:</span> <span class="text-cyan-400">scuiibzfhingcxdoorsj.supabase.co</span>
+                        </div>
+                        <div class="bg-emerald-500/20 border border-emerald-500/30 px-3 py-2 rounded-lg text-xs font-mono text-emerald-300 font-bold flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> ONLINE_SYNCED
+                        </div>
+                        <button onclick="loadSupabaseIncidents()" class="bg-dark-850 hover:bg-slate-800 text-slate-200 border border-slate-700/60 px-3 py-2 rounded-lg text-xs flex items-center gap-1.5 transition font-mono">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-emerald-400"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Supabase Cloud Architecture Highlights -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                    <div class="bg-dark-850/80 border border-slate-800/80 p-3.5 rounded-lg">
+                        <div class="text-[11px] text-slate-400 uppercase font-mono">Esquema Relacional</div>
+                        <div class="text-lg font-bold text-white mt-1">5 Tablas DDL</div>
+                        <div class="text-[11px] text-slate-500 mt-0.5">Integridad referencial y FK</div>
+                    </div>
+                    <div class="bg-dark-850/80 border border-slate-800/80 p-3.5 rounded-lg">
+                        <div class="text-[11px] text-slate-400 uppercase font-mono">Gobernanza de Datos</div>
+                        <div class="text-lg font-bold text-teal-400 mt-1">Ley N° 29733</div>
+                        <div class="text-[11px] text-slate-500 mt-0.5">Bitácora forense de auditoría</div>
+                    </div>
+                    <div class="bg-dark-850/80 border border-slate-800/80 p-3.5 rounded-lg">
+                        <div class="text-[11px] text-slate-400 uppercase font-mono">Ingestión n8n SOAR</div>
+                        <div class="text-lg font-bold text-amber-400 mt-1">Nodo Supabase</div>
+                        <div class="text-[11px] text-slate-500 mt-0.5">Dual-pipe (Telegram + Cloud DB)</div>
+                    </div>
+                    <div class="bg-dark-850/80 border border-slate-800/80 p-3.5 rounded-lg">
+                        <div class="text-[11px] text-slate-400 uppercase font-mono">Resiliencia Local</div>
+                        <div class="text-lg font-bold text-purple-400 mt-1">SQLite Fallback</div>
+                        <div class="text-[11px] text-slate-500 mt-0.5">Disponibilidad offline del SOC</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Incidents Table from Cloud SIEM -->
+            <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <i data-lucide="shield" class="w-4 h-4 text-emerald-400"></i> Registro de Incidentes en Tiempo Real (incidentes_seguridad)
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Eventos correlacionados con activos de información de Alma Industria Creativa E.I.R.L.</p>
+                    </div>
+                    <span id="supabase-source-badge" class="text-[11px] bg-slate-800 text-slate-300 border border-slate-700 px-2 py-0.5 rounded font-mono">Consultando...</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="text-slate-400 border-b border-slate-800 bg-dark-950/60 font-mono">
+                            <tr>
+                                <th class="p-2.5">Código Ticket</th>
+                                <th class="p-2.5">Severidad</th>
+                                <th class="p-2.5">Vector / Tipo</th>
+                                <th class="p-2.5">Origen / IP Hostil</th>
+                                <th class="p-2.5">NIST Control</th>
+                                <th class="p-2.5">Acción Ejecutada</th>
+                                <th class="p-2.5 text-center">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supabase-incidents-body" class="divide-y divide-slate-800/60 font-mono">
+                            <tr><td colspan="7" class="p-4 text-center text-slate-500">Cargando incidentes desde Supabase...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- FOOTER -->
@@ -615,8 +786,7 @@ Cargando políticas RBAC desde el servidor...
             
             const codeEl = document.getElementById('policy-viewer-code');
             if (codeEl) {
-                codeEl.innerText = policiesCache[pname] || `# Archivo ${pname} cargado.
-path "secret/data/" { capabilities = ["read"] }`;
+                codeEl.innerText = policiesCache[pname] || `# Archivo ${pname} cargado.\npath "secret/data/" { capabilities = ["read"] }`;
             }
         }
 
@@ -657,17 +827,25 @@ path "secret/data/" { capabilities = ["read"] }`;
                 el.classList.add('border-transparent', 'text-slate-400');
             });
 
-            document.getElementById('content-' + tabName).classList.remove('hidden');
+            const contentEl = document.getElementById('content-' + tabName);
+            if (contentEl) contentEl.classList.remove('hidden');
             const activeBtn = document.getElementById('tab-' + tabName);
-            activeBtn.classList.remove('border-transparent', 'text-slate-400');
-            activeBtn.classList.add('border-emerald-500', 'text-emerald-400', 'bg-dark-900');
+            if (activeBtn) {
+                activeBtn.classList.remove('border-transparent', 'text-slate-400');
+                activeBtn.classList.add('border-emerald-500', 'text-emerald-400', 'bg-dark-900');
+            }
 
             if (tabName === 'metrics') {
                 if (!window.chartRendered) renderChart();
                 loadMetricsTable();
             } else if (tabName === 'vault') {
                 loadRbacPolicies();
+            } else if (tabName === 'supabase') {
+                loadSupabaseIncidents();
+            } else if (tabName === 'hardening') {
+                loadBlockedIps();
             }
+            lucide.createIcons();
         }
 
         async function sendAlert(presetId) {
@@ -722,63 +900,6 @@ path "secret/data/" { capabilities = ["read"] }`;
             btn.disabled = false;
             btn.innerHTML = '<i data-lucide="play" class="w-4 h-4 inline mr-1"></i> Ejecutar Canary Secret Test';
             lucide.createIcons();
-
-        let policiesCache = {};
-
-        async function loadRbacPolicies() {
-            try {
-                const res = await fetch('/api/rbac-policies');
-                policiesCache = await res.json();
-                selectPolicy('backend-policy.hcl');
-            } catch (e) {
-                document.getElementById('policy-viewer-code').innerText = "Error cargando políticas: " + e.message;
-            }
-        }
-
-        function selectPolicy(pname) {
-            document.querySelectorAll('.policy-btn').forEach(b => {
-                b.className = 'policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-dark-850 text-slate-400 hover:text-white border border-slate-700/60 transition';
-            });
-            const activeId = pname.includes('backend') ? 'pbtn-backend' : (pname.includes('frontend') ? 'pbtn-frontend' : 'pbtn-qa');
-            const ab = document.getElementById(activeId);
-            if (ab) ab.className = 'policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition';
-            
-            const codeEl = document.getElementById('policy-viewer-code');
-            if (codeEl) {
-                codeEl.innerText = policiesCache[pname] || `# Archivo ${pname} cargado.
-path "secret/data/" { capabilities = ["read"] }`;
-            }
-        }
-
-        async function loadMetricsTable() {
-            const tbody = document.getElementById('telemetry-table-body');
-            if (!tbody) return;
-            try {
-                const res = await fetch('/api/metrics-raw');
-                const json = await res.json();
-                if (json.status === 'ok' && json.data && json.data.length > 0) {
-                    tbody.innerHTML = '';
-                    json.data.slice().reverse().forEach(row => {
-                        const tr = document.createElement('tr');
-                        tr.className = 'hover:bg-dark-850/50 transition';
-                        tr.innerHTML = `
-                            <td class="p-2.5 text-emerald-400 font-bold">${row.incident_id || 'ALMA-SEC'}</td>
-                            <td class="p-2.5 text-slate-400 text-[11px]">${(row.timestamp || '').replace(' UTC','')}</td>
-                            <td class="p-2.5 text-slate-200">${row.event_type}</td>
-                            <td class="p-2.5 text-slate-400 text-[11px]">${row.source}</td>
-                            <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] ${row.status_code === 200 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400'}">${row.status_code || 200}</span></td>
-                            <td class="p-2.5 text-right font-bold ${row.latency_ms < 1000 ? 'text-emerald-400' : 'text-amber-400'}">${Number(row.latency_ms || 0).toFixed(2)} ms</td>
-                            <td class="p-2.5 text-center"><span class="text-xs text-emerald-400">✓ Exitoso</span></td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">Sin registros empíricos aún.</td></tr>';
-                }
-            } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-rose-400">Error cargando telemetría: ${err.message}</td></tr>`;
-            }
-        }
         }
 
         async function runUrlAudit() {
@@ -843,63 +964,175 @@ path "secret/data/" { capabilities = ["read"] }`;
             btn.disabled = false;
             btn.innerHTML = '<i data-lucide="search" class="w-4 h-4 inline mr-1"></i> Auditar Objetivo';
             lucide.createIcons();
-
-        let policiesCache = {};
-
-        async function loadRbacPolicies() {
-            try {
-                const res = await fetch('/api/rbac-policies');
-                policiesCache = await res.json();
-                selectPolicy('backend-policy.hcl');
-            } catch (e) {
-                document.getElementById('policy-viewer-code').innerText = "Error cargando políticas: " + e.message;
-            }
         }
 
-        function selectPolicy(pname) {
-            document.querySelectorAll('.policy-btn').forEach(b => {
-                b.className = 'policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-dark-850 text-slate-400 hover:text-white border border-slate-700/60 transition';
-            });
-            const activeId = pname.includes('backend') ? 'pbtn-backend' : (pname.includes('frontend') ? 'pbtn-frontend' : 'pbtn-qa');
-            const ab = document.getElementById(activeId);
-            if (ab) ab.className = 'policy-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition';
-            
-            const codeEl = document.getElementById('policy-viewer-code');
-            if (codeEl) {
-                codeEl.innerText = policiesCache[pname] || `# Archivo ${pname} cargado.
-path "secret/data/" { capabilities = ["read"] }`;
-            }
-        }
-
-        async function loadMetricsTable() {
-            const tbody = document.getElementById('telemetry-table-body');
+        // --- CLOUD SIEM (SUPABASE) FUNCTIONS ---
+        async function loadSupabaseIncidents() {
+            const tbody = document.getElementById('supabase-incidents-body');
+            const badge = document.getElementById('supabase-source-badge');
             if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500 font-mono">Consultando Supabase PostgreSQL...</td></tr>';
+
             try {
-                const res = await fetch('/api/metrics-raw');
-                const json = await res.json();
-                if (json.status === 'ok' && json.data && json.data.length > 0) {
+                const res = await fetch('/api/supabase-incidents');
+                const data = await res.json();
+                if (badge) {
+                    badge.innerText = `${data.connection_state} (${data.total_records} registros)`;
+                    badge.className = data.connection_state.includes('ONLINE') 
+                        ? 'text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded font-mono'
+                        : 'text-[11px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded font-mono';
+                }
+
+                if (data.incidents && data.incidents.length > 0) {
                     tbody.innerHTML = '';
-                    json.data.slice().reverse().forEach(row => {
+                    data.incidents.forEach(inc => {
                         const tr = document.createElement('tr');
                         tr.className = 'hover:bg-dark-850/50 transition';
+                        const sevClass = inc.severidad === 'CRITICAL' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
+                                         (inc.severidad === 'HIGH' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' :
+                                         (inc.severidad === 'MEDIUM' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-700 text-slate-300'));
                         tr.innerHTML = `
-                            <td class="p-2.5 text-emerald-400 font-bold">${row.incident_id || 'ALMA-SEC'}</td>
-                            <td class="p-2.5 text-slate-400 text-[11px]">${(row.timestamp || '').replace(' UTC','')}</td>
-                            <td class="p-2.5 text-slate-200">${row.event_type}</td>
-                            <td class="p-2.5 text-slate-400 text-[11px]">${row.source}</td>
-                            <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] ${row.status_code === 200 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400'}">${row.status_code || 200}</span></td>
-                            <td class="p-2.5 text-right font-bold ${row.latency_ms < 1000 ? 'text-emerald-400' : 'text-amber-400'}">${Number(row.latency_ms || 0).toFixed(2)} ms</td>
-                            <td class="p-2.5 text-center"><span class="text-xs text-emerald-400">✓ Exitoso</span></td>
+                            <td class="p-2.5 text-emerald-400 font-bold">${inc.codigo_ticket || inc.id || 'INC'}</td>
+                            <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${sevClass}">${inc.severidad || 'HIGH'}</span></td>
+                            <td class="p-2.5 text-slate-200">${inc.tipo_evento || inc.titulo || 'Incidente'}</td>
+                            <td class="p-2.5 text-slate-400 text-[11px] font-mono">${inc.ip_origen || inc.origen_sensor || 'N/A'}</td>
+                            <td class="p-2.5 text-cyan-400 text-[11px]">${inc.categoria_nist || 'NIST CSF'}</td>
+                            <td class="p-2.5 text-slate-300 text-[11px]">${(inc.accion_ejecutada || 'Contención SOAR').substring(0, 45)}...</td>
+                            <td class="p-2.5 text-center"><span class="text-xs text-emerald-400 font-bold">✓ REGISTRADO</span></td>
                         `;
                         tbody.appendChild(tr);
                     });
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">Sin registros empíricos aún.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500 font-mono">No hay incidentes registrados en la base de datos centralizada.</td></tr>';
                 }
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-rose-400">Error cargando telemetría: ${err.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-rose-400 font-mono">Error al consultar Supabase: ${err.message}</td></tr>`;
             }
         }
+
+        // --- ACTIVE REMEDIATION (.HTACCESS BAN) FUNCTIONS ---
+        async function mitigateIp() {
+            const input = document.getElementById('ban-ip-input');
+            const btn = document.getElementById('btn-mitigate-ip');
+            const banner = document.getElementById('ban-status-banner');
+            const msg = document.getElementById('ban-status-msg');
+            const ip = (input.value || '').trim();
+
+            if (!ip) {
+                alert("Por favor ingresa una IP hostil válida.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Bloqueando...";
+
+            try {
+                const res = await fetch('/api/mitigate-ip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip: ip })
+                });
+                const data = await res.json();
+
+                banner.classList.remove('hidden');
+                if (data.status === 'success') {
+                    banner.className = 'mb-4 p-3 rounded-lg bg-rose-500/20 border border-rose-500/40 text-xs text-rose-300 flex items-center justify-between';
+                    msg.innerHTML = `<strong>[BLOQUEADO]</strong> ${data.message} &bull; Control NIST: ${data.nist_control}`;
+                    input.value = '';
+                } else if (data.status === 'already_blocked') {
+                    banner.className = 'mb-4 p-3 rounded-lg bg-amber-500/20 border border-amber-500/40 text-xs text-amber-300 flex items-center justify-between';
+                    msg.innerHTML = `<strong>[AVISO]</strong> ${data.message}`;
+                } else {
+                    banner.className = 'mb-4 p-3 rounded-lg bg-rose-500/20 border border-rose-500/40 text-xs text-rose-400 flex items-center justify-between';
+                    msg.innerHTML = `<strong>[ERROR]</strong> ${data.message}`;
+                }
+                loadBlockedIps();
+            } catch (err) {
+                alert("Error de remediación: " + err.message);
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="ban" class="w-4 h-4"></i> Bloquear IP en Servidor';
+            lucide.createIcons();
+        }
+
+        async function loadBlockedIps() {
+            const listEl = document.getElementById('blocked-ips-list');
+            if (!listEl) return;
+
+            try {
+                const res = await fetch('/api/blocked-ips');
+                const data = await res.json();
+                if (data.blocked_ips && data.blocked_ips.length > 0) {
+                    listEl.innerHTML = '';
+                    data.blocked_ips.forEach(ip => {
+                        const tag = document.createElement('div');
+                        tag.className = 'bg-rose-500/15 border border-rose-500/30 text-rose-300 px-2.5 py-1 rounded-md flex items-center gap-2';
+                        tag.innerHTML = `
+                            <span>🚫 ${ip}</span>
+                            <button onclick="unblockIp('${ip}')" title="Desbloquear IP" class="hover:text-white transition text-xs font-bold text-rose-400">
+                                &times;
+                            </button>
+                        `;
+                        listEl.appendChild(tag);
+                    });
+                } else {
+                    listEl.innerHTML = '<span class="text-slate-500 text-xs italic">Ninguna IP bloqueada actualmente en .htaccess</span>';
+                }
+            } catch (err) {
+                listEl.innerHTML = `<span class="text-rose-400 text-xs">Error cargando lista: ${err.message}</span>`;
+            }
+        }
+
+        async function unblockIp(ip) {
+            if (!confirm(`¿Deseas desbloquear la IP ${ip} del archivo .htaccess?`)) return;
+            try {
+                const res = await fetch('/api/unblock-ip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip: ip })
+                });
+                const data = await res.json();
+                loadBlockedIps();
+                const banner = document.getElementById('ban-status-banner');
+                const msg = document.getElementById('ban-status-msg');
+                if (banner && msg) {
+                    banner.classList.remove('hidden');
+                    banner.className = 'mb-4 p-3 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-xs text-emerald-300 flex items-center justify-between';
+                    msg.innerHTML = `<strong>[DESBLOQUEADO]</strong> ${data.message}`;
+                }
+            } catch (err) {
+                alert("Error al desbloquear: " + err.message);
+            }
+        }
+
+        // --- JURY LIVE DEMO SUITE: SOP-05 OFFBOARDING ---
+        async function triggerOffboardingDemo() {
+            const empEmail = "colaborador_remoto_01@almaindustriacreativa.com";
+            if (!confirm(`DEMO EN VIVO PARA EL JURADO:\n\n¿Ejecutar simulación del protocolo SOP-05 para desvincular a '${empEmail}'?\n\nAcciones que se medirán:\n1. Revocación inmediata en Vaultwarden\n2. Purga remota de sesiones activas\n3. Rotación dinámica de credenciales en HashiCorp Vault\n4. Registro de auditoría criptográfica Ley N° 29733`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/simulate-offboarding', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ employee: empEmail })
+                });
+                const data = await res.json();
+
+                alert(`✅ [SOP-05 EJECUTADO CON ÉXITO]\n\n` +
+                      `Ticket de Auditoría: ${data.incident_id}\n` +
+                      `Colaborador: ${data.employee}\n` +
+                      `Tiempo de Revocación Medido: ${data.revocation_time_sec} segundos\n` +
+                      `SLA Exigido (<10 seg): ${data.sla_met ? 'CUMPLIDO AL 100%' : 'SUPERADO'}\n` +
+                      `Estado Vaultwarden: ${data.vaultwarden_status}\n` +
+                      `Estado Vault: ${data.vault_secrets_status}\n\n` +
+                      `Se registró el evento en la Bitácora de Auditoría Ley N° 29733.`);
+                
+                loadMetricsTable();
+            } catch (err) {
+                alert("Error en la ejecución de la prueba: " + err.message);
+            }
         }
 
         async function renderChart() {
@@ -971,6 +1204,11 @@ path "secret/data/" { capabilities = ["read"] }`;
                 }
             });
         }
+
+        // Carga inicial de datos de remediación perimetral
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBlockedIps();
+        });
     </script>
 </body>
 </html>

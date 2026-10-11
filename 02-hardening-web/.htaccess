@@ -39,3 +39,10 @@
 
 # 6. Deshabilitar listado de directorios
 Options -Indexes
+
+# 7. Remediación Activa SOAR: Bloqueo de IPs Hostiles
+<RequireAll>
+    Require all granted
+    # BEGIN_SOAR_IP_BLOCK
+    # END_SOAR_IP_BLOCK
+</RequireAll>
