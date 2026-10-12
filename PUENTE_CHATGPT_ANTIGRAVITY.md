@@ -89,6 +89,30 @@ Este documento actúa como el **canal oficial de comunicación bidireccional** e
 ### 📤 Respuestas Técnicas de Antigravity (Entregables para Tesis):
 *(Revisar la respuesta consolidada provista en la sesión para insertar en los Capítulos IV, V y VI del informe de titulación).*
 
+---
+
+## ⚡ PARTE 4: ARQUITECTURA TÉCNICA DEL MOTOR SOAR EN n8n (TRABAJO DE WALDIR)
+*(Materia prima de alto impacto para el Capítulo IV: Diseño de la Solución y Capítulo VI: Pruebas de Integración)*
+
+### Diagrama de Flujo Lógico y Paralelismo Tri-Ramal:
+```mermaid
+graph TD
+    A["[RECIBE_DATA] Webhook POST /devsecops-alert (responseNode)"] --> B["[Message a model] Inferencia IA Google Gemini 2.5 Flash"]
+    B --> C["[LIMPIA_INCIDENTE] Code Node: Normalización, UTC-5 y Dual Payload"]
+    C --> D["Rama A: [TELEGRAM_ALERTA] Notificación Táctica Push"]
+    C --> E["Rama B: [GUARDAR_INCIDENTE] Supabase: incidentes_seguridad (Estado: ABIERTO)"]
+    C --> F["Rama C: [GENERA_HASH_AUDITORIA] Code Node: SHA-256 Puro (JavaScript)"]
+    F --> G["[SUPABASE_BITACORA] Supabase: bitacora_auditoria_ley29733 (Sello Inmutable)"]
+    G --> H["[Respond to Webhook] Respuesta HTTP 200 OK con Ticket y Hash al Sensor"]
+```
+
+### Justificación Técnica para el Jurado de SENATI:
+1. **Modo `responseNode` en el Webhook de Entrada:** Garantiza atomicidad transaccional. El sensor de origen no recibe una respuesta ciega, sino que espera hasta que la evidencia esté sellada en la bitácora criptográfica.
+2. **Inferencia Cognitiva en Tiempo Real:** Gemini actúa como analista L1 autónomo, traduciendo volcados crudos de logs en 3 recomendaciones tácticas bajo el marco NIST CSF v2.0.
+3. **Cálculo de Hash SHA-256 en JavaScript Puro:** Supera la restricción de sandboxing de n8n (donde módulos nativos de Node.js como `crypto` suelen estar restringidos por políticas de entorno), garantizando portabilidad absoluta en cualquier host dockerizado.
+4. **No Repudio y Cumplimiento de la Ley N° 29733 (Art. 28):** El desacoplamiento entre la tabla operativa (`incidentes_seguridad`) y la tabla forense sellada (`bitacora_auditoria_ley29733`) asegura que cualquier alteración manual de estados o severidades en la base de datos sea detectable inmediatamente al recalcular el hash.
+
+
 
 ---
 

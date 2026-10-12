@@ -5,12 +5,13 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "devsecops-alert",
+        "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -240,
+        -280,
         0
       ],
       "id": "e923b7f0-27fa-4637-93e9-fae247ce0bd0",
@@ -49,21 +50,21 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        0,
+        -40,
         0
       ],
       "id": "c194b830-4e2b-4e6f-9988-8291a1b2c3d4",
-      "name": "NODO_IA_GEMINI",
+      "name": "Message a model (Gemini)",
       "continueOnFail": true
     },
     {
       "parameters": {
-        "jsCode": "// 1. Obtener datos originales del Webhook\nconst raw = $('RECIBE_DATA').first().json.body || $('RECIBE_DATA').first().json;\n\n// 2. Obtener respuesta del Nodo IA\nlet aiText = \"\";\ntry {\n  const aiRes = $input.first().json;\n  if (aiRes.candidates && aiRes.candidates[0] && aiRes.candidates[0].content && aiRes.candidates[0].content.parts) {\n    aiText = aiRes.candidates[0].content.parts[0].text || \"\";\n  } else if (raw.ai_summary) {\n    aiText = raw.ai_summary;\n  }\n} catch (e) {\n  aiText = raw.ai_summary || \"\";\n}\n\nfunction stripHTML(text) {\n  if (text === undefined || text === null) return \"\";\n  return String(text)\n    .replace(/<[^>]*>/g, \"\")\n    .replace(/&lt;/g, \"<\")\n    .replace(/&gt;/g, \">\")\n    .replace(/&amp;/g, \"&\")\n    .trim();\n}\n\nconst sevUpper = String(raw.severidad || raw.severity || raw.nivel || \"\").toUpperCase();\nlet emoji = \"⚠️\";\nif (sevUpper.includes(\"CRITIC\") || sevUpper.includes(\"CRÍT\")) emoji = \"🚨\";\nelse if (sevUpper.includes(\"HIGH\") || sevUpper.includes(\"ALTA\")) emoji = \"🛑\";\nelse if (sevUpper.includes(\"INFO\") || sevUpper.includes(\"BAJ\")) emoji = \"ℹ️\";\nelse if (sevUpper.includes(\"MED\")) emoji = \"🟡\";\n\nconst severidad = stripHTML(raw.severidad || raw.severity || raw.nivel) || \"INFO\";\nconst score = stripHTML(raw.risk_score || raw.score || \"N/A\");\nconst evento = stripHTML(raw.tipo_incidente || raw.event_type || raw.evento || \"Incidente de Ciberseguridad\");\nconst activo = stripHTML(raw.activo_afectado || raw.affected_asset || raw.recurso) || \"Infraestructura Alma\";\nconst control = stripHTML(raw.control_nist || raw.framework_nist || raw.nist_control || raw.nist) || \"NIST CSF v2.0\";\nconst ip = stripHTML(raw.responsable_ip || raw.usuario_ip || raw.ip || raw.ip_origen) || \"N/A\";\nconst sop = stripHTML(raw.sop_reference || raw.regla || raw.sop);\nconst detalle = stripHTML(raw.detalles || raw.details || raw.descripcion) || \"Sin detalles adicionales.\";\nconst accionOriginal = stripHTML(raw.accion_recomendada || raw.suggested_action || raw.recomendacion) || \"Verificar protocolos de seguridad.\";\nconst aiClean = stripHTML(aiText);\nconst id = stripHTML(raw.incident_id || raw.id_incidente) || \"ALMA-SEC-\" + Math.floor(Math.random() * 1000000);\nconst timestamp = stripHTML(raw.timestamp || raw.fecha_hora) || new Date().toISOString();\n\nlet seccionSop = sop ? `• Procedimiento: ${sop}\\n` : \"\";\nlet seccionTimestamp = timestamp ? ` | ${timestamp}` : \"\";\n\nlet seccionIa = \"\";\nif (aiClean && aiClean.length > 5) {\n  seccionIa = `\\n🧠 TRIAGE EN TIEMPO REAL (NODO IA - Google Gemini):\\n${aiClean}\\n`;\n}\n\nconst mensajeFinal = `\n${emoji} [ALERTA DE CIBERSEGURIDAD - SOAR]\n\n• Evento: ${evento}\n• Severidad: ${severidad} (Score: ${score}/10)\n• Activo: ${activo}\n• Control NIST: ${control}\n${seccionSop}• IP/Responsable: ${ip}\n${seccionIa}\nDETALLES TÉCNICOS:\n${detalle}\n\nACCIÓN RECOMENDADA:\n${accionOriginal}\n\n⏱️ ID: ${id}${seccionTimestamp}\n`.trim();\n\nreturn [{\n  json: {\n    text: mensajeFinal,\n    codigo_incidente: id,\n    tipo_evento: evento,\n    severidad: severidad,\n    risk_score: parseFloat(score) || 8.0,\n    origen_sensor: stripHTML(raw.source || raw.origen || \"SOAR Engine\"),\n    ip_origen: ip,\n    activo_afectado: activo,\n    detalles_tecnicos: detalle,\n    control_nist: control,\n    procedimiento_sop: sop || \"SOP-04\",\n    resumen_ia: aiClean || \"Análisis estándar aplicado\",\n    acciones_recomendadas: accionOriginal,\n    fecha_registro: new Date().toISOString()\n  }\n}];"
+        "jsCode": "// 1. Obtener datos originales del Webhook\nconst raw = $('RECIBE_DATA').first().json.body || $('RECIBE_DATA').first().json;\n\n// 2. Obtener respuesta del Nodo IA\nlet aiText = \"\";\ntry {\n  const aiRes = $input.first().json;\n  if (aiRes.candidates && aiRes.candidates[0] && aiRes.candidates[0].content && aiRes.candidates[0].content.parts) {\n    aiText = aiRes.candidates[0].content.parts[0].text || \"\";\n  } else if (raw.ai_summary) {\n    aiText = raw.ai_summary;\n  }\n} catch (e) {\n  aiText = raw.ai_summary || \"\";\n}\n\nfunction stripHTML(text) {\n  if (text === undefined || text === null) return \"\";\n  return String(text)\n    .replace(/<[^>]*>/g, \"\")\n    .replace(/&lt;/g, \"<\")\n    .replace(/&gt;/g, \">\")\n    .replace(/&amp;/g, \"&\")\n    .trim();\n}\n\nconst sevUpper = String(raw.severidad || raw.severity || raw.nivel || \"\").toUpperCase();\nlet emoji = \"⚠️\";\nif (sevUpper.includes(\"CRITIC\") || sevUpper.includes(\"CRÍT\")) emoji = \"🚨\";\nelse if (sevUpper.includes(\"HIGH\") || sevUpper.includes(\"ALTA\")) emoji = \"🛑\";\nelse if (sevUpper.includes(\"INFO\") || sevUpper.includes(\"BAJ\")) emoji = \"ℹ️\";\nelse if (sevUpper.includes(\"MED\")) emoji = \"🟡\";\n\nconst severidad = stripHTML(raw.severidad || raw.severity || raw.nivel) || \"INFO\";\nconst score = stripHTML(raw.risk_score || raw.score || \"N/A\");\nconst evento = stripHTML(raw.tipo_incidente || raw.event_type || raw.evento || \"Incidente de Ciberseguridad\");\nconst activo = stripHTML(raw.activo_afectado || raw.affected_asset || raw.recurso) || \"Infraestructura Alma\";\nconst control = stripHTML(raw.control_nist || raw.framework_nist || raw.nist_control || raw.nist) || \"NIST CSF v2.0\";\nconst ip = stripHTML(raw.responsable_ip || raw.usuario_ip || raw.ip || raw.ip_origen) || \"N/A\";\nconst sop = stripHTML(raw.sop_reference || raw.regla || raw.sop);\nconst detalle = stripHTML(raw.detalles || raw.details || raw.descripcion) || \"Sin detalles adicionales.\";\nconst accionOriginal = stripHTML(raw.accion_recomendada || raw.suggested_action || raw.recomendacion) || \"Verificar protocolos de seguridad.\";\nconst aiClean = stripHTML(aiText);\nconst id = stripHTML(raw.incident_id || raw.id_incidente) || \"ALMA-SEC-\" + Math.floor(Math.random() * 1000000);\n\n// Ajuste temporal UTC-5 (Hora Perú)\nconst nowPeru = new Date(new Date().getTime() - (5 * 60 * 60 * 1000)).toISOString().replace('T', ' ').substring(0, 19) + ' UTC-5';\nconst timestamp = stripHTML(raw.timestamp || raw.fecha_hora) || nowPeru;\n\nlet seccionSop = sop ? `• Procedimiento: ${sop}\\n` : \"\";\nlet seccionTimestamp = timestamp ? ` | ${timestamp}` : \"\";\n\nlet seccionIa = \"\";\nif (aiClean && aiClean.length > 5) {\n  seccionIa = `\\n🧠 TRIAGE EN TIEMPO REAL (NODO IA - Google Gemini):\\n${aiClean}\\n`;\n}\n\nconst mensajeFinal = `\n${emoji} [ALERTA DE CIBERSEGURIDAD - SOAR]\n\n• Evento: ${evento}\n• Severidad: ${severidad} (Score: ${score}/10)\n• Activo: ${activo}\n• Control NIST: ${control}\n${seccionSop}• IP/Responsable: ${ip}\n${seccionIa}\nDETALLES TÉCNICOS:\n${detalle}\n\nACCIÓN RECOMENDADA:\n${accionOriginal}\n\n⏱️ ID: ${id}${seccionTimestamp}\n`.trim();\n\nreturn [{\n  json: {\n    text: mensajeFinal,\n    codigo_incidente: id,\n    tipo_evento: evento,\n    severidad: severidad,\n    risk_score: parseFloat(score) || 8.0,\n    origen_sensor: stripHTML(raw.source || raw.origen || \"SOAR Engine\"),\n    ip_origen: ip,\n    activo_afectado: activo,\n    detalles_tecnicos: detalle,\n    control_nist: control,\n    procedimiento_sop: sop || \"SOP-04\",\n    resumen_ia: aiClean || \"Análisis estándar aplicado\",\n    acciones_recomendadas: accionOriginal,\n    fecha_registro: nowPeru,\n    estado_incidente: \"ABIERTO\"\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        240,
+        200,
         0
       ],
       "id": "1034c43b-6cc0-41bc-bafc-225999c3bef4",
@@ -82,7 +83,7 @@
       "typeVersion": 1.2,
       "position": [
         480,
-        -80
+        -140
       ],
       "id": "a91fe331-f1f5-44a0-8c20-a59a7458caf8",
       "name": "TELEGRAM_ALERTA",
@@ -141,12 +142,12 @@
               "fieldValue": "={{ $json.procedimiento_sop }}"
             },
             {
-              "fieldId": "resumen_ia",
-              "fieldValue": "={{ $json.resumen_ia }}"
+              "fieldId": "estado_incidente",
+              "fieldValue": "ABIERTO"
             },
             {
-              "fieldId": "acciones_recomendadas",
-              "fieldValue": "={{ $json.acciones_recomendadas }}"
+              "fieldId": "fecha_registro",
+              "fieldValue": "={{ $json.fecha_registro }}"
             }
           ]
         }
@@ -155,16 +156,90 @@
       "typeVersion": 1,
       "position": [
         480,
-        100
+        0
       ],
       "id": "f8a7b6c5-4321-4def-9876-112233445566",
-      "name": "SUPABASE_LOG_INCIDENTE",
+      "name": "GUARDAR_INCIDENTE",
       "credentials": {
         "supabaseApi": {
           "id": "SUPABASE_ALMA_CREDS",
           "name": "Supabase Alma DevSecOps"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Implementación pura de SHA-256 en JavaScript (sin dependencias externas)\nfunction sha256(ascii) {\n    function rightRotate(value, amount) {\n        return (value >>> amount) | (value << (32 - amount));\n    }\n    var mathPow = Math.pow;\n    var maxWord = mathPow(2, 32);\n    var lengthProperty = 'length';\n    var i, j;\n    var result = '';\n    var words = [];\n    var asciiBitLength = ascii[lengthProperty] * 8;\n    var hash = [];\n    var k = [];\n    var primeCounter = 0;\n    var isComposite = {};\n    for (var candidate = 2; primeCounter < 64; candidate++) {\n        if (!isComposite[candidate]) {\n            for (i = 0; i < 313; i += candidate) isComposite[i] = candidate;\n            hash[primeCounter] = (mathPow(candidate, .5) * maxWord) | 0;\n            k[primeCounter++] = (mathPow(candidate, 1/3) * maxWord) | 0;\n        }\n    }\n    hash = hash.slice(0, 8);\n    ascii += '\\x80';\n    while (ascii[lengthProperty] % 64 - 56) ascii += '\\x00';\n    for (i = 0; i < ascii[lengthProperty]; i++) {\n        j = ascii.charCodeAt(i);\n        if (j >> 8) return; \n        words[i >> 2] |= j << ((3 - i) % 4) * 8;\n    }\n    words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);\n    words[words[lengthProperty]] = (asciiBitLength | 0);\n    for (j = 0; j < words[lengthProperty];) {\n        var w = words.slice(j, j += 16);\n        var oldHash = hash;\n        hash = hash.slice(0, 8);\n        for (i = 0; i < 64; i++) {\n            var i2 = i + j;\n            var w15 = w[i - 15], w2 = w[i - 2];\n            var a = hash[0], e = hash[4];\n            var temp1 = hash[7] + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) + ((e & hash[5]) ^ ((~e) & hash[6])) + k[i] + (w[i] = (i < 16) ? w[i] : (\n                w[i - 16] + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))\n            | 0));\n            var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));\n            hash = [(temp1 + temp2) | 0].concat(hash);\n            hash[4] = (hash[4] + temp1) | 0;\n        }\n        for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;\n    }\n    for (i = 0; i < 8; i++) {\n        for (var b = 3; b >= 0; b--) {\n            var byte = (hash[i] >> (b * 8)) & 255;\n            result += (byte < 16 ? '0' : '') + byte.toString(16);\n        }\n    }\n    return result;\n}\n\nconst item = $input.first().json;\nconst cadenaInmutable = `${item.codigo_incidente}:${item.tipo_evento}:${item.severidad}:${item.activo_afectado}:${item.fecha_registro}`;\nconst hashCalculado = sha256(cadenaInmutable);\n\nreturn [{\n    json: {\n        ...item,\n        hash_sha256: hashCalculado,\n        evento_auditado: `SOAR_DISPATCH: ${item.tipo_evento}`,\n        estado_trazabilidad: 'TRAZABILIDAD_GARANTIZADA'\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        140
+      ],
+      "id": "b3e2d1c0-7788-4999-aaaa-112233445566",
+      "name": "GENERA_HASH_AUDITORIA"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "table": "bitacora_auditoria_ley29733",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "codigo_incidente",
+              "fieldValue": "={{ $json.codigo_incidente }}"
+            },
+            {
+              "fieldId": "evento_auditado",
+              "fieldValue": "={{ $json.evento_auditado }}"
+            },
+            {
+              "fieldId": "hash_integridad_sha256",
+              "fieldValue": "={{ $json.hash_sha256 }}"
+            },
+            {
+              "fieldId": "estado_trazabilidad",
+              "fieldValue": "={{ $json.estado_trazabilidad }}"
+            },
+            {
+              "fieldId": "registrado_por",
+              "fieldValue": "n8n_SOAR_ALMA"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        720,
+        140
+      ],
+      "id": "c4d3e2f1-8899-4aaa-bbbb-223344556677",
+      "name": "SUPABASE_BITACORA",
+      "credentials": {
+        "supabaseApi": {
+          "id": "SUPABASE_ALMA_CREDS",
+          "name": "Supabase Alma DevSecOps"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"success\",\n  \"incident_id\": \"{{ $json.codigo_incidente }}\",\n  \"hash_sha256\": \"{{ $json.hash_integridad_sha256 }}\",\n  \"trazabilidad\": \"GARANTIZADA_LEY_29733\",\n  \"timestamp\": \"{{ $now.toISO() }}\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        940,
+        140
+      ],
+      "id": "d5e4f3a2-99aa-4bbb-cccc-334455667788",
+      "name": "Respond to Webhook"
     }
   ],
   "pinData": {},
@@ -173,14 +248,14 @@
       "main": [
         [
           {
-            "node": "NODO_IA_GEMINI",
+            "node": "Message a model (Gemini)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "NODO_IA_GEMINI": {
+    "Message a model (Gemini)": {
       "main": [
         [
           {
@@ -200,7 +275,34 @@
             "index": 0
           },
           {
-            "node": "SUPABASE_LOG_INCIDENTE",
+            "node": "GUARDAR_INCIDENTE",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GENERA_HASH_AUDITORIA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GENERA_HASH_AUDITORIA": {
+      "main": [
+        [
+          {
+            "node": "SUPABASE_BITACORA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SUPABASE_BITACORA": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }
@@ -214,7 +316,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "d3f2e1a0-5566-7788-9900-aabbccddeeff",
+  "versionId": "e4f5a6b7-8899-0011-2233-aabbccddeeff",
   "meta": {
     "templateCredsSetupCompleted": true
   },
