@@ -185,5 +185,71 @@
     "source": "Dashboard SOAR 1-Click Mitigation",
     "affected_asset": "Servidor Web / .htaccess (Bloqueada: 185.220.101.5)",
     "details": "IP hostil 185.220.101.5 interceptada y baneada en .htaccess bajo control NIST RS.MI-01."
+  },
+  {
+    "incident_id": "ALMA-SEC-A5B099B1",
+    "timestamp": "2026-10-12 00:39:18 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 1173.61,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://mante.terrafinaperu.com/",
+    "details": "Se audito el objetivo https://mante.terrafinaperu.com/ y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-SEC-6B092139",
+    "timestamp": "2026-10-12 02:22:14 UTC",
+    "event_type": "Exposicion de Secretos en Pre-Commit",
+    "latency_ms": 4452.73,
+    "success": true,
+    "status_code": 200,
+    "source": "Shift-Left / Gitleaks Pre-commit Hook",
+    "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+    "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado."
+  },
+  {
+    "incident_id": "ALMA-SEC-8981F9CE",
+    "timestamp": "2026-10-12 02:22:15 UTC",
+    "event_type": "Exposicion de Secretos en Pre-Commit",
+    "latency_ms": 3333.01,
+    "success": true,
+    "status_code": 200,
+    "source": "Shift-Left / Gitleaks Pre-commit Hook",
+    "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+    "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado."
+  },
+  {
+    "incident_id": "ALMA-SEC-7B4E23F2",
+    "timestamp": "2026-10-12 04:02:15 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 5060.35,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://mante.terrafinaperu.com/",
+    "details": "Se audito el objetivo https://mante.terrafinaperu.com/ y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-BAN-2061F1",
+    "timestamp": "2026-10-12 04:11:41 UTC",
+    "event_type": "Remediacion Activa: Bloqueo de IP Hostil",
+    "latency_ms": 12.5,
+    "success": true,
+    "status_code": 200,
+    "source": "Dashboard SOAR 1-Click Mitigation",
+    "affected_asset": "Servidor Web / .htaccess (Bloqueada: 185.220.101.5)",
+    "details": "IP hostil 185.220.101.5 interceptada y baneada en .htaccess bajo control NIST RS.MI-01."
+  },
+  {
+    "incident_id": "ALMA-SEC-9E353C27",
+    "timestamp": "2026-10-12 15:25:48 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 5099.09,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://radioyaravi.org.pe/",
+    "details": "Se audito el objetivo https://radioyaravi.org.pe/ y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
   }
 ]
