@@ -372,5 +372,39 @@
     "source": "Dashboard SOAR 1-Click Mitigation",
     "affected_asset": "Servidor Web / .htaccess (Bloqueada: 10.235.105.158)",
     "details": "IP hostil 10.235.105.158 interceptada y baneada en .htaccess bajo control NIST RS.MI-01."
+  },
+  {
+    "incident_id": "ALMA-BAN-93C3EC",
+    "timestamp": "2026-10-27 14:53:27 UTC",
+    "event_type": "Remediacion Activa: Bloqueo de IP Hostil",
+    "latency_ms": 12.5,
+    "success": true,
+    "status_code": 200,
+    "source": "Dashboard SOAR 1-Click Mitigation",
+    "affected_asset": "Servidor Web / .htaccess (Bloqueada: 10.235.105.158)",
+    "details": "IP hostil 10.235.105.158 interceptada y baneada en .htaccess bajo control NIST RS.MI-01."
+  },
+  {
+    "incident_id": "ALMA-SEC-8284936A",
+    "timestamp": "2026-10-27 15:00:32 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 668.33,
+    "success": false,
+    "status_code": 500,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://radiosanmartin.pe",
+    "details": "{\"code\":0,\"message\":\"No Respond to Webhook node found in the workflow\"}"
+  },
+  {
+    "incident_id": "ALMA-SEC-A6A5F7E4",
+    "timestamp": "2026-10-27 15:06:32 UTC",
+    "event_type": "Intento de Enumeracion de Usuarios REST API",
+    "latency_ms": 895.08,
+    "success": false,
+    "status_code": 500,
+    "source": "Hardening Web (.htaccess / WAF)",
+    "ip_origen": "10.235.105.158",
+    "affected_asset": "CMS WordPress - Produccion (almaindustriacreativa.com)",
+    "details": "Peticion HTTP anonima interceptada y bloqueada con codigo 403 Forbidden en el endpoint sensible de usuarios."
   }
 ]
