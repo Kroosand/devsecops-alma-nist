@@ -50,5 +50,7 @@ description = "Archivos permitidos / excepciones controladas"
 paths = [
     '''\.gitleaks\.toml$''',
     '''01-shift-left/tests/test_canary_secrets\.py$''',
-    '''05-docs-senati/.*'''
+    '''05-docs-senati/.*''',
+    '''GUIA_.*\.md$''',
+    '''PUENTE_.*\.md$'''
 ]

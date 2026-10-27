@@ -1,0 +1,393 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <!-- Paper Grid Background -->
+    <pattern id="sketchGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e2e8f0" stroke-width="0.8" stroke-dasharray="2 3"/>
+    </pattern>
+
+    <!-- Marker Highlighter Filters -->
+    <filter id="roughPaper" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise"/>
+      <feDiffuseLighting in="noise" lighting-color="#ffffff" surfaceScale="1" result="light">
+        <feDistantLight azimuth="45" elevation="60"/>
+      </feDiffuseLighting>
+      <feBlend mode="multiply" in="SourceGraphic" in2="light"/>
+    </filter>
+
+    <!-- Arrow Marker Red -->
+    <marker id="arrowRed" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
+      <path d="M 1 1 L 11 6 L 1 11 Z" fill="#e11d48" stroke="#be123c" stroke-width="1"/>
+    </marker>
+
+    <!-- Arrow Marker Teal -->
+    <marker id="arrowTeal" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
+      <path d="M 1 1 L 11 6 L 1 11 Z" fill="#0d9488" stroke="#0f766e" stroke-width="1"/>
+    </marker>
+
+    <!-- Arrow Marker Purple -->
+    <marker id="arrowPurple" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
+      <path d="M 1 1 L 11 6 L 1 11 Z" fill="#6366f1" stroke="#4f46e5" stroke-width="1"/>
+    </marker>
+
+    <!-- Arrow Marker Amber -->
+    <marker id="arrowAmber" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
+      <path d="M 1 1 L 11 6 L 1 11 Z" fill="#d97706" stroke="#b45309" stroke-width="1"/>
+    </marker>
+  </defs>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&amp;family=Patrick+Hand&amp;family=Fira+Code:wght@500;700&amp;display=swap');
+    
+    .sketch-title { font-family: 'Caveat', 'Segoe Print', cursive, sans-serif; font-size: 38px; font-weight: 700; fill: #0f172a; }
+    .sketch-subtitle { font-family: 'Patrick Hand', 'Comic Sans MS', cursive, sans-serif; font-size: 20px; fill: #475569; }
+    .box-title { font-family: 'Caveat', 'Segoe Print', cursive, sans-serif; font-size: 28px; font-weight: 700; }
+    .box-body { font-family: 'Patrick Hand', 'Comic Sans MS', cursive, sans-serif; font-size: 18px; fill: #334155; }
+    .code-text { font-family: 'Fira Code', monospace; font-size: 15px; font-weight: 600; }
+    .badge-text { font-family: 'Patrick Hand', 'Comic Sans MS', cursive, sans-serif; font-size: 16px; font-weight: 700; }
+    .arrow-text { font-family: 'Caveat', 'Segoe Print', cursive, sans-serif; font-size: 20px; font-weight: 700; }
+  </style>
+
+  <!-- Background Canvas -->
+  <rect width="1920" height="1080" fill="#fcfaf7"/>
+  <rect width="1920" height="1080" fill="url(#sketchGrid)"/>
+
+  <!-- HEADER / SLIDE TITLE -->
+  <g transform="translate(60, 45)">
+    <!-- Sketchy underline -->
+    <path d="M 0 65 Q 400 70 900 64 T 1800 68" fill="none" stroke="#0d9488" stroke-width="4" stroke-linecap="round"/>
+    <path d="M 5 69 Q 450 72 950 67 T 1795 70" fill="none" stroke="#14b8a6" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+    
+    <!-- Title -->
+    <text x="0" y="35" class="sketch-title">⚡ ARQUITECTURA DE LA DEMOSTRACIÓN EN VIVO (EVALUACIÓN SENATI)</text>
+    <text x="0" y="58" class="sketch-subtitle">Montaje Práctico Cuasi-Real • Simulación de Ataque, Triage IA y Remediación SOAR Automatizada • 3 Minutos</text>
+    
+    <!-- Time & Setup Badge -->
+    <rect x="1500" y="5" width="290" height="48" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="2" stroke-dasharray="8 3"/>
+    <text x="1515" y="34" class="badge-text" fill="#b45309">⏱️ Setup: 2 Laptops + Cloud + Móvil</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONA 1: FLANCO ATACANTE / DESARROLLADOR (LAPTOP 2 O MÁQUINA VIRTUAL)       -->
+  <!-- ========================================================================= -->
+  <g transform="translate(70, 160)">
+    <!-- Shadow Box -->
+    <rect x="6" y="6" width="410" height="480" rx="18" fill="#cbd5e1" opacity="0.4"/>
+    <!-- Sketchy Main Box -->
+    <rect x="0" y="0" width="410" height="480" rx="18" fill="#fff1f2" stroke="#e11d48" stroke-width="3"/>
+    <rect x="-3" y="-3" width="416" height="486" rx="20" fill="none" stroke="#fda4af" stroke-width="1.5" stroke-dasharray="6 4"/>
+
+    <!-- Header Pill -->
+    <rect x="25" y="-18" width="360" height="38" rx="10" fill="#e11d48" stroke="#be123c" stroke-width="2"/>
+    <text x="45" y="8" class="badge-text" fill="#ffffff">🔴 LAPTOP 2: ATACANTE / DEV (VM KALI)</text>
+
+    <!-- Subtitle / Role -->
+    <text x="25" y="50" class="box-title" fill="#9f1239">Puesto del Adversario / Pentester</text>
+    <text x="25" y="75" class="box-body">Simula un hacker en internet o un colaborador en su casa.</text>
+
+    <!-- Laptop Doodle -->
+    <g transform="translate(130, 90)">
+      <!-- Screen -->
+      <rect x="0" y="0" width="150" height="95" rx="8" fill="#1e293b" stroke="#334155" stroke-width="2.5"/>
+      <rect x="8" y="8" width="134" height="79" rx="4" fill="#0f172a"/>
+      <!-- Terminal prompt -->
+      <text x="16" y="32" class="code-text" fill="#e11d48">root@kali:~#</text>
+      <text x="16" y="54" class="code-text" fill="#38bdf8">curl /wp-json/</text>
+      <text x="16" y="74" class="code-text" fill="#facc15">git commit (key)</text>
+      <!-- Base -->
+      <path d="M -25 95 L 175 95 L 160 108 L -10 108 Z" fill="#94a3b8" stroke="#475569" stroke-width="2"/>
+      <rect x="55" y="98" width="40" height="5" rx="2" fill="#cbd5e1"/>
+    </g>
+
+    <!-- Action 1 Card -->
+    <rect x="20" y="225" width="370" height="105" rx="10" fill="#ffffff" stroke="#f43f5e" stroke-width="1.8"/>
+    <text x="35" y="252" class="box-title" font-size="22" fill="#be123c">1. Prueba Shift-Left (Canary Leak)</text>
+    <text x="35" y="278" class="box-body">• Intenta hacer <tspan font-family="Fira Code" font-size="14" fill="#be123c">git commit</tspan> con clave AWS/Stripe.</text>
+    <text x="35" y="302" class="box-body">• <tspan fill="#059669" font-weight="bold">Gitleaks intercepta en local en &lt; 350 ms</tspan> (Exit 1).</text>
+    <rect x="275" y="306" width="105" height="18" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+    <text x="282" y="319" font-family="Fira Code" font-size="11" fill="#166534">NIST PR.PS-01</text>
+
+    <!-- Action 2 Card -->
+    <rect x="20" y="345" width="370" height="115" rx="10" fill="#ffffff" stroke="#f43f5e" stroke-width="1.8"/>
+    <text x="35" y="372" class="box-title" font-size="22" fill="#be123c">2. Ataque a API REST (/wp-json/)</text>
+    <text x="35" y="398" class="box-body">• Lanza script de enumeración de administradores:</text>
+    <text x="35" y="420" class="code-text" font-size="13" fill="#be123c">curl http://mante.terrafinaperu.com/wp-json/..</text>
+    <text x="35" y="445" class="box-body">• Busca nombres de usuarios para fuerza bruta.</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONA 2: SERVIDOR WEB OBJETIVO (APACHE / LITESPEED / .HTACCESS)             -->
+  <!-- ========================================================================= -->
+  <g transform="translate(560, 480)">
+    <!-- Shadow Box -->
+    <rect x="6" y="6" width="360" height="420" rx="18" fill="#cbd5e1" opacity="0.4"/>
+    <!-- Main Box -->
+    <rect x="0" y="0" width="360" height="420" rx="18" fill="#f8fafc" stroke="#475569" stroke-width="3"/>
+    <rect x="-3" y="-3" width="366" height="426" rx="20" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 4"/>
+
+    <!-- Header Pill -->
+    <rect x="20" y="-18" width="320" height="38" rx="10" fill="#475569" stroke="#334155" stroke-width="2"/>
+    <text x="35" y="8" class="badge-text" fill="#ffffff">🏢 SERVIDOR WEB DE ALMA (EN LA NUBE)</text>
+
+    <!-- Server Icon / Rack -->
+    <g transform="translate(130, 40)">
+      <!-- Server 1 -->
+      <rect x="0" y="0" width="100" height="28" rx="4" fill="#334155" stroke="#1e293b" stroke-width="2"/>
+      <circle cx="15" cy="14" r="4" fill="#22c55e"/>
+      <circle cx="30" cy="14" r="4" fill="#38bdf8"/>
+      <line x1="50" y1="14" x2="90" y2="14" stroke="#64748b" stroke-width="2" stroke-dasharray="3 2"/>
+      <!-- Server 2 -->
+      <rect x="0" y="34" width="100" height="28" rx="4" fill="#334155" stroke="#1e293b" stroke-width="2"/>
+      <circle cx="15" cy="48" r="4" fill="#22c55e"/>
+      <circle cx="30" cy="48" r="4" fill="#eab308"/>
+      <line x1="50" y1="48" x2="90" y2="48" stroke="#64748b" stroke-width="2" stroke-dasharray="3 2"/>
+      <!-- Server 3 -->
+      <rect x="0" y="68" width="100" height="28" rx="4" fill="#334155" stroke="#1e293b" stroke-width="2"/>
+      <circle cx="15" cy="82" r="4" fill="#e11d48"/>
+      <circle cx="30" cy="82" r="4" fill="#38bdf8"/>
+      <line x1="50" y1="82" x2="90" y2="82" stroke="#64748b" stroke-width="2" stroke-dasharray="3 2"/>
+    </g>
+
+    <!-- Description -->
+    <text x="25" y="165" class="box-title" font-size="24" fill="#1e293b">Apache / LiteSpeed (.htaccess)</text>
+    <text x="25" y="195" class="box-body">• Aloja los sitios web y tiendas e-commerce.</text>
+    <text x="25" y="220" class="box-body">• Inspecciona cabeceras HTTP y endpoints.</text>
+
+    <!-- Sensor Alert Hook -->
+    <rect x="20" y="240" width="320" height="70" rx="8" fill="#fef2f2" stroke="#f87171" stroke-width="1.5"/>
+    <text x="32" y="265" class="box-title" font-size="19" fill="#991b1b">⚡ Sensor Perimetral de Anomalías</text>
+    <text x="32" y="290" class="box-body" font-size="16">Detecta consulta hostil y dispara Webhook SOAR.</text>
+
+    <!-- Remediación Activa .htaccess Box -->
+    <rect x="20" y="325" width="320" height="80" rx="8" fill="#f0fdf4" stroke="#4ade80" stroke-width="2"/>
+    <text x="32" y="350" class="box-title" font-size="20" fill="#166534">🛡️ Remediación Activa (.htaccess)</text>
+    <text x="32" y="375" class="code-text" font-size="13" fill="#15803d">Require not ip 185.220.101.5</text>
+    <text x="32" y="395" class="box-body" font-size="15" fill="#166534">¡Atacante bloqueado con HTTP 403 en 12.5 ms!</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONA 3: NUBE INTELIGENTE SOAR, IA & CLOUD SIEM (CENTRO DE CONTROL CLOUD)  -->
+  <!-- ========================================================================= -->
+  <g transform="translate(560, 140)">
+    <!-- Fluffy Cloud Shape as background -->
+    <path d="M 50 140 
+             A 60 60 0 0 1 120 40 
+             A 80 80 0 0 1 270 20 
+             A 90 90 0 0 1 450 30 
+             A 70 70 0 0 1 580 80 
+             A 65 65 0 0 1 670 150 
+             A 55 55 0 0 1 680 230 
+             A 60 60 0 0 1 620 300 
+             L 80 300 
+             A 60 60 0 0 1 20 230 
+             A 50 50 0 0 1 50 140 Z" 
+          fill="#faf5ff" stroke="#8b5cf6" stroke-width="3"/>
+    
+    <!-- Cloud Pill Title -->
+    <rect x="180" y="2" width="360" height="38" rx="10" fill="#7c3aed" stroke="#6d28d9" stroke-width="2"/>
+    <text x="205" y="27" class="badge-text" fill="#ffffff">☁️ NUBE SOAR, IA &amp; CLOUD SIEM CENTRAL</text>
+
+    <!-- Node 1: n8n Engine -->
+    <g transform="translate(60, 60)">
+      <rect x="0" y="0" width="170" height="90" rx="12" fill="#ffffff" stroke="#ec4899" stroke-width="2"/>
+      <text x="15" y="28" class="box-title" font-size="20" fill="#be185d">1. n8n SOAR</text>
+      <text x="15" y="50" class="code-text" font-size="12" fill="#475569">POST /devsecops</text>
+      <text x="15" y="70" class="box-body" font-size="15" fill="#0f172a">Modo responseNode</text>
+      <circle cx="150" cy="20" r="6" fill="#ec4899"/>
+    </g>
+
+    <!-- Node 2: Google Gemini AI -->
+    <g transform="translate(260, 60)">
+      <rect x="0" y="0" width="195" height="90" rx="12" fill="#ffffff" stroke="#3b82f6" stroke-width="2"/>
+      <text x="15" y="28" class="box-title" font-size="20" fill="#1d4ed8">2. IA Gemini 2.5</text>
+      <text x="15" y="50" class="box-body" font-size="15" fill="#475569">Triage en 1.20 seg</text>
+      <text x="15" y="70" class="box-body" font-size="15" fill="#1e40af">3 Acciones NIST RS</text>
+      <!-- Brain doodle -->
+      <circle cx="170" cy="22" r="7" fill="#60a5fa"/>
+    </g>
+
+    <!-- Node 3: Supabase Cloud DB -->
+    <g transform="translate(485, 60)">
+      <rect x="0" y="0" width="185" height="90" rx="12" fill="#ffffff" stroke="#10b981" stroke-width="2"/>
+      <text x="15" y="28" class="box-title" font-size="20" fill="#047857">3. Supabase SIEM</text>
+      <text x="15" y="50" class="code-text" font-size="12" fill="#047857">PostgreSQL 15</text>
+      <text x="15" y="70" class="box-body" font-size="15" fill="#0f172a">5 Tablas DDL + RLS</text>
+      <circle cx="160" cy="20" r="6" fill="#10b981"/>
+    </g>
+
+    <!-- Lower Cloud Banner: SHA-256 Seal -->
+    <g transform="translate(80, 180)">
+      <rect x="0" y="0" width="550" height="95" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="1.8"/>
+      <text x="15" y="28" class="box-title" font-size="21" fill="#6d28d9">🔐 Trazabilidad Criptográfica Inmutable (Ley N° 29733 Art. 28)</text>
+      <text x="15" y="54" class="box-body" font-size="16">• Nodo JS Puro en n8n calcula Sello <tspan font-family="Fira Code" font-size="14" fill="#7c3aed">SHA-256</tspan> del incidente.</text>
+      <text x="15" y="76" class="box-body" font-size="16">• Se guarda en <tspan font-family="Fira Code" font-size="13" fill="#047857">bitacora_auditoria_ley29733</tspan> garantizando <tspan font-weight="bold" fill="#be123c">No Repudio</tspan>.</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONA 4: PUESTO DE MANDO DEFENSOR (LAPTOP 1 - SERGIO & WALDIR)              -->
+  <!-- ========================================================================= -->
+  <g transform="translate(1360, 160)">
+    <!-- Shadow Box -->
+    <rect x="6" y="6" width="490" height="480" rx="18" fill="#cbd5e1" opacity="0.4"/>
+    <!-- Main Box -->
+    <rect x="0" y="0" width="490" height="480" rx="18" fill="#f0fdfa" stroke="#0d9488" stroke-width="3"/>
+    <rect x="-3" y="-3" width="496" height="486" rx="20" fill="none" stroke="#5eead4" stroke-width="1.5" stroke-dasharray="6 4"/>
+
+    <!-- Header Pill -->
+    <rect x="35" y="-18" width="420" height="38" rx="10" fill="#0d9488" stroke="#0f766e" stroke-width="2"/>
+    <text x="50" y="8" class="badge-text" fill="#ffffff">🟢 LAPTOP 1: PUESTO DE MANDO SOC (DEFENSORES)</text>
+
+    <!-- Subtitle -->
+    <text x="25" y="48" class="box-title" fill="#115e59">Consola Central DevSecOps (Conectada al Proyector)</text>
+    <text x="25" y="72" class="box-body">Sergio Incacutipa &amp; Waldir Chullo operan en tiempo real.</text>
+
+    <!-- Laptop SOC Doodle -->
+    <g transform="translate(160, 85)">
+      <!-- Screen -->
+      <rect x="0" y="0" width="170" height="105" rx="8" fill="#0f172a" stroke="#0d9488" stroke-width="2.5"/>
+      <rect x="8" y="8" width="154" height="89" rx="4" fill="#020617"/>
+      <!-- Dashboard UI sketch -->
+      <rect x="14" y="14" width="40" height="18" rx="3" fill="#0d9488"/>
+      <text x="18" y="27" font-family="Fira Code" font-size="9" fill="#ffffff">SOC</text>
+      <rect x="60" y="14" width="98" height="18" rx="3" fill="#1e293b"/>
+      <text x="65" y="26" font-family="Fira Code" font-size="8" fill="#38bdf8">MTTR: 5.04m</text>
+      
+      <!-- Chart lines in screen -->
+      <polyline points="20,70 45,55 70,62 95,40 120,50 150,35" fill="none" stroke="#22c55e" stroke-width="2"/>
+      <polyline points="20,80 45,75 70,78 95,72 120,70 150,68" fill="none" stroke="#e11d48" stroke-width="1.5" stroke-dasharray="2 2"/>
+      
+      <!-- Base -->
+      <path d="M -25 105 L 195 105 L 180 120 L -10 120 Z" fill="#94a3b8" stroke="#475569" stroke-width="2"/>
+      <rect x="65" y="108" width="45" height="5" rx="2" fill="#cbd5e1"/>
+    </g>
+
+    <!-- SOC Actions -->
+    <rect x="25" y="225" width="440" height="110" rx="10" fill="#ffffff" stroke="#14b8a6" stroke-width="1.8"/>
+    <text x="40" y="252" class="box-title" font-size="22" fill="#0f766e">1. Suite de Demostración en 1-Clic</text>
+    <text x="40" y="278" class="box-body">• Botón 1: Canary Secrets Git (Shift-Left).</text>
+    <text x="40" y="300" class="box-body">• Botón 2: Auditoría perimetral a REST API.</text>
+    <text x="40" y="322" class="box-body">• Botón 3: <tspan font-weight="bold" fill="#e11d48">Offboarding SOP-05 en &lt; 10 seg</tspan> (Revocación Vault).</text>
+
+    <!-- Action Remediacion & PDF -->
+    <rect x="25" y="350" width="440" height="110" rx="10" fill="#ffffff" stroke="#14b8a6" stroke-width="1.8"/>
+    <text x="40" y="376" class="box-title" font-size="22" fill="#0f766e">2. Remediación Activa &amp; Reporte PDF</text>
+    <text x="40" y="402" class="box-body">• Presiona <tspan font-weight="bold" fill="#e11d48">"Bloquear IP en Servidor"</tspan> (Aísla en .htaccess en 12 ms).</text>
+    <text x="40" y="424" class="box-body">• Botón verde: <tspan font-weight="bold" fill="#0d9488">[📄 Informe Ejecutivo PDF]</tspan> con sello SHA-256.</text>
+    <text x="40" y="446" class="box-body">• Se imprime o guarda en vivo frente al jurado.</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONA 5: SMARTPHONE DE GUARDIA (NOTIFICACIÓN TELEGRAM)                     -->
+  <!-- ========================================================================= -->
+  <g transform="translate(1420, 670)">
+    <!-- Shadow Box -->
+    <rect x="6" y="6" width="430" height="230" rx="18" fill="#cbd5e1" opacity="0.4"/>
+    <!-- Main Box -->
+    <rect x="0" y="0" width="430" height="230" rx="18" fill="#eff6ff" stroke="#3b82f6" stroke-width="2.5"/>
+    
+    <!-- Phone Doodle -->
+    <g transform="translate(25, 30)">
+      <!-- Phone Body -->
+      <rect x="0" y="0" width="85" height="165" rx="16" fill="#1e293b" stroke="#0f172a" stroke-width="2.5"/>
+      <rect x="5" y="10" width="75" height="145" rx="10" fill="#0284c7"/>
+      <!-- Speaker -->
+      <line x1="32" y1="5" x2="52" y2="5" stroke="#64748b" stroke-width="2"/>
+      <!-- Screen Alert Notification -->
+      <rect x="8" y="25" width="69" height="75" rx="5" fill="#ffffff"/>
+      <text x="12" y="40" font-family="Caveat" font-size="14" font-weight="bold" fill="#e11d48">🚨 ALERTA</text>
+      <text x="12" y="54" font-family="Patrick Hand" font-size="10" fill="#0f172a">Fuerza Bruta</text>
+      <text x="12" y="67" font-family="Fira Code" font-size="8" fill="#475569">IP: 185.220..</text>
+      <text x="12" y="80" font-family="Patrick Hand" font-size="9" fill="#0284c7">Triage Gemini</text>
+      <!-- Home Indicator -->
+      <line x1="32" y1="150" x2="52" y2="150" stroke="#cbd5e1" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+
+    <!-- Telegram Details -->
+    <text x="130" y="48" class="box-title" font-size="24" fill="#1d4ed8">📱 Celular de Guardia (Telegram)</text>
+    <text x="130" y="78" class="box-body">• Colocado en la mesa frente al jurado.</text>
+    <text x="130" y="104" class="box-body">• Suena en vivo en <tspan font-weight="bold" fill="#059669">&lt; 1 segundo</tspan> tras el ataque.</text>
+    <text x="130" y="130" class="box-body">• Incluye análisis y recomendaciones NIST.</text>
+    
+    <rect x="130" y="150" width="275" height="60" rx="8" fill="#ffffff" stroke="#60a5fa" stroke-width="1.5"/>
+    <text x="142" y="174" class="box-body" font-size="16" fill="#1e40af">🔔 Impacto auditivo para el jurado:</text>
+    <text x="142" y="196" class="box-body" font-size="15" fill="#334155">Demuestra que no hay demoras manuales.</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- CONEXIONES Y FLECHAS DE FLUJO INTERACTIVO (DIBUJADAS A MANO)               -->
+  <!-- ========================================================================= -->
+
+  <!-- Flecha 1: Atacante -> Servidor Web (Ataque HTTP) -->
+  <path d="M 480 380 Q 510 400 550 510" fill="none" stroke="#e11d48" stroke-width="3.5" stroke-dasharray="7 4" marker-end="url(#arrowRed)"/>
+  <rect x="440" y="430" width="130" height="42" rx="6" fill="#fff1f2" stroke="#e11d48" stroke-width="1.5"/>
+  <text x="450" y="452" class="arrow-text" fill="#be123c">1. Ataque HTTP</text>
+  <text x="450" y="468" class="code-text" font-size="11" fill="#be123c">GET /wp-json/</text>
+
+  <!-- Flecha 2: Servidor Web -> Nube n8n (Sensor alerta) -->
+  <path d="M 740 480 Q 750 440 760 410" fill="none" stroke="#d97706" stroke-width="3" marker-end="url(#arrowAmber)"/>
+  <rect x="765" y="430" width="150" height="38" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="775" y="454" class="arrow-text" fill="#b45309">2. Disparo Webhook</text>
+
+  <!-- Flecha 3: Nube SOAR -> Telegram Móvil -->
+  <path d="M 1240 280 Q 1380 450 1480 660" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="6 3" marker-end="url(#arrowPurple)"/>
+  <rect x="1270" y="460" width="175" height="42" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="1280" y="482" class="arrow-text" fill="#1d4ed8">3. Notificación Push</text>
+  <text x="1280" y="497" class="badge-text" font-size="13" fill="#1e40af">Telegram (&lt; 0.8 seg)</text>
+
+  <!-- Flecha 4: Laptop SOC -> Servidor Web (Remediación 1-Click Ban) -->
+  <path d="M 1360 410 Q 1120 440 930 520" fill="none" stroke="#0d9488" stroke-width="3.5" marker-end="url(#arrowTeal)"/>
+  <rect x="1000" y="420" width="220" height="42" rx="6" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+  <text x="1010" y="442" class="arrow-text" fill="#0f766e">4. Remediación Activa SOAR</text>
+  <text x="1010" y="457" class="code-text" font-size="11" fill="#0f766e">Require not ip en 12.5 ms</text>
+
+  <!-- Flecha 5: Servidor Web -> Atacante (Bloqueo 403 Forbidden) -->
+  <path d="M 560 620 Q 500 640 430 610" fill="none" stroke="#e11d48" stroke-width="3.5" marker-end="url(#arrowRed)"/>
+  <rect x="420" y="630" width="160" height="42" rx="6" fill="#be123c" stroke="#9f1239" stroke-width="2"/>
+  <text x="432" y="652" class="arrow-text" fill="#ffffff">5. HTTP 403 Forbidden</text>
+  <text x="432" y="667" class="badge-text" font-size="12" fill="#fecdd3">¡Atacante Neutralizado!</text>
+
+  <!-- Flecha 6: Laptop SOC <-> Supabase Cloud (Consulta y Sincronización) -->
+  <path d="M 1360 250 Q 1280 230 1190 220" fill="none" stroke="#10b981" stroke-width="2.5" stroke-dasharray="4 4"/>
+  <text x="1205" y="200" class="badge-text" font-size="14" fill="#047857">Consulta SIEM PostgreSQL</text>
+
+  <!-- ========================================================================= -->
+  <!-- BANNER INFERIOR: RESUMEN DE IMPACTO CUANTITATIVO PARA EL JURADO           -->
+  <!-- ========================================================================= -->
+  <g transform="translate(70, 930)">
+    <rect x="0" y="0" width="1780" height="110" rx="16" fill="#0f172a" stroke="#334155" stroke-width="2.5"/>
+    
+    <!-- KPI 1 -->
+    <g transform="translate(40, 22)">
+      <text x="0" y="24" class="badge-text" font-size="16" fill="#94a3b8">COMPARATIVA MTTR TOTAL</text>
+      <text x="0" y="58" class="box-title" font-size="34" fill="#f43f5e">255 min <tspan fill="#64748b" font-size="22">➜</tspan> <tspan fill="#10b981">5.04 min</tspan></text>
+      <text x="0" y="78" class="box-body" font-size="15" fill="#22c55e">Reducción del 98.02% (SLA Cumplido)</text>
+    </g>
+
+    <line x1="420" y1="15" x2="420" y2="95" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+    <!-- KPI 2 -->
+    <g transform="translate(460, 22)">
+      <text x="0" y="24" class="badge-text" font-size="16" fill="#94a3b8">VELOCIDAD DE CONTENCIÓN</text>
+      <text x="0" y="58" class="box-title" font-size="34" fill="#38bdf8">&lt; 15 milisegundos</text>
+      <text x="0" y="78" class="box-body" font-size="15" fill="#94a3b8">Inyección atómica en .htaccess perimetral</text>
+    </g>
+
+    <line x1="860" y1="15" x2="860" y2="95" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+    <!-- KPI 3 -->
+    <g transform="translate(900, 22)">
+      <text x="0" y="24" class="badge-text" font-size="16" fill="#94a3b8">OFFBOARDING REMOTO (SOP-05)</text>
+      <text x="0" y="58" class="box-title" font-size="34" fill="#a855f7">&lt; 10 segundos</text>
+      <text x="0" y="78" class="box-body" font-size="15" fill="#94a3b8">Revocación Vaultwarden + Rotación Vault</text>
+    </g>
+
+    <line x1="1300" y1="15" x2="1300" y2="95" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+    <!-- KPI 4 -->
+    <g transform="translate(1340, 22)">
+      <text x="0" y="24" class="badge-text" font-size="16" fill="#94a3b8">CUMPLIMIENTO NORMATIVO</text>
+      <text x="0" y="58" class="box-title" font-size="30" fill="#facc15">Ley N° 29733 (Art. 28)</text>
+      <text x="0" y="78" class="box-body" font-size="15" fill="#94a3b8">Certificación PDF con Sello SHA-256</text>
+    </g>
+  </g>
+</svg>

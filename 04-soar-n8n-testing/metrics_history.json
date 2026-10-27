@@ -251,5 +251,93 @@
     "source": "Auditor Perimetral Web / Pentesting Engine",
     "affected_asset": "https://radioyaravi.org.pe/",
     "details": "Se audito el objetivo https://radioyaravi.org.pe/ y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-SEC-5009004F",
+    "timestamp": "2026-10-15 15:18:53 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 5325.02,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://mapachio.com",
+    "details": "Se audito el objetivo https://mapachio.com y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-SEC-A2F6C1D4",
+    "timestamp": "2026-10-15 15:38:53 UTC",
+    "event_type": "Exposicion de Secretos en Pre-Commit",
+    "latency_ms": 4946.78,
+    "success": true,
+    "status_code": 200,
+    "source": "Shift-Left / Gitleaks Pre-commit Hook",
+    "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+    "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado."
+  },
+  {
+    "incident_id": "ALMA-SEC-F09B587C",
+    "timestamp": "2026-10-15 15:43:52 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 4758.75,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://mapachio.com",
+    "details": "Se audito el objetivo https://mapachio.com y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-OFFB-6F00C7",
+    "timestamp": "2026-10-15 15:44:32 UTC",
+    "event_type": "Desvinculacion Inmediata de Colaborador (SOP-05)",
+    "latency_ms": 770.0,
+    "success": true,
+    "status_code": 200,
+    "source": "Vaultwarden / Vault Engine",
+    "affected_asset": "Credenciales de: colaborador_remoto_01@almaindustriacreativa.com",
+    "details": "Acceso remoto revocado en Vaultwarden. Sesiones purgadas en dispositivos clientes. Duración: 0.77s."
+  },
+  {
+    "incident_id": "ALMA-SEC-9EDE3778",
+    "timestamp": "2026-10-15 15:45:09 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 5281.54,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://mapachio.com",
+    "details": "Se audito el objetivo https://mapachio.com y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-SEC-0ED04268",
+    "timestamp": "2026-10-15 15:45:09 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 3585.78,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://mapachio.com",
+    "details": "Se audito el objetivo https://mapachio.com y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-SEC-031C152B",
+    "timestamp": "2026-10-15 15:45:14 UTC",
+    "event_type": "Exposicion de Secretos en Pre-Commit",
+    "latency_ms": 4286.57,
+    "success": true,
+    "status_code": 200,
+    "source": "Shift-Left / Gitleaks Pre-commit Hook",
+    "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+    "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado."
+  },
+  {
+    "incident_id": "ALMA-SEC-EAE4AD56",
+    "timestamp": "2026-10-27 12:55:25 UTC",
+    "event_type": "Exposicion de Secretos en Pre-Commit",
+    "latency_ms": 5274.73,
+    "success": true,
+    "status_code": 200,
+    "source": "Shift-Left / Gitleaks Pre-commit Hook",
+    "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
+    "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado."
   }
 ]
