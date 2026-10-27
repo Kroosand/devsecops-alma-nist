@@ -339,5 +339,27 @@
     "source": "Shift-Left / Gitleaks Pre-commit Hook",
     "affected_asset": "Repositorio: Kroosand/devsecops-alma-nist (Rama: main)",
     "details": "Intento de commit interceptado y bloqueado localmente. Se detectaron secretos hardcodeados en el archivo preparado."
+  },
+  {
+    "incident_id": "ALMA-SEC-A4498ADC",
+    "timestamp": "2026-10-27 13:33:48 UTC",
+    "event_type": "Vulnerabilidad en Auditoria Web",
+    "latency_ms": 4520.27,
+    "success": true,
+    "status_code": 200,
+    "source": "Auditor Perimetral Web / Pentesting Engine",
+    "affected_asset": "https://radiosanmartin.pe/",
+    "details": "Se audito el objetivo https://radiosanmartin.pe/ y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores."
+  },
+  {
+    "incident_id": "ALMA-SEC-9F1FA9AC",
+    "timestamp": "2026-10-27 13:44:38 UTC",
+    "event_type": "Intento de Enumeracion de Usuarios REST API",
+    "latency_ms": 5158.05,
+    "success": true,
+    "status_code": 200,
+    "source": "Hardening Web (.htaccess / WAF)",
+    "affected_asset": "https://radiosanmartin.pe",
+    "details": "Se audito el objetivo https://radiosanmartin.pe y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200)."
   }
 ]

@@ -116,6 +116,17 @@ def send_alert(webhook_url, payload):
         latency = (time.time() - start_time) * 1000
         return False, 'ERROR', latency, str(e)
 
+def get_local_ip():
+    try:
+        import socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "10.235.105.158"
+
 def main():
     print("=" * 80)
     print("  DEVSECOPS SOAR DISPATCHER: EMISION DE INCIDENTES HACIA n8n")
@@ -124,15 +135,24 @@ def main():
 
     target_url = DEFAULT_WEBHOOK_URL
     event_choice = "1"
-    
-    if len(sys.argv) > 1 and sys.argv[1].startswith("http"):
-        target_url = sys.argv[1]
-        if len(sys.argv) > 2 and sys.argv[2] in EVENT_PRESETS:
-            event_choice = sys.argv[2]
-    elif len(sys.argv) > 1 and sys.argv[1] in EVENT_PRESETS:
-        event_choice = sys.argv[1]
+    custom_ip = None
+    custom_target = None
 
-    print(f"\n[+] URL de Webhook Configurada: {target_url}\n")
+    for arg in sys.argv[1:]:
+        if arg.startswith("http://") or arg.startswith("https://"):
+            if "webhook" in arg:
+                target_url = arg
+            else:
+                custom_target = arg
+        elif arg in EVENT_PRESETS:
+            event_choice = arg
+        elif "." in arg and len(arg.split(".")) == 4:
+            custom_ip = arg
+
+    detected_ip = custom_ip or get_local_ip()
+
+    print(f"\n[+] URL de Webhook Configurada: {target_url}")
+    print(f"[+] IP Origen Identificada:    {detected_ip}\n")
     print("Seleccione el evento de seguridad a simular:")
     for k, v in EVENT_PRESETS.items():
         print(f" [{k}] {v['event_type']} (Severidad: {v['severity']} | Riesgo: {v['risk_score']})")
@@ -146,6 +166,16 @@ def main():
             event_choice = "1"
 
     selected_event = EVENT_PRESETS[event_choice].copy()
+
+    # Inyectar IP real detectada y activo personalizado si existe
+    if detected_ip:
+        selected_event["attacker_ip"] = detected_ip
+        selected_event["user_involved"] = f"Waldir Chullo / Estación Atacante ({detected_ip})"
+
+    if custom_target:
+        selected_event["affected_asset"] = custom_target
+        selected_event["file_endpoint"] = f"{custom_target.rstrip('/')}/wp-json/wp/v2/users"
+        selected_event["details"] = f"Se audito el objetivo {custom_target} y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200)."
     now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
     incident_id = f"ALMA-SEC-{uuid.uuid4().hex[:8].upper()}"
 
