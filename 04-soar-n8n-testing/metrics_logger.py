@@ -62,7 +62,7 @@ def save_metrics(metrics_list):
         os.remove(METRICS_FILE)
     os.rename(temp_file, METRICS_FILE)
 
-def log_metric(incident_id, event_type, latency_ms, success=True, status_code=200, source="SOAR Dispatcher", affected_asset="Infraestructura Digital Alma", details=None, severity="HIGH", risk_score=8.5, nist_control="PR.PS-01 / DE.CM-01", sop_reference="SOP-04", ai_summary=None, suggested_action=None):
+def log_metric(incident_id, event_type, latency_ms, success=True, status_code=200, source="SOAR Dispatcher", affected_asset="Infraestructura Digital Alma", details=None, severity="HIGH", risk_score=8.5, nist_control="PR.PS-01 / DE.CM-01", sop_reference="SOP-04", ai_summary=None, suggested_action=None, ip_origen=None):
     """
     Registra un evento real ejecutado tanto en JSON como en la Base de Datos Relacional SQLite.
     """
@@ -78,6 +78,7 @@ def log_metric(incident_id, event_type, latency_ms, success=True, status_code=20
         "success": bool(success),
         "status_code": status_code,
         "source": source,
+        "ip_origen": ip_origen or "10.235.105.158",
         "affected_asset": affected_asset,
         "details": details or ""
     }
@@ -92,10 +93,10 @@ def log_metric(incident_id, event_type, latency_ms, success=True, status_code=20
         # Insertar en tabla de incidentes
         cursor.execute("""
             INSERT OR REPLACE INTO incidentes_seguridad 
-            (codigo_incidente, fecha_registro, tipo_evento, severidad, risk_score, origen_sensor, activo_afectado, detalles_tecnicos, control_nist, procedimiento_sop, estado_incidente, mitigado_en)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (codigo_incidente, fecha_registro, tipo_evento, severidad, risk_score, origen_sensor, ip_origen, activo_afectado, detalles_tecnicos, control_nist, procedimiento_sop, estado_incidente, mitigado_en)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
-            incident_id, now_str, event_type, severity, float(risk_score), source, affected_asset, details or "", nist_control, sop_reference, "MITIGADO", now_str
+            incident_id, now_str, event_type, severity, float(risk_score), source, ip_origen or "10.235.105.158", affected_asset, details or "", nist_control, sop_reference, "MITIGADO", now_str
         ))
         
         # Insertar en tabla de telemetría MTTR

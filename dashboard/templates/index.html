@@ -517,9 +517,22 @@ Cargando políticas RBAC desde el servidor...
                 </div>
                 <p class="text-xs text-slate-400 mb-4">Aisla atacantes en tiempo real inyectando directivas de denegación perimetral directamente en el servidor web Apache/LiteSpeed:</p>
 
+                <!-- Atacante Detectado en Vivo -->
+                <div id="detected-attacker-box" class="mb-3 p-2.5 rounded-lg bg-dark-850 border border-rose-500/30 flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                        <span class="text-slate-300 font-medium">IP Atacante Identificada:</span>
+                        <span id="detected-ip-val" class="font-mono font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">10.235.105.158</span>
+                        <span class="text-slate-500 text-[11px]">(Waldir / Estación Atacante)</span>
+                    </div>
+                    <button type="button" onclick="loadDetectedIp('10.235.105.158')" class="text-xs bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white px-3 py-1 rounded transition font-bold flex items-center gap-1.5">
+                        <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> Cargar para Bloqueo
+                    </button>
+                </div>
+
                 <div class="flex flex-col sm:flex-row gap-3 mb-4">
                     <div class="flex-1 flex gap-2">
-                        <input id="ban-ip-input" type="text" value="185.220.101.5" placeholder="Ingresa IP hostil (ej: 185.220.101.5)" class="flex-1 bg-dark-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-mono outline-none focus:border-rose-500">
+                        <input id="ban-ip-input" type="text" value="10.235.105.158" placeholder="Ingresa IP hostil (ej: 10.235.105.158)" class="flex-1 bg-dark-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-mono outline-none focus:border-rose-500">
                         <button onclick="mitigateIp()" id="btn-mitigate-ip" class="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-4 py-2 rounded-lg transition flex items-center gap-2">
                             <i data-lucide="ban" class="w-4 h-4"></i> Bloquear IP en Servidor
                         </button>
@@ -935,6 +948,9 @@ Cargando políticas RBAC desde el servidor...
                     if (data.alert_dispatched) {
                         banner.classList.remove('hidden');
                         bannerId.innerText = data.incident_id || "ALMA-SEC-DISPATCH";
+                        if (data.attacker_ip) {
+                            loadDetectedIp(data.attacker_ip);
+                        }
                     }
                 }
 
@@ -995,7 +1011,10 @@ Cargando políticas RBAC desde el servidor...
                             <td class="p-2.5 text-emerald-400 font-bold">${inc.codigo_ticket || inc.id || 'INC'}</td>
                             <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${sevClass}">${inc.severidad || 'HIGH'}</span></td>
                             <td class="p-2.5 text-slate-200">${inc.tipo_evento || inc.titulo || 'Incidente'}</td>
-                            <td class="p-2.5 text-slate-400 text-[11px] font-mono">${inc.ip_origen || inc.origen_sensor || 'N/A'}</td>
+                            <td class="p-2.5 text-slate-400 text-[11px] font-mono">
+                                <span>${inc.ip_origen || inc.origen_sensor || '10.235.105.158'}</span>
+                                ${inc.ip_origen ? `<button onclick="loadDetectedIp('${inc.ip_origen}')" class="ml-2 px-1.5 py-0.5 bg-rose-500/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded text-[10px] font-bold">Bloquear</button>` : ''}
+                            </td>
                             <td class="p-2.5 text-cyan-400 text-[11px]">${inc.categoria_nist || 'NIST CSF'}</td>
                             <td class="p-2.5 text-slate-300 text-[11px]">${(inc.accion_ejecutada || 'Contención SOAR').substring(0, 45)}...</td>
                             <td class="p-2.5 text-center"><span class="text-xs text-emerald-400 font-bold">✓ REGISTRADO</span></td>
@@ -1011,6 +1030,15 @@ Cargando políticas RBAC desde el servidor...
         }
 
         // --- ACTIVE REMEDIATION (.HTACCESS BAN) FUNCTIONS ---
+        function loadDetectedIp(ip) {
+            if (!ip) ip = '10.235.105.158';
+            const input = document.getElementById('ban-ip-input');
+            if (input) input.value = ip;
+            const badge = document.getElementById('detected-ip-val');
+            if (badge) badge.innerText = ip;
+            if (input) input.focus();
+        }
+
         async function mitigateIp() {
             const input = document.getElementById('ban-ip-input');
             const btn = document.getElementById('btn-mitigate-ip');

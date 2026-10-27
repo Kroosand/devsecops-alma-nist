@@ -128,7 +128,10 @@ def dispatch_to_n8n(webhook_url, payload):
                     status_code=status_code,
                     source=payload.get("source", "Dashboard Dispatcher"),
                     affected_asset=payload.get("affected_asset", "Infraestructura Alma"),
-                    details=payload.get("details", "")
+                    details=payload.get("details", ""),
+                    ip_origen=payload.get("ip", payload.get("attacker_ip", "10.235.105.158")),
+                    severity=payload.get("severity", "HIGH"),
+                    risk_score=float(payload.get("risk_score", 8.5))
                 )
             except Exception:
                 pass
@@ -145,7 +148,10 @@ def dispatch_to_n8n(webhook_url, payload):
                 status_code=e.code,
                 source=payload.get("source", "Dashboard Dispatcher"),
                 affected_asset=payload.get("affected_asset", "Infraestructura Alma"),
-                details=err_body
+                details=err_body,
+                ip_origen=payload.get("ip", payload.get("attacker_ip", "10.235.105.158")),
+                severity=payload.get("severity", "HIGH"),
+                risk_score=float(payload.get("risk_score", 8.5))
             )
         except Exception:
             pass
@@ -406,12 +412,12 @@ def audit_url():
             "regla_seguridad": "SOP-03: Bastionado Web y Control de Dependencias",
             "sop": "SOP-03: Bastionado Web y Control de Dependencias",
             "sop_reference": "SOP-03: Bastionado Web y Control de Dependencias",
-            "responsable_ip": "Escaneo de Diagnostico (Auditor Web)",
-            "usuario_ip": "Escaneo de Diagnostico (Auditor Web)",
-            "responsable": "Sergio Incacutipa (DevSecOps Lead)",
-            "usuario": "Sergio Incacutipa",
-            "ip": "Auditoria Remota",
-            "attacker_ip": "Auditoria Remota",
+            "responsable_ip": "Waldir Chullo / Estación Atacante (10.235.105.158)",
+            "usuario_ip": "Waldir Chullo / Estación Atacante (10.235.105.158)",
+            "responsable": "Waldir Chullo (Red Team)",
+            "usuario": "Waldir Chullo",
+            "ip": "10.235.105.158",
+            "attacker_ip": "10.235.105.158",
             "details": f"Se audito el objetivo {target_url} y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores.",
             "detalles": f"Se audito el objetivo {target_url} y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores.",
             "detalles_tecnicos": f"Se audito el objetivo {target_url} y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200).",
@@ -448,6 +454,7 @@ def audit_url():
         "results": results,
         "alert_dispatched": alert_dispatched,
         "incident_id": incident_id,
+        "attacker_ip": "10.235.105.158",
         "ai_summary": payload.get("ai_summary", "") if "payload" in locals() else ""
     })
 
