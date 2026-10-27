@@ -361,5 +361,16 @@
     "source": "Hardening Web (.htaccess / WAF)",
     "affected_asset": "https://radiosanmartin.pe",
     "details": "Se audito el objetivo https://radiosanmartin.pe y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200)."
+  },
+  {
+    "incident_id": "ALMA-BAN-B92446",
+    "timestamp": "2026-10-27 14:27:49 UTC",
+    "event_type": "Remediacion Activa: Bloqueo de IP Hostil",
+    "latency_ms": 12.5,
+    "success": true,
+    "status_code": 200,
+    "source": "Dashboard SOAR 1-Click Mitigation",
+    "affected_asset": "Servidor Web / .htaccess (Bloqueada: 10.235.105.158)",
+    "details": "IP hostil 10.235.105.158 interceptada y baneada en .htaccess bajo control NIST RS.MI-01."
   }
 ]
