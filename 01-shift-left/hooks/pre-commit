@@ -26,7 +26,7 @@ trigger_soar_incident() {
     else
         WIN_SCRIPT="$DISPATCHER_SCRIPT"
     fi
-    python "$WIN_SCRIPT" 1 2>&1 | grep -E "Despachando incidente|Codigo de Respuesta|Latencia|EXITOSO" || true
+    python "$WIN_SCRIPT" 1 "https://n8n-komidev.45.85.249.241.sslip.io/webhook/devsecops-alert" 2>&1 | grep -E "Despachando incidente|Codigo de Respuesta|Latencia|EXITOSO" || true
 }
 
 # Ejecutar Gitleaks con --no-color para compatibilidad con VS Code GUI (Comillas estrictas para rutas con espacios)
