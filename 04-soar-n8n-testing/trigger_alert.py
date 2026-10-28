@@ -87,6 +87,16 @@ EVENT_PRESETS = {
 
 def send_alert(webhook_url, payload):
     data = json.dumps(payload, indent=2).encode('utf-8')
+    # Sincronizar inmediatamente con el SOC Dashboard local (0ms lag)
+    try:
+        local_dash_req = urllib.request.Request(
+            'http://127.0.0.1:5000/api/live-incident',
+            data=data,
+            headers={'Content-Type': 'application/json'}
+        )
+        urllib.request.urlopen(local_dash_req, timeout=1)
+    except Exception:
+        pass
     ctx = ssl.create_default_context()
     
     req = urllib.request.Request(
@@ -104,6 +114,16 @@ def send_alert(webhook_url, payload):
             latency = (time.time() - start_time) * 1000
             status_code = response.getcode()
             response_body = response.read().decode('utf-8', errors='ignore')
+            # Sincronizar simultáneamente con el SOC Dashboard local si está activo
+            try:
+                local_dash_req = urllib.request.Request(
+                    "http://127.0.0.1:5000/api/live-incident",
+                    data=data,
+                    headers={'Content-Type': 'application/json'}
+                )
+                urllib.request.urlopen(local_dash_req, timeout=1)
+            except Exception:
+                pass
             return True, status_code, latency, response_body
     except urllib.error.HTTPError as e:
         latency = (time.time() - start_time) * 1000
@@ -171,6 +191,17 @@ def main():
     if detected_ip:
         selected_event["attacker_ip"] = detected_ip
         selected_event["user_involved"] = f"Waldir Chullo / Estación Atacante ({detected_ip})"
+
+    # Detección contextual si se ejecuta dentro del Runner de GitHub Actions
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        actor = os.environ.get("GITHUB_ACTOR", "komidev-code")
+        repo = os.environ.get("GITHUB_REPOSITORY", "Kroosand/devsecops-alma-nist")
+        ref = os.environ.get("GITHUB_REF_NAME", "feature/modulo-waldir")
+        selected_event["source"] = "GitHub Actions CI/CD (Cloud Security)"
+        selected_event["event_type"] = "Exposicion de Secretos en CI/CD Pipeline"
+        selected_event["affected_asset"] = f"GitHub: {repo} (Rama: {ref})"
+        selected_event["user_involved"] = f"{actor} (GitHub Collaborator)"
+        selected_event["details"] = f"Pull Request interceptado y bloqueado por Gitleaks en el pipeline CI/CD de GitHub Actions. Rama: {ref}."
 
     if custom_target:
         selected_event["affected_asset"] = custom_target

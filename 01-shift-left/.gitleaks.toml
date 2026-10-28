@@ -51,6 +51,7 @@ paths = [
     '''\.gitleaks\.toml$''',
     '''01-shift-left/tests/test_canary_secrets\.py$''',
     '''05-docs-senati/.*''',
+    '''dashboard/templates/.*''',
     '''GUIA_.*\.md$''',
     '''PUENTE_.*\.md$'''
 ]

@@ -438,22 +438,96 @@ Cargando políticas RBAC desde el servidor...
         <!-- TAB 2: SHIFT LEFT SANDBOX -->
         <div id="content-shift-left" class="tab-content hidden space-y-6">
             <div class="bg-dark-900 border border-slate-800 rounded-xl p-5">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                     <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-xs bg-purple-500/20 text-purple-400 border border-purple-500/30 px-2 py-0.5 rounded font-mono font-bold">NIST CSF v2.0 PR.PS-01</span>
+                            <span class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded font-mono font-bold">SOP-02 SHIFT-LEFT</span>
+                        </div>
                         <h2 class="text-base font-bold text-white flex items-center gap-2">
-                            <i data-lucide="shield-alert" class="w-5 h-5 text-rose-400"></i>
-                            Laboratorio Shift-Left: Simulación de Intento de Commit con Secretos
+                            <i data-lucide="shield-alert" class="w-5 h-5 text-purple-400"></i>
+                            Laboratorio Shift-Left: Control Preventivo en Git Pre-commit Hook
                         </h2>
-                        <p class="text-xs text-slate-400 mt-1">Ejecuta el script de validación <code>test_canary_secrets.py</code> para probar la intercepción de Gitleaks en vivo.</p>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Simula en vivo la intercepciÃ³n de credenciales hardcodeadas por un desarrollador antes de entrar al repositorio, y su remediaciÃ³n segura mediante variables de entorno y BÃ³vedas.
+                        </p>
                     </div>
-                    <button onclick="runCanaryTest()" id="btn-canary" class="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-4 py-2.5 rounded-lg transition flex items-center gap-2">
-                        <i data-lucide="play" class="w-4 h-4"></i> Ejecutar Canary Secret Test
-                    </button>
+                    <div class="flex items-center gap-2 font-mono text-xs">
+                        <span class="px-2.5 py-1 bg-dark-950 border border-slate-800 rounded text-slate-300 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Gitleaks v8.30 Activo
+                        </span>
+                        <span class="px-2.5 py-1 bg-dark-950 border border-slate-800 rounded text-amber-400 flex items-center gap-1.5">
+                            <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> &lt; 250ms Scan
+                        </span>
+                    </div>
                 </div>
 
-                <!-- Terminal output -->
-                <div id="canary-terminal" class="bg-dark-950 border border-slate-800 rounded-lg p-4 text-xs text-slate-300 terminal-font h-64 overflow-y-auto whitespace-pre-wrap">
-[Shift-Left Sandbox] Presiona "Ejecutar Canary Secret Test" para simular un intento de subir credenciales (AWS Key, Telegram Bot Token, Database Passwords) a Staging...
+                <!-- Code Comparison Side-by-Side -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
+                    <!-- Vulnerable Code Box -->
+                    <div class="bg-dark-950 border border-rose-500/30 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+                                    <i data-lucide="x-circle" class="w-4 h-4"></i> SituaciÃ³n 1: CÃ³digo Vulnerable (Hardcoded)
+                                </span>
+                                <span class="text-[10px] font-mono text-slate-400">services_notifier_demo.php</span>
+                            </div>
+                            <pre class="bg-dark-900 border border-slate-800 rounded p-3 text-[11px] text-slate-300 font-mono overflow-x-auto leading-relaxed"><code>&lt;?php
+// [ERROR DE DESARROLLADOR]: Tokens en texto plano
+<span class="text-rose-400 font-bold"> = "123456789:ABCdefGHI...";</span>
+<span class="text-rose-400 font-bold"> = "n8n_api_key_alma_growth...";</span>
+<span class="text-rose-400 font-bold">define('DB_PASSWORD', 'AlmaQuinta2024#SecretDBPass');</span>
+?&gt;</code></pre>
+                            <p class="text-[11px] text-slate-400 mt-2">
+                                El desarrollador intenta realizar commit con claves en el cÃ³digo fuente. Gitleaks detiene la ejecuciÃ³n con <code>exit code 1</code> y despacha una alerta SOAR crÃ­tica a n8n y Telegram.
+                            </p>
+                        </div>
+                        <div class="mt-4">
+                            <button onclick="runCanaryTest('leak')" id="btn-canary-leak" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition flex items-center justify-center gap-2 shadow-lg shadow-rose-900/30">
+                                <i data-lucide="shield-alert" class="w-4 h-4"></i> ðŸ”´ 1. Simular Intento con Secretos (Bloquear)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Remediated Code Box -->
+                    <div class="bg-dark-950 border border-emerald-500/30 rounded-xl p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                                    <i data-lucide="check-circle" class="w-4 h-4"></i> SituaciÃ³n 2: RemediaciÃ³n con BÃ³veda (SOP-02)
+                                </span>
+                                <span class="text-[10px] font-mono text-slate-400">services_notifier_demo.php</span>
+                            </div>
+                            <pre class="bg-dark-900 border border-slate-800 rounded p-3 text-[11px] text-slate-300 font-mono overflow-x-auto leading-relaxed"><code>&lt;?php
+// [CÃ“DIGO SEGURO]: Variables de entorno / BÃ³veda
+<span class="text-emerald-400 font-bold"> = getenv('TELEGRAM_BOT_TOKEN');</span>
+<span class="text-emerald-400 font-bold"> = getenv('N8N_API_KEY');</span>
+<span class="text-emerald-400 font-bold"> = getenv('DB_PASSWORD');</span>
+?&gt;</code></pre>
+                            <p class="text-[11px] text-slate-400 mt-2">
+                                Las credenciales se custodian en Vaultwarden. El cÃ³digo fuente consume variables del sistema sin exponer credenciales. El commit es autorizado limpiamente.
+                            </p>
+                        </div>
+                        <div class="mt-4">
+                            <button onclick="runCanaryTest('remediate')" id="btn-canary-clean" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 px-4 rounded-lg transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/30">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i> ðŸŸ¢ 2. Simular Commit Remediado (Pase Seguro)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Terminal Output -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-300 flex items-center gap-2">
+                            <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i> Salida en Tiempo Real del Hook Pre-commit (Git CLI)
+                        </span>
+                        <span class="text-[11px] text-slate-400 font-mono">Exit Code Monitor</span>
+                    </div>
+                    <div id="canary-terminal" class="bg-dark-950 border border-slate-800 rounded-lg p-4 text-xs text-slate-300 terminal-font h-64 overflow-y-auto whitespace-pre-wrap">[Shift-Left Sandbox] Listo.
+Selecciona "ðŸ”´ 1. Simular Intento con Secretos" para ver cÃ³mo Gitleaks intercepta el commit y dispara la alerta a Telegram/n8n.
+O selecciona "ðŸŸ¢ 2. Simular Commit Remediado" para comprobar la aprobaciÃ³n del commit con variables de entorno.</div>
                 </div>
             </div>
         </div>
@@ -466,8 +540,23 @@ Cargando políticas RBAC desde el servidor...
                 </h2>
                 <p class="text-xs text-slate-400 mb-4">Ingresa la URL del sitio web a auditar para verificar en vivo si los endpoints vulnerables están bloqueados y si las cabeceras de seguridad están activas.</p>
 
+                                <!-- Selector de Modo Demostración NIST -->
+                <div class="mb-4 p-3.5 bg-dark-850 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-xs font-semibold text-slate-300">Control NIST SOP-03:</span>
+                        <span id="bastionado-badge" class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">🔴 VULNERABLE (Situación Inicial)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="setBastionadoMode('vulnerable')" id="btn-mode-vuln" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-rose-600 text-white shadow-lg shadow-rose-900/30">
+                            🔴 Modo Vulnerable (Sin SOP-03)
+                        </button>
+                        <button type="button" onclick="setBastionadoMode('protected')" id="btn-mode-prot" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-dark-950 text-slate-400 hover:text-white border border-slate-700/60">
+                            🟢 Modo Protegido (Con SOP-03)
+                        </button>
+                    </div>
+                </div>
                 <div class="flex gap-2 mb-4">
-                    <input id="audit-url-input" type="text" value="https://almaindustriacreativa.com" class="flex-1 bg-dark-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-mono outline-none focus:border-blue-500">
+                    <input id="audit-url-input" type="text" value="https://almaquinta.loca.lt" class="flex-1 bg-dark-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-mono outline-none focus:border-blue-500">
                     <button onclick="runUrlAudit()" id="btn-audit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-2 rounded-lg transition flex items-center gap-2">
                         <i data-lucide="search" class="w-4 h-4"></i> Auditar Objetivo
                     </button>
@@ -517,22 +606,22 @@ Cargando políticas RBAC desde el servidor...
                 </div>
                 <p class="text-xs text-slate-400 mb-4">Aisla atacantes en tiempo real inyectando directivas de denegación perimetral directamente en el servidor web Apache/LiteSpeed:</p>
 
-                <!-- Atacante Detectado en Vivo -->
-                <div id="detected-attacker-box" class="mb-3 p-2.5 rounded-lg bg-dark-850 border border-rose-500/30 flex items-center justify-between text-xs">
+                <!-- Atacante Detectado Dinámicamente en Vivo -->
+                <div id="detected-attacker-box" class="mb-3 p-2.5 rounded-lg bg-dark-850 border border-slate-700/60 flex items-center justify-between text-xs transition-all">
                     <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                        <span id="detected-ping" class="w-2 h-2 rounded-full bg-slate-500"></span>
                         <span class="text-slate-300 font-medium">IP Atacante Identificada:</span>
-                        <span id="detected-ip-val" class="font-mono font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">10.235.105.158</span>
-                        <span class="text-slate-500 text-[11px]">(Waldir / Estación Atacante)</span>
+                        <span id="detected-ip-val" class="font-mono font-bold text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded border border-slate-700/40">Esperando ataque en vivo...</span>
+                        <span id="detected-tag" class="text-slate-500 text-[11px]">(Monitoreo NIST DE.AE-02)</span>
                     </div>
-                    <button type="button" onclick="loadDetectedIp('10.235.105.158')" class="text-xs bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white px-3 py-1 rounded transition font-bold flex items-center gap-1.5">
+                    <button type="button" id="btn-load-detected" onclick="loadDetectedIp()" class="text-xs bg-slate-800 text-slate-500 px-3 py-1 rounded transition font-bold flex items-center gap-1.5 cursor-not-allowed" disabled>
                         <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> Cargar para Bloqueo
                     </button>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3 mb-4">
                     <div class="flex-1 flex gap-2">
-                        <input id="ban-ip-input" type="text" value="10.235.105.158" placeholder="Ingresa IP hostil (ej: 10.235.105.158)" class="flex-1 bg-dark-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-mono outline-none focus:border-rose-500">
+                        <input id="ban-ip-input" type="text" placeholder="IP se detectará automáticamente al atacar (o escríbela manual)..." class="flex-1 bg-dark-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-mono outline-none focus:border-rose-500">
                         <button onclick="mitigateIp()" id="btn-mitigate-ip" class="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-4 py-2 rounded-lg transition flex items-center gap-2">
                             <i data-lucide="ban" class="w-4 h-4"></i> Bloquear IP en Servidor
                         </button>
@@ -896,23 +985,94 @@ Cargando políticas RBAC desde el servidor...
             consoleEl.scrollTop = consoleEl.scrollHeight;
         }
 
-        async function runCanaryTest() {
+        async function runCanaryTest(mode = 'leak') {
             const term = document.getElementById('canary-terminal');
-            const btn = document.getElementById('btn-canary');
-            btn.disabled = true;
-            btn.innerText = "Ejecutando escaneo...";
-            term.innerHTML = "[*] Creando archivo con Canary Tokens y ejecutando 'git commit' para probar Gitleaks...\n";
+            const btnLeak = document.getElementById('btn-canary-leak');
+            const btnClean = document.getElementById('btn-canary-clean');
+            if (btnLeak) btnLeak.disabled = true;
+            if (btnClean) btnClean.disabled = true;
+            
+            term.innerHTML = mode === 'leak' 
+                ? '[*] [MODO FUGA]: Preparando archivo con tokens e invocando git commit...\n[*] Se espera intercepción de Gitleaks en <300ms...\n'
+                : '[*] [MODO REMEDIADO]: Preparando archivo seguro con getenv() e invocando git commit...\n[*] Se espera autorización limpia de Gitleaks...\n';
 
             try {
-                const res = await fetch('/api/run-canary-test', { method: 'POST' });
+                const res = await fetch('/api/run-canary-test', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ mode: mode })
+                });
                 const data = await res.json();
-                term.innerHTML = data.stdout + "\n" + (data.stderr || "");
+                term.innerHTML = data.stdout + '\n' + (data.stderr || '');
+                if (data.blocked || data.mode === 'leak') {
+                    loadMetricsTable();
+                    loadCloudIncidents();
+                }
             } catch (err) {
-                term.innerHTML = "[-] Error al ejecutar prueba: " + err.message;
+                term.innerHTML = '[-] Error al ejecutar prueba: ' + err.message;
             }
-            btn.disabled = false;
-            btn.innerHTML = '<i data-lucide="play" class="w-4 h-4 inline mr-1"></i> Ejecutar Canary Secret Test';
+            if (btnLeak) {
+                btnLeak.disabled = false;
+                btnLeak.innerHTML = '<i data-lucide="shield-alert" class="w-4 h-4 inline mr-1"></i> 🔴 1. Simular Intento con Secretos (Bloquear)';
+            }
+            if (btnClean) {
+                btnClean.disabled = false;
+                btnClean.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 inline mr-1"></i> 🟢 2. Simular Commit Remediado (Pase Seguro)';
+            }
             lucide.createIcons();
+        }
+
+        async function loadBastionadoMode() {
+            try {
+                const res = await fetch('/api/bastionado-mode');
+                const data = await res.json();
+                updateBastionadoUI(data.mode);
+            } catch (e) {}
+        }
+
+        async function setBastionadoMode(mode) {
+            try {
+                const res = await fetch('/api/bastionado-mode', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode: mode })
+                });
+                const data = await res.json();
+                updateBastionadoUI(data.mode);
+                // Ejecutar automáticamente la auditoría tras cambiar el modo
+                runUrlAudit();
+            } catch (e) {
+                alert("Error al cambiar modo: " + e.message);
+            }
+        }
+
+        function updateBastionadoUI(mode) {
+            const badge = document.getElementById('bastionado-badge');
+            const btnV = document.getElementById('btn-mode-vuln');
+            const btnP = document.getElementById('btn-mode-prot');
+            if (mode === 'vulnerable') {
+                if (badge) {
+                    badge.className = "px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30";
+                    badge.innerText = "🔴 VULNERABLE (Situación Inicial)";
+                }
+                if (btnV) {
+                    btnV.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-rose-600 text-white shadow-lg shadow-rose-900/30";
+                }
+                if (btnP) {
+                    btnP.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-dark-950 text-slate-400 hover:text-white border border-slate-700/60";
+                }
+            } else {
+                if (badge) {
+                    badge.className = "px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                    badge.innerText = "🟢 BASTIONADO ACTIVO (SOP-03)";
+                }
+                if (btnV) {
+                    btnV.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-dark-950 text-slate-400 hover:text-white border border-slate-700/60";
+                }
+                if (btnP) {
+                    btnP.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-lg shadow-emerald-900/30";
+                }
+            }
         }
 
         async function runUrlAudit() {
@@ -1012,7 +1172,7 @@ Cargando políticas RBAC desde el servidor...
                             <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${sevClass}">${inc.severidad || 'HIGH'}</span></td>
                             <td class="p-2.5 text-slate-200">${inc.tipo_evento || inc.titulo || 'Incidente'}</td>
                             <td class="p-2.5 text-slate-400 text-[11px] font-mono">
-                                <span>${inc.ip_origen || inc.origen_sensor || '10.235.105.158'}</span>
+                                <span>${inc.ip_origen || inc.origen_sensor || '127.0.0.1'}</span>
                                 ${inc.ip_origen ? `<button onclick="loadDetectedIp('${inc.ip_origen}')" class="ml-2 px-1.5 py-0.5 bg-rose-500/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded text-[10px] font-bold">Bloquear</button>` : ''}
                             </td>
                             <td class="p-2.5 text-cyan-400 text-[11px]">${inc.categoria_nist || 'NIST CSF'}</td>
@@ -1029,9 +1189,64 @@ Cargando políticas RBAC desde el servidor...
             }
         }
 
+        
+        let liveAttackerIp = null;
+
+        function updateAttackerUI(ip, incidentId, eventType) {
+            if (!ip) return;
+            const isNew = (ip !== liveAttackerIp);
+            liveAttackerIp = ip;
+
+            const box = document.getElementById('detected-attacker-box');
+            const ping = document.getElementById('detected-ping');
+            const val = document.getElementById('detected-ip-val');
+            const tag = document.getElementById('detected-tag');
+            const btn = document.getElementById('btn-load-detected');
+            const input = document.getElementById('ban-ip-input');
+
+            if (box) {
+                box.className = "mb-3 p-2.5 rounded-lg bg-rose-950/30 border border-rose-500/50 flex items-center justify-between text-xs transition-all shadow-lg shadow-rose-950/20";
+            }
+            if (ping) {
+                ping.className = "w-2 h-2 rounded-full bg-rose-500 animate-ping";
+            }
+            if (val) {
+                val.innerText = ip;
+                val.className = "font-mono font-bold text-rose-300 bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/30";
+            }
+            if (tag) {
+                tag.innerText = `(Detectado en vivo ${incidentId ? '• ' + incidentId : ''})`;
+                tag.className = "text-rose-400 font-medium text-[11px]";
+            }
+            if (btn) {
+                btn.disabled = false;
+                btn.className = "text-xs bg-rose-600 hover:bg-rose-500 text-white px-3 py-1 rounded transition font-bold flex items-center gap-1.5 cursor-pointer shadow-lg shadow-rose-900/30";
+            }
+            if (input && (!input.value || input.value === '181.176.3.226' || input.value.trim() === '')) {
+                input.value = ip;
+            }
+
+            if (isNew) {
+                loadMetricsTable();
+                loadCloudIncidents();
+            }
+        }
+
+        async function pollLatestAttacker() {
+            try {
+                const res = await fetch('/api/latest-attacker');
+                const data = await res.json();
+                if (data.status === 'ok' && data.has_attacker && data.attacker.ip) {
+                    updateAttackerUI(data.attacker.ip, data.attacker.incident_id, data.attacker.event_type);
+                }
+            } catch (e) {}
+        }
+
         // --- ACTIVE REMEDIATION (.HTACCESS BAN) FUNCTIONS ---
         function loadDetectedIp(ip) {
-            if (!ip) ip = '10.235.105.158';
+            const targetIp = ip || liveAttackerIp;
+            if (!targetIp) { alert('Aún no se ha detectado ninguna IP hostil.'); return; }
+            ip = targetIp;
             const input = document.getElementById('ban-ip-input');
             if (input) input.value = ip;
             const badge = document.getElementById('detected-ip-val');
@@ -1236,6 +1451,9 @@ Cargando políticas RBAC desde el servidor...
         // Carga inicial de datos de remediación perimetral
         document.addEventListener('DOMContentLoaded', () => {
             loadBlockedIps();
+            loadBastionadoMode();
+            pollLatestAttacker();
+            setInterval(pollLatestAttacker, 2000);
         });
     </script>
 </body>

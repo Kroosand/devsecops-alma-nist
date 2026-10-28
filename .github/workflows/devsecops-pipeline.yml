@@ -75,6 +75,12 @@ jobs:
             gitleaks detect --verbose --redact
           fi
 
+      - name: 🚨 Notificar Alerta Crítica a n8n y Telegram (SOAR NIST RS.MI-01)
+        if: failure()
+        run: |
+          echo "[*] Disparando alerta automatizada hacia n8n y Telegram..."
+          python 04-soar-n8n-testing/trigger_alert.py 1 https://n8n.almaquinta.com/webhook/devsecops-alert || true
+
   # ----------------------------------------------------------------------------
   # JOB 2: Análisis de Composición de Software y Dependencias (SCA - Trivy)
   # NIST CSF v2.0: ID.RA-01, PR.PS-02 | SOP-03

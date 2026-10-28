@@ -6,14 +6,6 @@
 
 set -e
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
-echo -e "${BLUE}[DevSecOps - Shift Left]${NC} Validando código preparado en Staging..."
-
 # Determinar la raíz del repositorio dinámicamente
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 if [ -z "$REPO_ROOT" ]; then
@@ -23,53 +15,49 @@ fi
 CONFIG_PATH="$REPO_ROOT/01-shift-left/.gitleaks.toml"
 DISPATCHER_SCRIPT="$REPO_ROOT/04-soar-n8n-testing/trigger_alert.py"
 
-if command -v gitleaks &> /dev/null; then
-    SCANNER="gitleaks"
-elif command -v trufflehog &> /dev/null; then
-    SCANNER="trufflehog"
-else
-    echo -e "${YELLOW}[ADVERTENCIA]${NC} Gitleaks/TruffleHog no encontrado en el PATH."
-    echo -e "Instala Gitleaks para habilitar la protección local: winget install Gitleaks.Gitleaks"
+if ! command -v gitleaks &> /dev/null; then
+    echo "[ADVERTENCIA] Gitleaks no encontrado en el PATH."
     exit 1
 fi
 
-if [ "$SCANNER" = "gitleaks" ]; then
-    if [ -f "$CONFIG_PATH" ]; then
-        if ! gitleaks protect --staged --verbose --redact --config="$CONFIG_PATH"; then
-            echo -e "\n${RED}===================================================================${NC}"
-            echo -e "${RED}[BLOQUEO SHIFT-LEFT] Se detectaron secretos o tokens en el commit!${NC}"
-            echo -e "${RED}===================================================================${NC}"
-            echo -e "${YELLOW}Acción Correctiva:${NC}"
-            echo "1. Remueve las credenciales y trasládalas a la bóveda (Vaultwarden/Vault)."
-            echo "2. Usa variables de entorno (.env) que no se suban al repositorio."
-            echo "3. Vuelve a ejecutar 'git add <archivo>' y realiza el commit nuevamente.\n"
-
-            # Disparo SOAR a n8n en segundo plano
-            if [ -f "$DISPATCHER_SCRIPT" ]; then
-                python "$DISPATCHER_SCRIPT" 1 >/dev/null 2>&1 &
-            fi
-
-            exit 1
-        fi
+trigger_soar_incident() {
+    if command -v cygpath &> /dev/null; then
+        WIN_SCRIPT=$(cygpath -w "$DISPATCHER_SCRIPT")
     else
-        if ! gitleaks protect --staged --verbose --redact; then
-            echo -e "\n${RED}===================================================================${NC}"
-            echo -e "${RED}[BLOQUEO SHIFT-LEFT] Se detectaron secretos o tokens en el commit!${NC}"
-            echo -e "${RED}===================================================================${NC}"
-            echo -e "${YELLOW}Acción Correctiva:${NC}"
-            echo "1. Remueve las credenciales y trasládalas a la bóveda (Vaultwarden/Vault)."
-            echo "2. Usa variables de entorno (.env) que no se suban al repositorio."
-            echo "3. Vuelve a ejecutar 'git add <archivo>' y realiza el commit nuevamente.\n"
-
-            # Disparo SOAR a n8n en segundo plano
-            if [ -f "$DISPATCHER_SCRIPT" ]; then
-                python "$DISPATCHER_SCRIPT" 1 >/dev/null 2>&1 &
-            fi
-
-            exit 1
-        fi
+        WIN_SCRIPT="$DISPATCHER_SCRIPT"
     fi
+    python "$WIN_SCRIPT" 1 2>&1 | grep -E "Despachando incidente|Codigo de Respuesta|Latencia|EXITOSO" || true
+}
+
+# Ejecutar Gitleaks con --no-color para compatibilidad con VS Code GUI (Comillas estrictas para rutas con espacios)
+GITLEAKS_EXIT=0
+if [ -f "$CONFIG_PATH" ]; then
+    LEAKS_OUTPUT=$(gitleaks protect --staged --verbose --redact --no-color --config="$CONFIG_PATH" 2>&1) || GITLEAKS_EXIT=$?
+else
+    LEAKS_OUTPUT=$(gitleaks protect --staged --verbose --redact --no-color 2>&1) || GITLEAKS_EXIT=$?
 fi
 
-echo -e "${GREEN}[PASS]${NC} Código limpio de secretos. Commit autorizado."
+if [ "$GITLEAKS_EXIT" -ne 0 ]; then
+    # El primer mensaje es el que toma la ventana emergente de VS Code
+    echo "🛑 [BLOQUEO SHIFT-LEFT] Commit rechazado: Se detectaron credenciales en Staging (SOP-02 / NIST PR.PS-01)"
+    echo ""
+    echo "==================================================================="
+    echo "CONTROL PREVENTIVO DEVSECOPS - ALMA INDUSTRIA CREATIVA E.I.R.L."
+    echo "Framework: NIST CSF v2.0 | Subcategoría: PR.PS-01 & DE.CM-01"
+    echo "==================================================================="
+    echo ""
+    echo "$LEAKS_OUTPUT"
+    echo ""
+    echo "==================================================================="
+    echo "ACCIÓN CORRECTIVA SEGÚN SOP-02:"
+    echo "1. Remueve las credenciales y trasládalas a la bóveda (Vaultwarden)."
+    echo "2. Usa variables de entorno (getenv) que no se suban al repositorio."
+    echo "3. Vuelve a ejecutar 'git add' y realiza el commit nuevamente."
+    echo "==================================================================="
+    echo "[SOAR NIST CSF v2.0] ⚡ Despachando alerta en tiempo real a n8n (Telegram) y SOC Dashboard..."
+    trigger_soar_incident
+    exit 1
+fi
+
+echo "[PASS] Código limpio de secretos. Commit autorizado."
 exit 0

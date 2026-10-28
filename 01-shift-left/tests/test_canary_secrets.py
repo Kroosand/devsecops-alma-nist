@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 ==============================================================================
-Script de Validación y Simulación de Fuga de Secretos (Canary Token Test)
+Script de Validación y Simulación Shift-Left (Canary Token Test)
 Proyecto: DevSecOps NIST CSF v2.0 - Alma Industria Creativa E.I.R.L.
-Autor: Sergio Incacutipa (SENATI)
+Autores: Sergio Incacutipa & Waldir Chullo (SENATI)
 Control: SOP-02 (PR.PS-01 / DE.CM-01)
 ==============================================================================
 """
@@ -12,67 +12,122 @@ import os
 import subprocess
 import sys
 
-CANARY_FILE = "config_test_leak.php"
+CANARY_FILE = "services_notifier_demo.php"
 
 SAMPLE_LEAKS = """<?php
-// ARCHIVO DE PRUEBA CONTROLADA - SIMULACIÓN DE FUGA DE CREDENCIALES
+// Módulo de Notificaciones de Clientes - Alma Industria Creativa E.I.R.L.
+// [ERROR DE DESARROLLO]: Credenciales hardcodeadas en código fuente
 $telegram_bot_token = "123456789:ABCdefGHIjklMNOpqrsTUVwxyz123456789";
-$aws_access_key = "AKIAIOSFODNN7EXAMPLE";
-$aws_secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
-define('DB_PASSWORD', 'super_secret_db_pass_12345');
 $n8n_api_key = "n8n_api_key_alma_growth_secret_998877665544";
+define('DB_PASSWORD', 'AlmaQuinta2024#SecretDBPass');
 ?>"""
 
-def run_command(cmd):
-    return subprocess.run(cmd, shell=True, capture_output=True, text=True)
+SAMPLE_REMEDIATED = """<?php
+// Módulo de Notificaciones de Clientes - Alma Industria Creativa E.I.R.L.
+// [CÓDIGO REMEDIADO]: Custodiado en Bóveda y consumido por Variables de Entorno (SOP-02)
+$telegram_bot_token = getenv('TELEGRAM_BOT_TOKEN');
+$n8n_api_key = getenv('N8N_API_KEY');
+$db_password = getenv('DB_PASSWORD');
+?>"""
+
+def run_command(cmd, cwd=None):
+    return subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=cwd)
 
 def main():
-    print("=" * 70)
-    print("[*] TEST AUTOMATIZADO SHIFT-LEFT: SIMULACIÓN DE INTENTO DE COMMIT CON SECRETOS")
-    print("=" * 70)
+    mode = "leak"
+    if len(sys.argv) > 1 and sys.argv[1].lower() in ["remediate", "clean", "pass"]:
+        mode = "remediate"
 
-    # 1. Crear archivo con secretos simulados
-    print(f"\n[1] Creando archivo temporal con credenciales: {CANARY_FILE}...")
-    with open(CANARY_FILE, "w") as f:
-        f.write(SAMPLE_LEAKS)
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    target_path = os.path.join(repo_root, CANARY_FILE)
 
-    # 2. Agregar archivo a staging
-    print("[2] Agregando archivo a Staging (git add)...")
-    run_command(f"git add {CANARY_FILE}")
+    if mode == "leak":
+        print("=" * 75)
+        print("  SIMULACIÓN SHIFT-LEFT: INTENTO DE COMMIT CON CREDENCIALES HARDCODEADAS")
+        print("  Control NIST CSF v2.0: PR.PS-01 (Platform Security) / SOP-02")
+        print("=" * 75)
 
-    # 3. Intentar realizar el commit
-    print("[3] Ejecutando 'git commit' (Se espera intercepción y bloqueo)...")
-    commit_res = run_command('git commit -m "test: intento de subir secretos hardcodeados"')
+        print(f"\n[1] Creando archivo vulnerable de prueba: {CANARY_FILE}...")
+        with open(target_path, "w", encoding="utf-8") as f:
+            f.write(SAMPLE_LEAKS)
 
-    # 4. Analizar resultado
-    blocked = (commit_res.returncode != 0)
-    
-    print("\n--- SALIDA DEL ESCANEO ---")
-    print(commit_res.stdout)
-    if commit_res.stderr:
-        print(commit_res.stderr)
-    print("--------------------------")
+        print("[2] Agregando archivo a Staging (git add)...")
+        run_command(f'git add "{CANARY_FILE}"', cwd=repo_root)
 
-    # 5. Limpieza (Deshacer staging y eliminar archivo temporal)
-    print("[5] Limpiando entorno de prueba...")
-    run_command(f"git reset HEAD {CANARY_FILE}")
-    if os.path.exists(CANARY_FILE):
-        os.remove(CANARY_FILE)
+        print("[3] Ejecutando 'git commit' (Se espera intercepción de Gitleaks en <300ms)...")
+        commit_res = run_command('git commit -m "feat: modulo de notificaciones con credenciales hardcodeadas"', cwd=repo_root)
 
-    # 6. Conclusión y reporte
-    print("\n" + "=" * 70)
-    if blocked:
-        print("[RESULTADO: EXITOSO - CONTROL OPERATIVO SOP-02 FUNCIONANDO]")
-        print(" -> El Pre-commit Hook detectó los secretos y BLOQUEÓ el commit.")
-        print(" -> Código de salida retornado: 1 (Fallo forzado de seguridad).")
-        print(" -> Cumplimiento NIST CSF v2.0: PR.PS-01 (Platform Security) VALIDADO.")
-        print("=" * 70)
-        sys.exit(0)
+        blocked = (commit_res.returncode != 0)
+
+        print("\n--- SALIDA DE LA INTERCEPCIÓN EN TERMINAL ---")
+        print(commit_res.stdout)
+        if commit_res.stderr:
+            print(commit_res.stderr)
+        print("---------------------------------------------")
+
+        # Limpieza
+        run_command(f'git reset HEAD "{CANARY_FILE}"', cwd=repo_root)
+        if os.path.exists(target_path):
+            os.remove(target_path)
+
+        print("=" * 75)
+        if blocked:
+            print(" [RESULTADO: EXITOSO - CONTROL SOP-02 FUNCIONANDO]")
+            print(" -> El Pre-commit Hook (Gitleaks) detectó los secretos y BLOQUEÓ el commit.")
+            print(" -> Código de salida retornado: 1 (Commit abortado antes de entrar al repo).")
+            print(" -> Alerta SOAR despachada automáticamente hacia n8n y SOC Dashboard.")
+            print(" -> Control NIST CSF v2.0 PR.PS-01 VALIDADO.")
+            print("=" * 75)
+            sys.exit(0)
+        else:
+            print(" [RESULTADO: FALLIDO - EL COMMIT NO FUE BLOQUEADO]")
+            print(" -> Revisa la instalación del hook en .git/hooks/pre-commit.")
+            print("=" * 75)
+            sys.exit(1)
+
     else:
-        print("[RESULTADO: FALLIDO - EL COMMIT NO FUE BLOQUEADO]")
-        print(" -> Revisa la instalación del hook en .git/hooks/pre-commit.")
-        print("=" * 70)
-        sys.exit(1)
+        print("=" * 75)
+        print("  SIMULACIÓN SHIFT-LEFT: COMMIT REMEDIADO CON VARIABLES DE ENTORNO (SOP-02)")
+        print("  Control NIST CSF v2.0: PR.PS-01 (Platform Security) / DE.CM-01")
+        print("=" * 75)
+
+        print(f"\n[1] Creando archivo remediado seguro: {CANARY_FILE}...")
+        with open(target_path, "w", encoding="utf-8") as f:
+            f.write(SAMPLE_REMEDIATED)
+
+        print("[2] Agregando archivo seguro a Staging (git add)...")
+        run_command(f'git add "{CANARY_FILE}"', cwd=repo_root)
+
+        print("[3] Ejecutando 'git commit' (Se espera verificación limpia y autorización)...")
+        commit_res = run_command('git commit -m "feat(security): modulo remediado con variables de entorno (SOP-02)"', cwd=repo_root)
+
+        passed = (commit_res.returncode == 0)
+
+        print("\n--- SALIDA DE LA VALIDACIÓN EN TERMINAL ---")
+        print(commit_res.stdout)
+        if commit_res.stderr:
+            print(commit_res.stderr)
+        print("-------------------------------------------")
+
+        # Revertir commit de prueba para mantener el repo limpio
+        if passed:
+            run_command("git reset --soft HEAD~1", cwd=repo_root)
+        run_command(f'git reset HEAD "{CANARY_FILE}"', cwd=repo_root)
+        if os.path.exists(target_path):
+            os.remove(target_path)
+
+        print("=" * 75)
+        if passed:
+            print(" [RESULTADO: EXITOSO - COMMIT AUTORIZADO]")
+            print(" -> Gitleaks analizó el código: 0 secretos detectados.")
+            print(" -> El código cumple con las directivas de seguridad SOP-02 y NIST PR.PS-01.")
+            print(" -> Entorno de staging limpio y listo para el flujo CI/CD.")
+            print("=" * 75)
+            sys.exit(0)
+        else:
+            print(" [RESULTADO: FALLIDO - EL COMMIT FUE RECHAZADO]")
+            print("=" * 75)
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()
