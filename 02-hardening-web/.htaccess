@@ -40,5 +40,6 @@ Options -Indexes
 <RequireAll>
     Require all granted
     # BEGIN_SOAR_IP_BLOCK
+    Require not ip 132.184.160.122
     # END_SOAR_IP_BLOCK
 </RequireAll>
