@@ -79,7 +79,7 @@ jobs:
         if: failure()
         run: |
           echo "[*] Disparando alerta automatizada hacia n8n y Telegram..."
-          python 04-soar-n8n-testing/trigger_alert.py 1 https://n8n.almaquinta.com/webhook/devsecops-alert || true
+          python 04-soar-n8n-testing/trigger_alert.py 1 https://n8n-komidev.45.85.249.241.sslip.io/webhook/devsecops-alert || true
 
   # ----------------------------------------------------------------------------
   # JOB 2: Análisis de Composición de Software y Dependencias (SCA - Trivy)

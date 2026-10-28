@@ -20,7 +20,7 @@ import urllib.error
 import ssl
 
 # URL oficial del Webhook de n8n de Waldir
-DEFAULT_WEBHOOK_URL = "https://n8n.almaquinta.com/webhook/devsecops-alert"
+DEFAULT_WEBHOOK_URL = "https://n8n-komidev.45.85.249.241.sslip.io/webhook/devsecops-alert"
 
 EVENT_PRESETS = {
     "1": {

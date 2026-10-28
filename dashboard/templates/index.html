@@ -571,7 +571,12 @@ O selecciona "ðŸŸ¢ 2. Simular Commit Remediado" para comprobar la aprobaciÃ
                             <span id="audit-banner-text" class="text-rose-200 ml-1">Alerta despachada automáticamente al Webhook de n8n y canal de Telegram.</span>
                         </div>
                     </div>
-                    <span id="audit-banner-id" class="font-mono text-[11px] bg-rose-500/20 text-rose-300 px-2.5 py-1 rounded-lg border border-rose-500/30">ALMA-SEC-XXXX</span>
+                    <div class="flex items-center gap-2">
+                        <span id="audit-banner-id" class="font-mono text-[11px] bg-rose-500/20 text-rose-300 px-2.5 py-1 rounded-lg border border-rose-500/30">ALMA-SEC-XXXX</span>
+                        <button type="button" onclick="document.getElementById('audit-alert-banner').classList.add('hidden')" title="Cerrar banner" class="text-rose-300 hover:text-white p-1 rounded hover:bg-rose-500/20 transition cursor-pointer">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div id="audit-results" class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -614,9 +619,14 @@ O selecciona "ðŸŸ¢ 2. Simular Commit Remediado" para comprobar la aprobaciÃ
                         <span id="detected-ip-val" class="font-mono font-bold text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded border border-slate-700/40">Esperando ataque en vivo...</span>
                         <span id="detected-tag" class="text-slate-500 text-[11px]">(Monitoreo NIST DE.AE-02)</span>
                     </div>
-                    <button type="button" id="btn-load-detected" onclick="loadDetectedIp()" class="text-xs bg-slate-800 text-slate-500 px-3 py-1 rounded transition font-bold flex items-center gap-1.5 cursor-not-allowed" disabled>
-                        <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> Cargar para Bloqueo
-                    </button>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" id="btn-load-detected" onclick="loadDetectedIp()" class="text-xs bg-slate-800 text-slate-500 px-3 py-1 rounded transition font-bold flex items-center gap-1.5 cursor-not-allowed" disabled>
+                            <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> Cargar para Bloqueo
+                        </button>
+                        <button type="button" id="btn-clear-detected" onclick="clearDetectedIp()" title="Limpiar alerta y esperar nuevo ataque" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-2.5 py-1 rounded transition font-medium flex items-center gap-1 cursor-pointer border border-slate-700">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i> Limpiar
+                        </button>
+                    </div>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3 mb-4">
@@ -630,6 +640,9 @@ O selecciona "ðŸŸ¢ 2. Simular Commit Remediado" para comprobar la aprobaciÃ
 
                 <div id="ban-status-banner" class="hidden mb-4 p-3 rounded-lg bg-dark-850 border border-slate-800 text-xs text-slate-200 flex items-center justify-between">
                     <span id="ban-status-msg" class="font-mono"></span>
+                    <button type="button" onclick="document.getElementById('ban-status-banner').classList.add('hidden')" title="Cerrar banner" class="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-700 transition cursor-pointer">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </button>
                 </div>
 
                 <div>
@@ -1192,6 +1205,49 @@ O selecciona "ðŸŸ¢ 2. Simular Commit Remediado" para comprobar la aprobaciÃ
         
         let liveAttackerIp = null;
 
+        function resetAttackerUI() {
+            liveAttackerIp = null;
+            const box = document.getElementById('detected-attacker-box');
+            const ping = document.getElementById('detected-ping');
+            const val = document.getElementById('detected-ip-val');
+            const tag = document.getElementById('detected-tag');
+            const btn = document.getElementById('btn-load-detected');
+            const btnClear = document.getElementById('btn-clear-detected');
+            const input = document.getElementById('ban-ip-input');
+
+            if (box) {
+                box.className = "mb-3 p-2.5 rounded-lg bg-dark-850 border border-slate-700/60 flex items-center justify-between text-xs transition-all";
+            }
+            if (ping) {
+                ping.className = "w-2 h-2 rounded-full bg-slate-500";
+            }
+            if (val) {
+                val.innerText = "Esperando ataque en vivo...";
+                val.className = "font-mono font-bold text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded border border-slate-700/40";
+            }
+            if (tag) {
+                tag.innerText = "(Monitoreo NIST DE.AE-02)";
+                tag.className = "text-slate-500 text-[11px]";
+            }
+            if (btn) {
+                btn.disabled = true;
+                btn.className = "text-xs bg-slate-800 text-slate-500 px-3 py-1 rounded transition font-bold flex items-center gap-1.5 cursor-not-allowed";
+            }
+            if (btnClear) {
+                btnClear.classList.add('hidden');
+            }
+            if (input && (input.value === '181.176.3.226' || input.value === '192.168.0.6' || input.value === '132.184.160.122')) {
+                input.value = '';
+            }
+        }
+
+        async function clearDetectedIp() {
+            try {
+                await fetch('/api/clear-latest-attacker', { method: 'POST' });
+            } catch (e) {}
+            resetAttackerUI();
+        }
+
         function updateAttackerUI(ip, incidentId, eventType) {
             if (!ip) return;
             const isNew = (ip !== liveAttackerIp);
@@ -1222,7 +1278,12 @@ O selecciona "ðŸŸ¢ 2. Simular Commit Remediado" para comprobar la aprobaciÃ
                 btn.disabled = false;
                 btn.className = "text-xs bg-rose-600 hover:bg-rose-500 text-white px-3 py-1 rounded transition font-bold flex items-center gap-1.5 cursor-pointer shadow-lg shadow-rose-900/30";
             }
-            if (input && (!input.value || input.value === '181.176.3.226' || input.value.trim() === '')) {
+            const btnClear = document.getElementById('btn-clear-detected');
+            if (btnClear) {
+                btnClear.classList.remove('hidden');
+                if (window.lucide) lucide.createIcons();
+            }
+            if (input && (isNew || !input.value || input.value === '181.176.3.226' || input.value === '192.168.0.6' || input.value.trim() === '')) {
                 input.value = ip;
             }
 
@@ -1238,6 +1299,8 @@ O selecciona "ðŸŸ¢ 2. Simular Commit Remediado" para comprobar la aprobaciÃ
                 const data = await res.json();
                 if (data.status === 'ok' && data.has_attacker && data.attacker.ip) {
                     updateAttackerUI(data.attacker.ip, data.attacker.incident_id, data.attacker.event_type);
+                } else if (data.status === 'ok' && !data.has_attacker && liveAttackerIp !== null) {
+                    resetAttackerUI();
                 }
             } catch (e) {}
         }

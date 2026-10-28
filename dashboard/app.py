@@ -33,7 +33,7 @@ import ai_triage
 
 app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"), static_folder=os.path.join(BASE_DIR, "static"))
 
-DEFAULT_WEBHOOK_URL = "https://n8n.almaquinta.com/webhook/devsecops-alert"
+DEFAULT_WEBHOOK_URL = "https://n8n-komidev.45.85.249.241.sslip.io/webhook/devsecops-alert"
 
 # Memoria de incidentes en sesión
 INCIDENT_HISTORY = []
@@ -424,6 +424,7 @@ def audit_url():
         now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
         incident_id = f"ALMA-SEC-{uuid.uuid4().hex[:8].upper()}"
         
+        detected_attacker_ip = LATEST_ATTACKER.get("ip") or "132.184.160.122"
         payload = {
             "incident_id": incident_id,
             "id_incidente": incident_id,
@@ -464,12 +465,12 @@ def audit_url():
             "regla_seguridad": "SOP-03: Bastionado Web y Control de Dependencias",
             "sop": "SOP-03: Bastionado Web y Control de Dependencias",
             "sop_reference": "SOP-03: Bastionado Web y Control de Dependencias",
-            "responsable_ip": "Waldir Chullo / Estación Atacante (181.176.3.226)",
-            "usuario_ip": "Waldir Chullo / Estación Atacante (181.176.3.226)",
+            "responsable_ip": f"Waldir Chullo / Estación Atacante ({detected_attacker_ip})",
+            "usuario_ip": f"Waldir Chullo / Estación Atacante ({detected_attacker_ip})",
             "responsable": "Waldir Chullo (Red Team)",
             "usuario": "Waldir Chullo",
-            "ip": "181.176.3.226",
-            "attacker_ip": "181.176.3.226",
+            "ip": detected_attacker_ip,
+            "attacker_ip": detected_attacker_ip,
             "details": f"Se audito el objetivo {target_url} y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores.",
             "detalles": f"Se audito el objetivo {target_url} y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200) permitiendo enumeracion de administradores.",
             "detalles_tecnicos": f"Se audito el objetivo {target_url} y se detecto el endpoint sensible /wp-json/wp/v2/users expuesto publicamente (HTTP 200).",
@@ -506,7 +507,7 @@ def audit_url():
         "results": results,
         "alert_dispatched": alert_dispatched,
         "incident_id": incident_id,
-        "attacker_ip": "181.176.3.226",
+        "attacker_ip": LATEST_ATTACKER.get("ip") or "132.184.160.122",
         "ai_summary": payload.get("ai_summary", "") if "payload" in locals() else ""
     })
 
@@ -606,6 +607,7 @@ def get_benchmark_data():
 
 HTACCESS_PATH = os.path.join(PROJECT_ROOT, "02-hardening-web", ".htaccess")
 BASTIONADO_STATUS_FILE = os.path.join(PROJECT_ROOT, "03-secrets-management", "data", "wp_data", "bastionado_status.txt")
+BLOCKED_IPS_FILE = os.path.join(PROJECT_ROOT, "03-secrets-management", "data", "wp_data", "blocked_ips.txt")
 
 @app.route("/api/bastionado-mode", methods=["GET", "POST"])
 def bastionado_mode_api():
@@ -687,12 +689,18 @@ def live_incident_receiver():
 
     now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
-    # Guardar en LATEST_ATTACKER dinámico
-    LATEST_ATTACKER["ip"] = ip
-    LATEST_ATTACKER["incident_id"] = incident_id
-    LATEST_ATTACKER["event_type"] = event_type
-    LATEST_ATTACKER["details"] = details
-    LATEST_ATTACKER["timestamp"] = now_utc
+    # Guardar en LATEST_ATTACKER dinámico SOLO si proviene de eventos Web / WAF / Pentest
+    # Esto previene que un commit git local con 192.168.0.6 sobreescriba la IP real de Waldir
+    source_str = str(data.get("source", "")).lower()
+    event_str = str(event_type).lower()
+    is_web_attack = any(k in source_str for k in ["waf", "wordpress", "hardening", "pentest", "auditor"]) or                     any(k in event_str for k in ["enumeracion", "vulnerabilidad", "bruta", "fuerza"])
+
+    if is_web_attack and ip and ip != "127.0.0.1" and not ip.startswith("172.18."):
+        LATEST_ATTACKER["ip"] = ip
+        LATEST_ATTACKER["incident_id"] = incident_id
+        LATEST_ATTACKER["event_type"] = event_type
+        LATEST_ATTACKER["details"] = details
+        LATEST_ATTACKER["timestamp"] = now_utc
 
     # Agregar a INCIDENT_HISTORY para la tabla en vivo
     history_entry = {
@@ -731,6 +739,16 @@ def live_incident_receiver():
         print(f"Error registrando métrica en vivo: {e}")
 
     return jsonify({"status": "recorded", "ip": ip, "incident_id": incident_id})
+
+@app.route("/api/clear-latest-attacker", methods=["POST"])
+def clear_latest_attacker():
+    """Limpia la alerta del atacante para reiniciar el sensor en espera de un nuevo ataque."""
+    LATEST_ATTACKER["ip"] = None
+    LATEST_ATTACKER["incident_id"] = None
+    LATEST_ATTACKER["event_type"] = None
+    LATEST_ATTACKER["details"] = None
+    LATEST_ATTACKER["timestamp"] = None
+    return jsonify({"status": "cleared", "message": "Alerta de atacante reiniciada con exito."})
 
 @app.route("/api/latest-attacker", methods=["GET"])
 def get_latest_attacker():
@@ -773,6 +791,15 @@ def mitigate_ip():
         with open(HTACCESS_PATH, "w", encoding="utf-8") as f:
             f.write(content)
 
+        # 2. Registrar en blocked_ips.txt (Capa de defensa en profundidad evaluada por wp-hardening-plugin.php)
+        blocked_set = set()
+        if os.path.exists(BLOCKED_IPS_FILE):
+            with open(BLOCKED_IPS_FILE, "r", encoding="utf-8") as bf:
+                blocked_set = set(line.strip() for line in bf if line.strip())
+        blocked_set.add(ip)
+        with open(BLOCKED_IPS_FILE, "w", encoding="utf-8") as bf:
+            bf.write("\n".join(sorted(blocked_set)) + "\n")
+
         # Registrar en la base de datos de auditoría
         metrics_logger.log_metric(
             incident_id=f"ALMA-BAN-{uuid.uuid4().hex[:6].upper()}",
@@ -800,8 +827,8 @@ def mitigate_ip():
 
 @app.route("/api/blocked-ips", methods=["GET"])
 def get_blocked_ips():
-    """Obtiene la lista de IPs actualmente bloqueadas en .htaccess."""
-    blocked = []
+    """Obtiene la lista de IPs actualmente bloqueadas en .htaccess y blocked_ips.txt."""
+    blocked = set()
     if os.path.exists(HTACCESS_PATH):
         try:
             with open(HTACCESS_PATH, "r", encoding="utf-8") as f:
@@ -809,11 +836,21 @@ def get_blocked_ips():
                     line = line.strip()
                     if line.startswith("Require not ip "):
                         ip = line.replace("Require not ip ", "").strip()
-                        if ip and ip != "172.18.0.1" and ip not in blocked:
-                            blocked.append(ip)
+                        if ip and ip != "172.18.0.1":
+                            blocked.add(ip)
         except Exception:
             pass
-    return jsonify({"blocked_ips": blocked, "total": len(blocked)})
+    if os.path.exists(BLOCKED_IPS_FILE):
+        try:
+            with open(BLOCKED_IPS_FILE, "r", encoding="utf-8") as bf:
+                for line in bf:
+                    ip = line.strip()
+                    if ip and ip != "172.18.0.1":
+                        blocked.add(ip)
+        except Exception:
+            pass
+    blocked_sorted = sorted(list(blocked))
+    return jsonify({"blocked_ips": blocked_sorted, "total": len(blocked_sorted)})
 
 @app.route("/api/unblock-ip", methods=["POST"])
 def unblock_ip():
@@ -837,6 +874,14 @@ def unblock_ip():
 
         with open(HTACCESS_PATH, "w", encoding="utf-8") as f:
             f.writelines(new_lines)
+
+        # Remover de blocked_ips.txt
+        if os.path.exists(BLOCKED_IPS_FILE):
+            with open(BLOCKED_IPS_FILE, "r", encoding="utf-8") as bf:
+                blocked_set = set(line.strip() for line in bf if line.strip())
+            blocked_set.discard(ip)
+            with open(BLOCKED_IPS_FILE, "w", encoding="utf-8") as bf:
+                bf.write("\n".join(sorted(blocked_set)) + ("\n" if blocked_set else ""))
 
         return jsonify({"status": "success", "message": f"IP {ip} removida del bloqueo con éxito."})
     except Exception as e:

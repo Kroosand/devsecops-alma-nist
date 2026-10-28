@@ -1,4 +1,4 @@
-﻿# ==============================================================================
+# ==============================================================================
 # CONFIGURACIÓN DE BASTIONADO PERIMETRAL (.htaccess - Apache / LiteSpeed)
 # Empresa: Alma Industria Creativa E.I.R.L.
 # Proyecto: Titulación SENATI - DevSecOps NIST CSF v2.0
@@ -19,28 +19,24 @@
     RewriteEngine On
     RewriteBase /
 
-    # 2. Bloqueo de Enumeración REST API (/wp-json/wp/v2/users) para accesos anónimos
-    RewriteCond %{REQUEST_URI} ^/wp-json/wp/v2/users [NC]
-    RewriteCond %{HTTP:Authorization} ^$
-    RewriteCond %{HTTP_COOKIE} !wordpress_logged_in_ [NC]
-    RewriteRule ^.*$ - [F,L]
+    # 2. Denegar acceso a archivos sensibles y de configuración
+    RewriteRule ^(\.env|\.git|\.htaccess|\.htpasswd|composer\.json|package\.json|wp-config\.php)$ - [F,L]
 
-    # 3. Bloqueo de Enumeración de Autores mediante Query String (?author=1)
-    RewriteCond %{QUERY_STRING} ^author=([0-9]+) [NC]
-    RewriteRule ^ - [F,L]
-
-    # 4. Whitelist para Bots de Redes Sociales (Evitar HTTP 429 en OpenGraph)
+    # 3. Whitelist para Bots de Redes Sociales (Evitar HTTP 429 en OpenGraph)
     RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|TelegramBot|Googlebot|bingbot) [NC]
     RewriteRule ^.*$ - [E=WAF_WHITELIST:1]
 
-    # 5. Denegar acceso a archivos sensibles y de configuración
-    RewriteRule ^(\.env|\.git|\.htaccess|\.htpasswd|composer\.json|package\.json|wp-config\.php)$ - [F,L]
+    # 4. Enrutamiento del CMS WordPress para procesamiento del WAF Sensor
+    RewriteRule ^index\.php$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /index.php [L]
 </IfModule>
 
-# 6. Deshabilitar listado de directorios
+# 5. Deshabilitar listado de directorios
 Options -Indexes
 
-# 7. Remediación Activa SOAR: Bloqueo de IPs Hostiles
+# 6. Remediación Activa SOAR: Bloqueo de IPs Hostiles
 <RequireAll>
     Require all granted
     # BEGIN_SOAR_IP_BLOCK
