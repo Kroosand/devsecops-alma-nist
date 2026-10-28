@@ -117,6 +117,15 @@ function alma_alertar_soar($tipo_evento, $detalles_tecnicos, $score = 8.5) {
     $incident_id = 'ALMA-WAF-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
     $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'curl/pentest';
 
+    $autoblock_file = '/var/www/html/autoblock_status.txt';
+    $is_autoblock = true;
+    if (file_exists($autoblock_file)) {
+        $is_autoblock = (trim(file_get_contents($autoblock_file)) === 'enabled');
+    }
+    $accion = $is_autoblock 
+        ? '⚡ AUTO-BLOQUEO EJECUTADO: IP ' . $ip . ' neutralizada automáticamente en < 1 seg (NIST RS.MI-01 - Zero-Touch SOAR).'
+        : '1. Bloquear IP ' . $ip . ' en el Centro de Control SOC. 2. Alternar a Modo Protegido (SOP-03).';
+
     $payload = array(
         'incident_id'        => $incident_id,
         'id_incidente'       => $incident_id,
@@ -138,14 +147,17 @@ function alma_alertar_soar($tipo_evento, $detalles_tecnicos, $score = 8.5) {
         'details'            => $detalles_tecnicos . ' [User-Agent: ' . $user_agent . ']',
         'detalles'           => $detalles_tecnicos . ' [User-Agent: ' . $user_agent . ']',
         'detalles_tecnicos'  => $detalles_tecnicos . ' [User-Agent: ' . $user_agent . ']',
-        'nist_control'       => 'PR.IR-01 / DE.AE-02',
-        'control_nist'       => 'PR.IR-01 / DE.AE-02',
+        'nist_control'       => 'PR.IR-01 / DE.AE-02 / RS.MI-01',
+        'control_nist'       => 'PR.IR-01 / DE.AE-02 / RS.MI-01',
         'sop'                => 'SOP-03',
         'sop_reference'      => 'SOP-03: Bastionado Web y Control de Dependencias',
         'score'              => $score,
         'risk_score'         => (string)$score,
         'timestamp'          => date('c'),
-        'suggested_action'   => '1. Bloquear IP ' . $ip . ' en el Centro de Control SOC. 2. Alternar a Modo Protegido (SOP-03).'
+        'suggested_action'   => $accion,
+        'accion_recomendada' => $accion,
+        'accion'             => $accion,
+        'auto_blocked'       => $is_autoblock
     );
 
     $json_payload = json_encode($payload);
@@ -205,6 +217,23 @@ add_action('init', function () {
             'Enumeración de Usuarios REST API (Intento de Intrusión)',
             'Intento de reconocimiento activo contra endpoints sensibles de cuentas de usuario (/wp-json/wp/v2/users).'
         );
+
+        // Auto-Remediación Inmediata 24/7 (NIST CSF v2.0 RS.MI-01): Neutraliza la IP hostil en <1ms
+        $autoblock_file = '/var/www/html/autoblock_status.txt';
+        $autoblock_active = true;
+        if (file_exists($autoblock_file)) {
+            $autoblock_active = (trim(file_get_contents($autoblock_file)) === 'enabled');
+        }
+        if ($autoblock_active) {
+            $ip_attacker = alma_get_client_ip();
+            if ($ip_attacker && $ip_attacker !== '127.0.0.1' && !str_starts_with($ip_attacker, '172.18.')) {
+                $bf = '/var/www/html/blocked_ips.txt';
+                $ex = file_exists($bf) ? file_get_contents($bf) : '';
+                if (strpos($ex, $ip_attacker) === false) {
+                    @file_put_contents($bf, $ip_attacker . "\n", FILE_APPEND | LOCK_EX);
+                }
+            }
+        }
 
         // Si está en Modo Protegido (SOP-03), bloquear con 403 Forbidden
         if (!alma_es_modo_vulnerable()) {

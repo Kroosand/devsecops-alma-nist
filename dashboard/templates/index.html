@@ -612,6 +612,30 @@ O selecciona "ðŸŸ¢ 2. Simular Commit Remediado" para comprobar la aprobaciÃ
                 <p class="text-xs text-slate-400 mb-4">Aisla atacantes en tiempo real inyectando directivas de denegación perimetral directamente en el servidor web Apache/LiteSpeed:</p>
 
                 <!-- Atacante Detectado Dinámicamente en Vivo -->
+                <!-- MODO AUTO-BLOQUEO AUTÓNOMO SOAR 24/7 -->
+                <div class="mb-4 p-3 rounded-lg bg-dark-950 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                            <i data-lucide="zap" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white flex items-center gap-2">
+                                Defensa Activa 24/7: Remediación Autónoma SOAR
+                                <span id="autoblock-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">⚡ ACTIVO (Zero-Touch)</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Neutraliza y bloquea atacantes automáticamente en &lt; 1 seg sin requerir supervisión humana 24/7 (NIST RS.MI-01).</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="setAutoblockMode(true)" id="btn-autoblock-on" class="px-3 py-1 rounded text-xs font-bold transition flex items-center gap-1 bg-emerald-600 text-white shadow-lg shadow-emerald-900/30">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Automático 24/7
+                        </button>
+                        <button type="button" onclick="setAutoblockMode(false)" id="btn-autoblock-off" class="px-3 py-1 rounded text-xs font-bold transition flex items-center gap-1 bg-dark-900 text-slate-400 hover:text-white border border-slate-800">
+                            <i data-lucide="user-check" class="w-3.5 h-3.5"></i> Supervisado
+                        </button>
+                    </div>
+                </div>
+
                 <div id="detected-attacker-box" class="mb-3 p-2.5 rounded-lg bg-dark-850 border border-slate-700/60 flex items-center justify-between text-xs transition-all">
                     <div class="flex items-center gap-2">
                         <span id="detected-ping" class="w-2 h-2 rounded-full bg-slate-500"></span>
@@ -1035,6 +1059,50 @@ O selecciona "ðŸŸ¢ 2. Simular Commit Remediado" para comprobar la aprobaciÃ
             lucide.createIcons();
         }
 
+        async function loadAutoblockMode() {
+            try {
+                const res = await fetch('/api/autoblock-mode');
+                const data = await res.json();
+                updateAutoblockUI(data.enabled);
+            } catch (e) {}
+        }
+
+        async function setAutoblockMode(enabled) {
+            try {
+                const res = await fetch('/api/autoblock-mode', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled: enabled })
+                });
+                const data = await res.json();
+                updateAutoblockUI(data.enabled);
+            } catch (e) {
+                alert("Error al cambiar modo de auto-bloqueo: " + e.message);
+            }
+        }
+
+        function updateAutoblockUI(enabled) {
+            const badge = document.getElementById('autoblock-badge');
+            const btnOn = document.getElementById('btn-autoblock-on');
+            const btnOff = document.getElementById('btn-autoblock-off');
+            if (enabled) {
+                if (badge) {
+                    badge.className = "px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                    badge.innerText = "⚡ ACTIVO (Zero-Touch 24/7)";
+                }
+                if (btnOn) btnOn.className = "px-3 py-1 rounded text-xs font-bold transition flex items-center gap-1 bg-emerald-600 text-white shadow-lg shadow-emerald-900/30";
+                if (btnOff) btnOff.className = "px-3 py-1 rounded text-xs font-bold transition flex items-center gap-1 bg-dark-900 text-slate-400 hover:text-white border border-slate-800";
+            } else {
+                if (badge) {
+                    badge.className = "px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30";
+                    badge.innerText = "👤 SUPERVISADO (Human-in-the-Loop)";
+                }
+                if (btnOn) btnOn.className = "px-3 py-1 rounded text-xs font-bold transition flex items-center gap-1 bg-dark-900 text-slate-400 hover:text-white border border-slate-800";
+                if (btnOff) btnOff.className = "px-3 py-1 rounded text-xs font-bold transition flex items-center gap-1 bg-amber-600 text-white shadow-lg shadow-amber-900/30";
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
         async function loadBastionadoMode() {
             try {
                 const res = await fetch('/api/bastionado-mode');
@@ -1248,7 +1316,11 @@ O selecciona "ðŸŸ¢ 2. Simular Commit Remediado" para comprobar la aprobaciÃ
             resetAttackerUI();
         }
 
-        function updateAttackerUI(ip, incidentId, eventType) {
+        function updateAttackerUI(ip, incidentId, eventType, autoBlocked) {
+            if (autoBlocked) {
+                // Si fue auto-bloqueada, refrescar la lista de IPs bloqueadas de inmediato
+                loadBlockedIps();
+            }
             if (!ip) return;
             const isNew = (ip !== liveAttackerIp);
             liveAttackerIp = ip;
@@ -1298,7 +1370,7 @@ O selecciona "ðŸŸ¢ 2. Simular Commit Remediado" para comprobar la aprobaciÃ
                 const res = await fetch('/api/latest-attacker');
                 const data = await res.json();
                 if (data.status === 'ok' && data.has_attacker && data.attacker.ip) {
-                    updateAttackerUI(data.attacker.ip, data.attacker.incident_id, data.attacker.event_type);
+                    updateAttackerUI(data.attacker.ip, data.attacker.incident_id, data.attacker.event_type, data.attacker.auto_blocked);
                 } else if (data.status === 'ok' && !data.has_attacker && liveAttackerIp !== null) {
                     resetAttackerUI();
                 }
@@ -1515,6 +1587,7 @@ O selecciona "ðŸŸ¢ 2. Simular Commit Remediado" para comprobar la aprobaciÃ
         document.addEventListener('DOMContentLoaded', () => {
             loadBlockedIps();
             loadBastionadoMode();
+            loadAutoblockMode();
             pollLatestAttacker();
             setInterval(pollLatestAttacker, 2000);
         });
