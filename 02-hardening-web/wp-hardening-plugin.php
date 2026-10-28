@@ -150,21 +150,21 @@ function alma_alertar_soar($tipo_evento, $detalles_tecnicos, $score = 8.5) {
 
     $json_payload = json_encode($payload);
 
-    // 1. Enviar alerta al SOAR en n8n Cloud (asíncrono o sincrónico rápido)
+    // 1. Enviar alerta al SOAR en n8n Cloud (sincrónico garantizado con timeout controlado)
     $n8n_webhook = 'https://n8n-komidev.45.85.249.241.sslip.io/webhook/devsecops-alert';
     if (function_exists('wp_remote_post')) {
         wp_remote_post($n8n_webhook, array(
             'body'      => $json_payload,
             'headers'   => array('Content-Type' => 'application/json'),
             'timeout'   => 4,
-            'blocking'  => false,
+            'blocking'  => true,
             'sslverify' => false
         ));
         // 2. Sincronizar simultáneamente con el SOC Dashboard local en tiempo real
         wp_remote_post('http://host.docker.internal:5000/api/live-incident', array(
             'body'      => $json_payload,
             'headers'   => array('Content-Type' => 'application/json'),
-            'timeout'   => 3,
+            'timeout'   => 2,
             'blocking'  => false
         ));
     } else {
